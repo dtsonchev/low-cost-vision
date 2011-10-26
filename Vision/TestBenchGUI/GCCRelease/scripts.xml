@@ -1,0 +1,23 @@
+<scripts>
+	<script path="/home/franc/Meuk/CppPython/" name="test">
+		<desc>Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.</desc>
+		<param name="s1param1" type="int" />
+		<param name="s1param2" type="string" />
+	</script>
+	<script path="/path/script/" name="script2" training="true">
+		<desc>Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.Dit is script 2.</desc>
+		<param name="s2param1" type="string" />
+		<param name="s2param2" type="int" />
+		<param name="s2param3" type="boolean" />
+		<param name="s2param4" type="boolean" />
+		<param name="s2param5" type="boolean" />
+	</script>
+	<script path="/path/script/" name="script3" training="true">
+		<desc>Dit is script 3.Dit is script 3.Dit is script 3.Dit is script 3.</desc>
+		<param name="name" type="type" />
+	</script>
+	<script path="/path/script/" name="script4" training="false">
+		<desc>Dit is script 4.</desc>
+		<param name="name" type="type" />
+	</script>
+</scripts>
