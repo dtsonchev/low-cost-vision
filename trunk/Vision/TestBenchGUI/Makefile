@@ -13,7 +13,7 @@ CONFIG=debug
 
 # debug
 ifeq ($(CONFIG),debug)
-WXWIN=$(HOME)/wxWidgets-2.8.12
+WXWIN=
 TOOLCHAINNAME=gtk2d
 WXVERSION:=$(shell echo `$(WXWIN)/GCCBuildDebugGTK2/wx-config --version`)
 CXX=g++
@@ -45,9 +45,9 @@ MACPACKAGEINFO=
 # release
 else
 ifeq ($(CONFIG),release)
-WXWIN=$(HOME)/wxWidgets-2.8.12
+WXWIN=
 TOOLCHAINNAME=gtk2
-WXVERSION:=$(shell echo `$(WXWIN)/GCCBuildReleaseGTK2/wx-config --version`)
+WXVERSION:=$(shell echo `wx-config --version`)
 CXX=g++
 LINKER=g++
 CC=gcc
@@ -60,13 +60,13 @@ OBJECTPATH=GCCRelease
 BUILDPATHS=$(OBJECTPATH)
 EXTRADEPENDENCIES=
 PROGRAM=TestbenchGUI
-LIBS=$(shell $(WXWIN)/GCCBuildReleaseGTK2/wx-config --inplace --exec-prefix="$(WXWIN)/GCCBuildReleaseGTK2" --libs std --cxxflags)
+LIBS=$(shell wx-config --libs std --cxxflags)
 LINKERFLAGS=-lpython2.7 -lboost_filesystem-mt 
 WARNINGFLAGS=-Wall -Wno-write-strings
 OPTFLAGS=-O2
 DEBUGFLAGS=
 LIBPATH=
-CPPINC:=-I/usr/include/python2.7/ $(shell $(WXWIN)/GCCBuildReleaseGTK2/wx-config --inplace --cxxflags)
+CPPINC:=-I/usr/include/python2.7/ $(shell wx-config --cxxflags)
 GCCFLAGS=
 LDFLAGS=$(LIBS) $(LIBPATH) $(LINKERFLAGS)
 CPPFLAGS=$(CPPINC) $(GCCFLAGS) $(DEBUGFLAGS) $(OPTFLAGS) $(WARNINGFLAGS)
@@ -77,7 +77,7 @@ MACPACKAGEINFO=
 # unicodedebug
 else
 ifeq ($(CONFIG),unicodedebug)
-WXWIN=$(HOME)/wxWidgets-2.8.12
+WXWIN=
 TOOLCHAINNAME=gtk2ud
 WXVERSION:=$(shell echo `$(WXWIN)/GCCBuildDebugGTK2Unicode/wx-config --version`)
 CXX=g++
@@ -108,7 +108,7 @@ MACPACKAGEINFO=
 
 # unicoderelease
 else
-WXWIN=$(HOME)/wxWidgets-2.8.12
+WXWIN=
 TOOLCHAINNAME=gtk2u
 WXVERSION:=$(shell echo `$(WXWIN)/GCCBuildReleaseGTK2Unicode/wx-config --version`)
 CXX=g++

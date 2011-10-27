@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        addjobwizard.cpp
 // Purpose:     
-// Author:      Franc
+// Author:      Franc Pape
 // Modified by: 
 // Created:     Fri 14 Oct 2011 11:46:22 CEST
 // RCS-ID:      
@@ -324,12 +324,12 @@ void WizardPage::CreateControls()
 ////@end WizardPage content construction
     wxChoice* ch = (wxChoice*)FindWindowById(ChoiceScriptSelect);
     for(unsigned int i = 0; i < scripts.size(); i++){
-        ch->Append(scripts[i].name);
+        ch->Append(wxString(scripts[i].name.c_str(), wxConvUTF8));
     }
     scriptIndex = 0;
     ch->SetSelection(scriptIndex);
     wxStaticText* txt = (wxStaticText*)FindWindowById(LabelScriptDescription);
-    txt->SetLabel(scripts[scriptIndex].description);
+    txt->SetLabel(wxString(scripts[scriptIndex].description.c_str(), wxConvUTF8));
     txt->Wrap(250);
 }
 
@@ -519,7 +519,7 @@ wxIcon WizardPage1::GetIconResource( const wxString& name )
 }
 
 void WizardPage1::AddParamField(wxBoxSizer* parent, const wxString& name, const wxString& type ){
-    wxString s = name + "(" + type + "):";
+    wxString s = name + _("(") + type + _("):");
     wxStaticText* itemStaticText17 = new wxStaticText( this, wxID_ANY, s, wxDefaultPosition, wxDefaultSize, 0 );
     parent->Add(itemStaticText17, 0, wxALIGN_LEFT|wxALL, 5);
 
@@ -535,7 +535,7 @@ void WizardPage::OnChoiceScriptSelectSelected( wxCommandEvent& event )
 {
     wxStaticText* txt = (wxStaticText*)FindWindowById(LabelScriptDescription);
     scriptIndex = event.GetSelection();
-    txt->SetLabel(scripts[scriptIndex].description);
+    txt->SetLabel(wxString(scripts[scriptIndex].description.c_str(), wxConvUTF8));
     txt->Wrap(250);
 }
 
@@ -756,7 +756,7 @@ void WizardPage2::OnTextFieldTrainXMLTextUpdated( wxCommandEvent& event )
 {
     AddJobWizard* ajw = (AddJobWizard*)GetParent();
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldTrainXML);
-    ajw->SetTrainXmlPath((std::string)txt->GetValue());
+    ajw->SetTrainXmlPath(std::string(txt->GetValue().mb_str()));
 }
 
 
@@ -766,7 +766,7 @@ void WizardPage2::OnTextFieldTrainXMLTextUpdated( wxCommandEvent& event )
 
 void WizardPage2::OnButtonBrowseTrainXMLClick( wxCommandEvent& event )
 {
-    wxFileDialog openFileDialog(this, _("Open XML file"), "", "", "XML files (*.xml)|*.xml", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+    wxFileDialog openFileDialog(this, _("Open XML file"), _(""), _(""), _("XML files (*.xml)|*.xml"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;
     
@@ -800,7 +800,7 @@ void WizardPage2::OnAjWizardPage3PageChanged( wxWizardEvent& event )
 
 void WizardPage2::OnButtonBrowseTestXMLClick( wxCommandEvent& event )
 {
-    wxFileDialog openFileDialog(this, _("Open XML file"), "", "", "XML files (*.xml)|*.xml", wxFD_OPEN|wxFD_FILE_MUST_EXIST);
+    wxFileDialog openFileDialog(this, _("Open XML file"), _(""), _(""), _("XML files (*.xml)|*.xml"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;
     
@@ -817,7 +817,7 @@ void WizardPage2::OnTextFieldTestXMLTextUpdated( wxCommandEvent& event )
 {
     AddJobWizard* ajw = (AddJobWizard*)GetParent();
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldTestXML);
-    ajw->SetTestXmlPath((std::string)txt->GetValue());
+    ajw->SetTestXmlPath(std::string(txt->GetValue().mb_str()));
 }
 
 
@@ -834,7 +834,7 @@ void WizardPage1::OnAjWizardPage2PageChanged( wxWizardEvent& event )
     s += scripts[scriptIndex].params[scripts[scriptIndex].params.size() - 1].name;
     
     wxStaticText* txt = (wxStaticText*)FindWindowById(LabelParams);
-    txt->SetLabel(s);
+    txt->SetLabel(wxString(s.c_str(), wxConvUTF8));
     txt->Wrap(250);
 }
 
@@ -856,7 +856,7 @@ void WizardPage1::OnTextFieldParamsTextUpdated( wxCommandEvent& event )
 void WizardPage1::OnAjWizardPage2PageChanging( wxWizardEvent& event )
 {
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldParams);
-    std::string s = (std::string)txt->GetValue();
+    std::string s = std::string(txt->GetValue().mb_str());
     boost::erase_all(s, " ");
     
     std::vector<std::string> params;
@@ -866,7 +866,7 @@ void WizardPage1::OnAjWizardPage2PageChanging( wxWizardEvent& event )
         event.Veto();
         std::stringstream ss;
         ss << "Please provide " << scripts[scriptIndex].params.size() << " parameters";
-        wxMessageBox(ss.str(), "Incorrect number of parameters", wxOK, this);
+        wxMessageBox(wxString(ss.str().c_str(), wxConvUTF8), _("Incorrect number of parameters"), wxOK, this);
         return;
     }
     
