@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        mainframe.cpp
 // Purpose:     
-// Author:      Franc
+// Author:      Franc Pape
 // Modified by: 
 // Created:     Fri 14 Oct 2011 10:41:09 CEST
 // RCS-ID:      
@@ -160,9 +160,9 @@ void MainFrame::CreateControls()
 ////@end MainFrame content construction
 
     wxListCtrl* lj = (wxListCtrl*)FindWindowById(ListJobs);
-    lj->InsertColumn(0, "Name");
-    lj->InsertColumn(1, "Test");
-    lj->InsertColumn(2, "Train");
+    lj->InsertColumn(0, _("Name"));
+    lj->InsertColumn(1, _("Test"));
+    lj->InsertColumn(2, _("Train"));
     
     //scripts = new 
 }
@@ -217,10 +217,10 @@ void MainFrame::OnButtonAddJobClick( wxCommandEvent& event )
     if(finished && !scripts.empty()){
         wxListCtrl* lj = (wxListCtrl*)FindWindowById(ListJobs);
         Script s = scripts[scripts.size() - 1];
-        int index = lj->InsertItem(0, s.name);
-        lj->SetItem(index, 1, s.params[s.params.size() - 1].value);
+        int index = lj->InsertItem(0, wxString(s.name.c_str(), wxConvUTF8));
+        lj->SetItem(index, 1, wxString(s.params[s.params.size() - 1].value.c_str(), wxConvUTF8));
         if(s.training)
-            lj->SetItem(index, 2, s.params[s.params.size() - 2].value);
+            lj->SetItem(index, 2, wxString(s.params[s.params.size() - 2].value.c_str(), wxConvUTF8));
     }
 }
 
@@ -231,7 +231,7 @@ void MainFrame::OnButtonAddJobClick( wxCommandEvent& event )
 
 void MainFrame::OnButtonClearJobsClick( wxCommandEvent& event )
 {
-    int answer = wxMessageBox("This will clear all jobs, are you sure?", "Confirm", 
+    int answer = wxMessageBox(_("This will clear all jobs, are you sure?"), _("Confirm"), 
         wxOK|wxCANCEL|wxICON_EXCLAMATION, this);
     if(answer == wxOK){
         scripts.clear();
@@ -260,7 +260,7 @@ void MainFrame::OnButtonRunJobsClick( wxCommandEvent& event )
                 std::cerr <<  e.what();
             }
         }
-        wxMessageBox("Done running scripts", "Done", wxOK, this);
+        wxMessageBox(_("Done running scripts"), _("Done"), wxOK, this);
     }
 }
 
@@ -355,11 +355,11 @@ std::string MainFrame::callPythonFunc(
 void MainFrame::OnButtonBashClick( wxCommandEvent& event )
 {
     using namespace boost::filesystem;
-    wxFileDialog saveFileDialog(this, _("Save bash script"), "", "", "Shell script (*.sh)|*.sh", wxFD_SAVE);
+    wxFileDialog saveFileDialog(this, _("Save bash script"), _(""), _(""), _("Shell script (*.sh)|*.sh"), wxFD_SAVE);
     if (saveFileDialog.ShowModal() == wxID_CANCEL)
         return;
     
-    std::string bashPath = (std::string)saveFileDialog.GetPath();
+    std::string bashPath = std::string(saveFileDialog.GetPath().mb_str());
     
     if(path(bashPath).extension() == ""){
         bashPath += ".sh";

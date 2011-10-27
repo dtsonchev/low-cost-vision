@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        testbenchguiapp.cpp
 // Purpose:     
-// Author:      Franc
+// Author:      Franc Pape
 // Modified by: 
 // Created:     Wed 12 Oct 2011 17:44:54 CEST
 // RCS-ID:      

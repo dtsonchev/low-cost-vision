@@ -54,7 +54,7 @@ class WizardPage2;
 #define ID_PANEL2 10017
 #define TextFieldTestXML 10018
 #define ButtonBrowseTestXML 10016
-#define ID_PANEL3 10000
+#define ID_PANEL3 10035
 #define TextFieldTrainXML 10021
 #define ButtonBrowseTrainXML 10020
 #define SYMBOL_ADDJOBWIZARD_IDNAME ID_ADDJOBWIZARD
