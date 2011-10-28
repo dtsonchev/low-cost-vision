@@ -735,7 +735,7 @@ void AddJobWizard::OnAddjobwizardFinished( wxWizardEvent& event )
     std::cout << "OnAddjobwizardFinished: " << "start" << std::endl;
     
     Script s(scripts[scriptIndex].path, scripts[scriptIndex].name, scripts[scriptIndex].training,
-        scripts[scriptIndex].description, scripts[scriptIndex].params);
+        scripts[scriptIndex].description, scripts[scriptIndex].python, scripts[scriptIndex].params);
     
     if(s.training)
         s.params.push_back(Param("trainXmlPath", "string", trainXmlPath));

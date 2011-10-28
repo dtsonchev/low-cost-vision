@@ -9,6 +9,7 @@ std::vector<Script> ScriptParser::loadScripts(const std::string &filename){
         std::string path = v.second.get<std::string>("<xmlattr>.path");
         std::string name = v.second.get<std::string>("<xmlattr>.name");
         bool training = v.second.get("<xmlattr>.training", false);
+        std::string python = v.second.get("<xmlattr>.python", "python");
         std::string desc;
         std::vector<Param> params;
         
@@ -25,7 +26,7 @@ std::vector<Script> ScriptParser::loadScripts(const std::string &filename){
             }
         }
         
-        scripts.push_back(Script(path, name, training, desc, params));
+        scripts.push_back(Script(path, name, training, desc, python, params));
     }
 
     return scripts;

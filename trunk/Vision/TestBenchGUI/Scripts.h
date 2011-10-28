@@ -16,15 +16,15 @@ struct Param {
 };
 
 struct Script {
-    Script(std::string path, std::string name, bool training, std::string description, std::vector<Param> params) :
-        path(path), name(name), training(training), description(description), params(params)
+    Script(std::string path, std::string name, bool training, std::string description, std::string python, std::vector<Param> params) :
+        path(path), name(name), training(training), description(description), python(python), params(params)
     {}
 
     std::string path;
     std::string name;
     bool training;
     std::string description;
-    //std::string testXmlPath, trainXmlPath;
+    std::string python;
     std::vector<Param> params;
 };
 
