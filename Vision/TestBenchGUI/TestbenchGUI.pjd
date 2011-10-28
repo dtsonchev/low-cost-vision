@@ -256,7 +256,7 @@
           <string name="Extra compile flags">"%AUTO%"</string>
           <string name="Libraries">"%AUTO%"</string>
           <string name="Library path">"%AUTO%"</string>
-          <string name="Linker flags">"-lpython2.7 -lboost_filesystem-mt %AUTO%"</string>
+          <string name="Linker flags">"-lpython2.7 -lboost_filesystem %AUTO%"</string>
           <string name="Include path">"%AUTO%"</string>
           <string name="Resource flags">"%AUTO%"</string>
           <string name="Resource path">"%AUTO%"</string>
@@ -286,7 +286,7 @@
           <string name="Build mode">"Release"</string>
           <string name="Unicode mode">"ANSI"</string>
           <string name="Shared mode">"Static"</string>
-          <string name="Modularity">"Modular"</string>
+          <string name="Modularity">"Monolithic"</string>
           <string name="GUI mode">"GUI"</string>
           <string name="Toolkit">"wxGTK+2"</string>
           <string name="Processor type">"Default"</string>
@@ -335,7 +335,7 @@
           <string name="Extra compile flags">"%AUTO%"</string>
           <string name="Libraries">"%AUTO%"</string>
           <string name="Library path">"%AUTO%"</string>
-          <string name="Linker flags">"-lpython2.7 -lboost_filesystem-mt %AUTO%"</string>
+          <string name="Linker flags">"-lpython2.7 -lboost_filesystem %AUTO%"</string>
           <string name="Include path">"-I/usr/include/python2.7/ %AUTO%"</string>
           <string name="Resource flags">"%AUTO%"</string>
           <string name="Resource path">"%AUTO%"</string>

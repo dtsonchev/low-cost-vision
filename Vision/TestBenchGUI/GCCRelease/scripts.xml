@@ -1,5 +1,5 @@
 <scripts>
-	<script path="/home/franc/Meuk/CppPython/" name="test">
+	<script path="/home/franc/Meuk/CppPython/" name="test" python="python2.7">
 		<desc>Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.Dit is script 1.</desc>
 		<param name="s1param1" type="int" />
 		<param name="s1param2" type="string" />

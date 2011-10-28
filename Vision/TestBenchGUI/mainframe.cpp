@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // Name:        mainframe.cpp
 // Purpose:     
-// Author:      Franc Pape
+// Author:      Franc
 // Modified by: 
 // Created:     Fri 14 Oct 2011 10:41:09 CEST
 // RCS-ID:      
@@ -367,10 +367,14 @@ void MainFrame::OnButtonBashClick( wxCommandEvent& event )
     
     std::ofstream bashFile;
     bashFile.open(bashPath.c_str());
-    bashFile << "#!/bin/sh\n\n";
+    bashFile << "#!/bin/bash\n\n";
+    if(bashFile.fail()){
+        wxMessageBox(_("Failed to make bash script"), _("Error"), wxOK|wxICON_ERROR, this);
+        return;
+    }
     
     for(unsigned int i = 0; i < scripts.size(); i++){
-        bashFile << "python " << "\"" << scripts[i].path << scripts[i].name << ".py\"";
+        bashFile << scripts[i].python << " \"" << scripts[i].path << scripts[i].name << ".py\"";
         for(unsigned int j = 0; j < scripts[i].params.size(); j++){
             bashFile << " " << "\"" << scripts[i].params[j].value << "\"";
         }
