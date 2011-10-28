@@ -1,0 +1,145 @@
+\hypertarget{classBOWNeuralClassifier}{
+\section{BOWNeuralClassifier Class Reference}
+\label{classBOWNeuralClassifier}\index{BOWNeuralClassifier@{BOWNeuralClassifier}}
+}
+
+
+A Bag of Words KeyPoint classifier utilizing Neural Networks.  
+
+
+
+
+{\ttfamily \#include $<$BOWNeuralClassifier.h$>$}
+
+Inheritance diagram for BOWNeuralClassifier:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2cm]{classBOWNeuralClassifier}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classBOWNeuralClassifier_a98d08040e7d499f34c31a03d70cc7266}{BOWNeuralClassifier} (cv::Mat \&layers, cv::Ptr$<$ cv::FeatureDetector $>$ \hyperlink{classBOWClassifier_af98420aa410054ef3010f4c098931a41}{detector}=new cv::SurfFeatureDetector(), cv::Ptr$<$ cv::DescriptorExtractor $>$ \hyperlink{classBOWClassifier_a429b9a83879611a7c3e06eeacec9fb18}{extractor}=new cv::SurfDescriptorExtractor(), cv::Ptr$<$ cv::DescriptorMatcher $>$ \hyperlink{classBOWClassifier_a35057956434d92402d24f2628cfaf35c}{matcher}=new cv::FlannBasedMatcher())
+\begin{DoxyCompactList}\small\item\em The constructor, allows different feature classes. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classBOWNeuralClassifier_af5bde18bb49d45421ea1332dee9ff9fa}{train} (const std::vector$<$ std::string $>$ \&paths, const cv::Mat \&labels, CvANN\_\-MLP\_\-TrainParams params, const cv::Mat \&sampleWeights=cv::Mat())
+\begin{DoxyCompactList}\small\item\em Trains the classifier. \item\end{DoxyCompactList}\item 
+virtual bool \hyperlink{classBOWNeuralClassifier_a8e29bc1d8b2fe3d3b362a5f224d5a095}{train} (const std::vector$<$ std::string $>$ \&paths, const cv::Mat \&labels)
+\begin{DoxyCompactList}\small\item\em Trains the classifier. \item\end{DoxyCompactList}\item 
+virtual bool \hyperlink{classBOWNeuralClassifier_accce7f4efd81373d87b9a6cef7802e1b}{classify} (const cv::Mat \&image, float \&result)
+\begin{DoxyCompactList}\small\item\em Classify an image. \item\end{DoxyCompactList}\item 
+virtual bool \hyperlink{classBOWNeuralClassifier_afbb503e23b8f881917ab1ea1cc6e2ece}{classify} (const std::vector$<$ std::string $>$ \&paths, cv::Mat \&results)
+\begin{DoxyCompactList}\small\item\em Classify multiple images. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A Bag of Words KeyPoint classifier utilizing Neural Networks. This class allows you to classify an image according to labels to which it is trained. This derived class uses Neural Networks for the classification. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classBOWNeuralClassifier_a98d08040e7d499f34c31a03d70cc7266}{
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\subsubsection[{BOWNeuralClassifier}]{\setlength{\rightskip}{0pt plus 5cm}BOWNeuralClassifier::BOWNeuralClassifier (cv::Mat \& {\em layers}, \/  cv::Ptr$<$ cv::FeatureDetector $>$ {\em detector} = {\ttfamily new~cv::SurfFeatureDetector()}, \/  cv::Ptr$<$ cv::DescriptorExtractor $>$ {\em extractor} = {\ttfamily new~cv::SurfDescriptorExtractor()}, \/  cv::Ptr$<$ cv::DescriptorMatcher $>$ {\em matcher} = {\ttfamily new~cv::FlannBasedMatcher()})}}
+\label{classBOWNeuralClassifier_a98d08040e7d499f34c31a03d70cc7266}
+
+
+The constructor, allows different feature classes. 
+
+The constructor defaults to a combination of SURF and Flann. You can make your own combination using the parameters.
+
+\begin{DoxyNote}{Note}
+Not compatible with the ORB or BRIEF descriptor. 
+\end{DoxyNote}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classBOWNeuralClassifier_afbb503e23b8f881917ab1ea1cc6e2ece}{
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!classify@{classify}}
+\index{classify@{classify}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\subsubsection[{classify}]{\setlength{\rightskip}{0pt plus 5cm}bool BOWNeuralClassifier::classify (const std::vector$<$ std::string $>$ \& {\em paths}, \/  cv::Mat \& {\em results})\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}
+\label{classBOWNeuralClassifier_afbb503e23b8f881917ab1ea1cc6e2ece}
+
+
+Classify multiple images. 
+
+Classifies an multiple images according to it's training set. It returns the label passed in \hyperlink{classBOWNeuralClassifier_af5bde18bb49d45421ea1332dee9ff9fa}{train()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em paths}]List of image paths to be classified \item[{\em results}]Output parameter for the labels \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\itshape true\/} if successful\par
+ {\itshape false\/} if no keypoints were found 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{classBOWClassifier_a0785d39115372051816210d8d2c0335e}{BOWClassifier}.
+
+\hypertarget{classBOWNeuralClassifier_accce7f4efd81373d87b9a6cef7802e1b}{
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!classify@{classify}}
+\index{classify@{classify}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\subsubsection[{classify}]{\setlength{\rightskip}{0pt plus 5cm}bool BOWNeuralClassifier::classify (const cv::Mat \& {\em image}, \/  float \& {\em result})\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}
+\label{classBOWNeuralClassifier_accce7f4efd81373d87b9a6cef7802e1b}
+
+
+Classify an image. 
+
+Classifies an image according to it's training set. It returns the label passed in \hyperlink{classBOWNeuralClassifier_af5bde18bb49d45421ea1332dee9ff9fa}{train()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em image}]Image to be classified \item[{\em result}]Output parameter for the label \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\itshape true\/} if successful\par
+ {\itshape false\/} if no keypoints were found 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{classBOWClassifier_a63bff22f5005e1b79d9c4cd5e7a57748}{BOWClassifier}.
+
+\hypertarget{classBOWNeuralClassifier_a8e29bc1d8b2fe3d3b362a5f224d5a095}{
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!train@{train}}
+\index{train@{train}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\subsubsection[{train}]{\setlength{\rightskip}{0pt plus 5cm}bool BOWNeuralClassifier::train (const std::vector$<$ std::string $>$ \& {\em paths}, \/  const cv::Mat \& {\em labels})\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}
+\label{classBOWNeuralClassifier_a8e29bc1d8b2fe3d3b362a5f224d5a095}
+
+
+Trains the classifier. 
+
+Trains the classifier on a list of images.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em paths}]List of training image paths \item[{\em labels}]Matrix containing ordered labels for each image \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\itshape true\/} if successfully trained\par
+ {\itshape false\/} if reading failed or no keypoints were found 
+\end{DoxyReturn}
+
+
+Implements \hyperlink{classBOWClassifier_a8a00f5cadf166f361a411d5a4e67b4d6}{BOWClassifier}.
+
+\hypertarget{classBOWNeuralClassifier_af5bde18bb49d45421ea1332dee9ff9fa}{
+\index{BOWNeuralClassifier@{BOWNeuralClassifier}!train@{train}}
+\index{train@{train}!BOWNeuralClassifier@{BOWNeuralClassifier}}
+\subsubsection[{train}]{\setlength{\rightskip}{0pt plus 5cm}bool BOWNeuralClassifier::train (const std::vector$<$ std::string $>$ \& {\em paths}, \/  const cv::Mat \& {\em labels}, \/  CvANN\_\-MLP\_\-TrainParams {\em params}, \/  const cv::Mat \& {\em sampleWeights} = {\ttfamily cv::Mat()})}}
+\label{classBOWNeuralClassifier_af5bde18bb49d45421ea1332dee9ff9fa}
+
+
+Trains the classifier. 
+
+Trains the classifier on a list of images with custom parameters.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em paths}]List of training image paths \item[{\em labels}]Matrix containing ordered labels for each image \item[{\em params}]Training parameters for the neural network \item[{\em sampleWeights}]Matrix containing extra weight for certain samples \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+{\itshape true\/} if successfully trained\par
+ {\itshape false\/} if reading failed or no keypoints were found 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+BOWNeuralClassifier.h\item 
+BOWNeuralClassifier.cpp\end{DoxyCompactItemize}

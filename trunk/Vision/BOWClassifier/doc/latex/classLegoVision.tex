@@ -1,0 +1,190 @@
+\hypertarget{classLegoVision}{
+\section{LegoVision Class Reference}
+\label{classLegoVision}\index{LegoVision@{LegoVision}}
+}
+
+
+A Bag of Words KeyPoint classifier.  
+
+
+
+
+{\ttfamily \#include $<$LegoVision.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classLegoVision_ae9612e1c30be7bc41ce92335b35eb729}{LegoVision} (cv::Ptr$<$ cv::FeatureDetector $>$ \hyperlink{classLegoVision_aac40598f5ee1c3d47b6b522434c7fc22}{detector}=new cv::SurfFeatureDetector(), cv::Ptr$<$ cv::DescriptorExtractor $>$ \hyperlink{classLegoVision_a4e2c9693477194621fa73f91e344543f}{extractor}=new cv::SurfDescriptorExtractor(), cv::Ptr$<$ cv::DescriptorMatcher $>$ \hyperlink{classLegoVision_a083739ef1478e1fa43e27572fcb5eab6}{matcher}=new cv::FlannBasedMatcher())
+\begin{DoxyCompactList}\small\item\em The constructor, allows different feature classes. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}{train} (const std::vector$<$ std::string $>$ \&paths, cv::Mat \&labels)
+\begin{DoxyCompactList}\small\item\em Trains the classifier. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_a60b6fdf4ad64b87c5523a2e94a17e7fd}{load} (const std::string path)
+\begin{DoxyCompactList}\small\item\em Loads the classifier from disk. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_ae1141c29fb3e96e834dddc7d36246110}{save} (const std::string path)
+\begin{DoxyCompactList}\small\item\em Saves the classifier to disk. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_aa8ca2dcfc88262604a0afca920fcccf8}{classify} (const cv::Mat \&image, float \&result)
+\begin{DoxyCompactList}\small\item\em Classify an image. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_a57197915f439503ba602ef0ad0e03e66}{classify} (const cv::Mat \&image, cv::Mat \&result)
+\begin{DoxyCompactList}\small\item\em Classify an image. \item\end{DoxyCompactList}\item 
+bool \hyperlink{classLegoVision_aab8d7ac39a37e2e8f901ca774793854b}{classify} (const std::vector$<$ std::string $>$ \&paths, cv::Mat \&results)
+\begin{DoxyCompactList}\small\item\em Classify multiple images. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classLegoVision_aac40598f5ee1c3d47b6b522434c7fc22}{
+cv::Ptr$<$ cv::FeatureDetector $>$ \hyperlink{classLegoVision_aac40598f5ee1c3d47b6b522434c7fc22}{detector}}
+\label{classLegoVision_aac40598f5ee1c3d47b6b522434c7fc22}
+
+\begin{DoxyCompactList}\small\item\em Pointer to the feature detector. \item\end{DoxyCompactList}\item 
+\hypertarget{classLegoVision_a4e2c9693477194621fa73f91e344543f}{
+cv::Ptr$<$ cv::DescriptorExtractor $>$ \hyperlink{classLegoVision_a4e2c9693477194621fa73f91e344543f}{extractor}}
+\label{classLegoVision_a4e2c9693477194621fa73f91e344543f}
+
+\begin{DoxyCompactList}\small\item\em Pointer to the descriptor extractor. \item\end{DoxyCompactList}\item 
+\hypertarget{classLegoVision_a083739ef1478e1fa43e27572fcb5eab6}{
+cv::Ptr$<$ cv::DescriptorMatcher $>$ \hyperlink{classLegoVision_a083739ef1478e1fa43e27572fcb5eab6}{matcher}}
+\label{classLegoVision_a083739ef1478e1fa43e27572fcb5eab6}
+
+\begin{DoxyCompactList}\small\item\em Pointer to the matcher. \item\end{DoxyCompactList}\item 
+\hypertarget{classLegoVision_ac720b489af782d6be2458f74ace0d1f1}{
+cv::BOWImgDescriptorExtractor \hyperlink{classLegoVision_ac720b489af782d6be2458f74ace0d1f1}{bowExtractor}}
+\label{classLegoVision_ac720b489af782d6be2458f74ace0d1f1}
+
+\begin{DoxyCompactList}\small\item\em Pointer to the BoW descriptor extractor. \item\end{DoxyCompactList}\item 
+\hypertarget{classLegoVision_a4ce6b1656c577f92b3b51d897e52e2f1}{
+CvNormalBayesClassifier \hyperlink{classLegoVision_a4ce6b1656c577f92b3b51d897e52e2f1}{classifier}}
+\label{classLegoVision_a4ce6b1656c577f92b3b51d897e52e2f1}
+
+\begin{DoxyCompactList}\small\item\em The Naive Bayes Classifier. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+A Bag of Words KeyPoint classifier. This class allows you to classify an image according to labels to which it is trained. 
+
+\subsection{Constructor \& Destructor Documentation}
+\hypertarget{classLegoVision_ae9612e1c30be7bc41ce92335b35eb729}{
+\index{LegoVision@{LegoVision}!LegoVision@{LegoVision}}
+\index{LegoVision@{LegoVision}!LegoVision@{LegoVision}}
+\subsubsection[{LegoVision}]{\setlength{\rightskip}{0pt plus 5cm}LegoVision::LegoVision (cv::Ptr$<$ cv::FeatureDetector $>$ {\em detector} = {\ttfamily new~cv::SurfFeatureDetector()}, \/  cv::Ptr$<$ cv::DescriptorExtractor $>$ {\em extractor} = {\ttfamily new~cv::SurfDescriptorExtractor()}, \/  cv::Ptr$<$ cv::DescriptorMatcher $>$ {\em matcher} = {\ttfamily new~cv::FlannBasedMatcher()})}}
+\label{classLegoVision_ae9612e1c30be7bc41ce92335b35eb729}
+
+
+The constructor, allows different feature classes. 
+
+The constructor defaults to a combination of SURF and Flann. You can make your own combination using the parameters.
+
+\begin{DoxyNote}{Note}
+Not compatible with the ORB or BRIEF descriptor. 
+\end{DoxyNote}
+
+
+\subsection{Member Function Documentation}
+\hypertarget{classLegoVision_aab8d7ac39a37e2e8f901ca774793854b}{
+\index{LegoVision@{LegoVision}!classify@{classify}}
+\index{classify@{classify}!LegoVision@{LegoVision}}
+\subsubsection[{classify}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::classify (const std::vector$<$ std::string $>$ \& {\em paths}, \/  cv::Mat \& {\em results})}}
+\label{classLegoVision_aab8d7ac39a37e2e8f901ca774793854b}
+
+
+Classify multiple images. 
+
+Classifies an multiple images according to it's training set. It returns the label passed in \hyperlink{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}{train()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em paths}]List of image paths to be classified \item[{\em results}]Output parameter for the labels \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successful false if no keypoints were found 
+\end{DoxyReturn}
+\hypertarget{classLegoVision_a57197915f439503ba602ef0ad0e03e66}{
+\index{LegoVision@{LegoVision}!classify@{classify}}
+\index{classify@{classify}!LegoVision@{LegoVision}}
+\subsubsection[{classify}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::classify (const cv::Mat \& {\em image}, \/  cv::Mat \& {\em result})}}
+\label{classLegoVision_a57197915f439503ba602ef0ad0e03e66}
+
+
+Classify an image. 
+
+Classifies an image according to it's training set. It returns the label passed in \hyperlink{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}{train()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em image}]Image to be classified \item[{\em result}]Output parameter for the label \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successful false if no keypoints were found 
+\end{DoxyReturn}
+\hypertarget{classLegoVision_aa8ca2dcfc88262604a0afca920fcccf8}{
+\index{LegoVision@{LegoVision}!classify@{classify}}
+\index{classify@{classify}!LegoVision@{LegoVision}}
+\subsubsection[{classify}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::classify (const cv::Mat \& {\em image}, \/  float \& {\em result})}}
+\label{classLegoVision_aa8ca2dcfc88262604a0afca920fcccf8}
+
+
+Classify an image. 
+
+Classifies an image according to it's training set. It returns the label passed in \hyperlink{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}{train()}.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em image}]Image to be classified \item[{\em result}]Output parameter for the label \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successful false if no keypoints were found 
+\end{DoxyReturn}
+\hypertarget{classLegoVision_a60b6fdf4ad64b87c5523a2e94a17e7fd}{
+\index{LegoVision@{LegoVision}!load@{load}}
+\index{load@{load}!LegoVision@{LegoVision}}
+\subsubsection[{load}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::load (const std::string {\em path})}}
+\label{classLegoVision_a60b6fdf4ad64b87c5523a2e94a17e7fd}
+
+
+Loads the classifier from disk. 
+
+Loads the classifier from the disk instead of training it.
+
+\begin{DoxyWarning}{Warning}
+Use the same feature classes used to generate the classifier!
+\end{DoxyWarning}
+
+\begin{DoxyParams}{Parameters}
+\item[{\em path}]Path to a previously saved classifier \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successfully loaded false if loading failed 
+\end{DoxyReturn}
+\hypertarget{classLegoVision_ae1141c29fb3e96e834dddc7d36246110}{
+\index{LegoVision@{LegoVision}!save@{save}}
+\index{save@{save}!LegoVision@{LegoVision}}
+\subsubsection[{save}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::save (const std::string {\em path})}}
+\label{classLegoVision_ae1141c29fb3e96e834dddc7d36246110}
+
+
+Saves the classifier to disk. 
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em path}]Path to save the classifier to \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successfully saved false if saving failed 
+\end{DoxyReturn}
+\hypertarget{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}{
+\index{LegoVision@{LegoVision}!train@{train}}
+\index{train@{train}!LegoVision@{LegoVision}}
+\subsubsection[{train}]{\setlength{\rightskip}{0pt plus 5cm}bool LegoVision::train (const std::vector$<$ std::string $>$ \& {\em paths}, \/  cv::Mat \& {\em labels})}}
+\label{classLegoVision_a8ada425fb6a2c65a4de8e81bb1fc4a72}
+
+
+Trains the classifier. 
+
+Trains the classifier on a list of images.
+
+
+\begin{DoxyParams}{Parameters}
+\item[{\em paths}]List of training image paths \item[{\em labels}]Matrix containing ordered labels for each image \end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if successfully trained false if reading failed or no keypoints were found 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+LegoVision.h\item 
+LegoVision.cpp\end{DoxyCompactItemize}

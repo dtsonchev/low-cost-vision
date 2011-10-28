@@ -1,0 +1,17 @@
+<package>
+  <description brief="Locator">
+
+     Locator
+
+  </description>
+  <author>Glenn</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/Locator</url>
+  <depend package="roscpp"/>
+  <depend package="opencv2"/>
+  <depend package="image_geometry"/>
+
+</package>
+
+
