@@ -1,0 +1,162 @@
+\hypertarget{classChoiceFrame}{
+\section{ChoiceFrame Class Reference}
+\label{classChoiceFrame}\index{ChoiceFrame@{ChoiceFrame}}
+}
+
+
+this class makes an frame at which 3 choices can be made and a directory needs to be chosen \par
+ this directory needs to contain an directory 'Image', and a document 'Values.txt'  
+
+
+
+
+{\ttfamily \#include $<$src/ChoiceFrame$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classChoiceFrame_a2ac7cbf7bb1cc6d431a97eeaa568f89b}{
+\hyperlink{classChoiceFrame_a2ac7cbf7bb1cc6d431a97eeaa568f89b}{ChoiceFrame} (wxWindow $\ast$parent, wxWindowID id=wxID\_\-ANY, const wxString \&title=wxEmptyString, const wxPoint \&pos=wxDefaultPosition, const wxSize \&size=wxSize(-\/1,-\/1), long style=wxDEFAULT\_\-FRAME\_\-STYLE$|$wxTAB\_\-TRAVERSAL)}
+\label{classChoiceFrame_a2ac7cbf7bb1cc6d431a97eeaa568f89b}
+
+\begin{DoxyCompactList}\small\item\em Constructor for \hyperlink{classChoiceFrame}{ChoiceFrame}. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_aef761d5247438b283d8020e3337048c1}{
+void \hyperlink{classChoiceFrame_aef761d5247438b283d8020e3337048c1}{Start} ()}
+\label{classChoiceFrame_aef761d5247438b283d8020e3337048c1}
+
+\begin{DoxyCompactList}\small\item\em this function creates an \hyperlink{classGUIFrame}{GUIFrame} and shows the \hyperlink{classChoiceFrame}{ChoiceFrame} \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \hyperlink{classChoiceFrame_a151614cb9a4695ce3448dffd7daf63ad}{OnOK} (wxMouseEvent \&event)
+\begin{DoxyCompactList}\small\item\em The function which is called when the OK button is pressed. \item\end{DoxyCompactList}\item 
+virtual void \hyperlink{classChoiceFrame_add2d86011be65c8c5ed74984ca845270}{OnXMLOption} (wxMouseEvent \&event)
+\begin{DoxyCompactList}\small\item\em The function which is called when one of the radio buttons is pressed. \item\end{DoxyCompactList}\item 
+virtual void \hyperlink{classChoiceFrame_a6016387f6d12175fd733832f83d9320e}{OnExit} (wxMouseEvent \&event)
+\begin{DoxyCompactList}\small\item\em The function which is called when the Exit button is pressed. \item\end{DoxyCompactList}\item 
+void \hyperlink{classChoiceFrame_ad6849e2dad8d91aa24199edab1e63f34}{LoadImagePaths} (boost::filesystem::path itPath)
+\begin{DoxyCompactList}\small\item\em Loads all the image paths from the image directory. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classChoiceFrame_a6ed5fc62946c154838f10c75e45b16cb}{
+wxDirPickerCtrl $\ast$ \hyperlink{classChoiceFrame_a6ed5fc62946c154838f10c75e45b16cb}{dirPicker}}
+\label{classChoiceFrame_a6ed5fc62946c154838f10c75e45b16cb}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_ae78facd2386f558d67ef5baee0fa5fca}{
+wxStaticText $\ast$ \hyperlink{classChoiceFrame_ae78facd2386f558d67ef5baee0fa5fca}{MessageField}}
+\label{classChoiceFrame_ae78facd2386f558d67ef5baee0fa5fca}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_a1de325ab936306c560df98e9e75ffaed}{
+wxButton $\ast$ \hyperlink{classChoiceFrame_a1de325ab936306c560df98e9e75ffaed}{ExitButton}}
+\label{classChoiceFrame_a1de325ab936306c560df98e9e75ffaed}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_a399c1a2e37749a29f5c02acb917b1570}{
+wxButton $\ast$ \hyperlink{classChoiceFrame_a399c1a2e37749a29f5c02acb917b1570}{OKButton}}
+\label{classChoiceFrame_a399c1a2e37749a29f5c02acb917b1570}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_a92a5a8f903e2faef896649df4f800d96}{
+wxRadioButton $\ast$ \hyperlink{classChoiceFrame_a92a5a8f903e2faef896649df4f800d96}{CreateNewXMLradioBtn}}
+\label{classChoiceFrame_a92a5a8f903e2faef896649df4f800d96}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_abf01a58b2ecdee731bd535606e7c31e9}{
+wxRadioButton $\ast$ \hyperlink{classChoiceFrame_abf01a58b2ecdee731bd535606e7c31e9}{EditExistingXMLradioBtn}}
+\label{classChoiceFrame_abf01a58b2ecdee731bd535606e7c31e9}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\item 
+\hypertarget{classChoiceFrame_a56cab5d46cec3546d37813c8773a28f2}{
+wxRadioButton $\ast$ \hyperlink{classChoiceFrame_a56cab5d46cec3546d37813c8773a28f2}{AddToExistingXMLradioBtn}}
+\label{classChoiceFrame_a56cab5d46cec3546d37813c8773a28f2}
+
+\begin{DoxyCompactList}\small\item\em An object in the GUI. \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+this class makes an frame at which 3 choices can be made and a directory needs to be chosen \par
+ this directory needs to contain an directory 'Image', and a document 'Values.txt' 
+
+\subsection{Member Function Documentation}
+\hypertarget{classChoiceFrame_ad6849e2dad8d91aa24199edab1e63f34}{
+\index{ChoiceFrame@{ChoiceFrame}!LoadImagePaths@{LoadImagePaths}}
+\index{LoadImagePaths@{LoadImagePaths}!ChoiceFrame@{ChoiceFrame}}
+\subsubsection[{LoadImagePaths}]{\setlength{\rightskip}{0pt plus 5cm}ChoiceFrame::LoadImagePaths (
+\begin{DoxyParamCaption}
+\item[{boost::filesystem::path}]{itPath}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}
+\label{classChoiceFrame_ad6849e2dad8d91aa24199edab1e63f34}
+
+
+Loads all the image paths from the image directory. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em itPath} & the root map from where the images are supposed to be loaded \\
+\hline
+\end{DoxyParams}
+\hypertarget{classChoiceFrame_a6016387f6d12175fd733832f83d9320e}{
+\index{ChoiceFrame@{ChoiceFrame}!OnExit@{OnExit}}
+\index{OnExit@{OnExit}!ChoiceFrame@{ChoiceFrame}}
+\subsubsection[{OnExit}]{\setlength{\rightskip}{0pt plus 5cm}ChoiceFrame::OnExit (
+\begin{DoxyParamCaption}
+\item[{wxMouseEvent \&}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, virtual\mbox{]}}}}
+\label{classChoiceFrame_a6016387f6d12175fd733832f83d9320e}
+
+
+The function which is called when the Exit button is pressed. 
+
+this frame and the \hyperlink{classGUIFrame}{GUIFrame} are closed 
+\begin{DoxyParams}{Parameters}
+{\em event} & the event created when the Exit button is pressed \\
+\hline
+\end{DoxyParams}
+\hypertarget{classChoiceFrame_a151614cb9a4695ce3448dffd7daf63ad}{
+\index{ChoiceFrame@{ChoiceFrame}!OnOK@{OnOK}}
+\index{OnOK@{OnOK}!ChoiceFrame@{ChoiceFrame}}
+\subsubsection[{OnOK}]{\setlength{\rightskip}{0pt plus 5cm}ChoiceFrame::OnOK (
+\begin{DoxyParamCaption}
+\item[{wxMouseEvent \&}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, virtual\mbox{]}}}}
+\label{classChoiceFrame_a151614cb9a4695ce3448dffd7daf63ad}
+
+
+The function which is called when the OK button is pressed. 
+
+when this button is pressed the inputed the comboboxen from \hyperlink{classGUIFrame}{GUIFrame} are filled and all the image paths are collected 
+\begin{DoxyParams}{Parameters}
+{\em event} & the event created when the OK button is pressed \\
+\hline
+\end{DoxyParams}
+\hypertarget{classChoiceFrame_add2d86011be65c8c5ed74984ca845270}{
+\index{ChoiceFrame@{ChoiceFrame}!OnXMLOption@{OnXMLOption}}
+\index{OnXMLOption@{OnXMLOption}!ChoiceFrame@{ChoiceFrame}}
+\subsubsection[{OnXMLOption}]{\setlength{\rightskip}{0pt plus 5cm}ChoiceFrame::OnXMLOption (
+\begin{DoxyParamCaption}
+\item[{wxMouseEvent \&}]{event}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}protected, virtual\mbox{]}}}}
+\label{classChoiceFrame_add2d86011be65c8c5ed74984ca845270}
+
+
+The function which is called when one of the radio buttons is pressed. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em event} & the event created when the OK button is pressed \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+src/ChoiceFrame.h\item 
+src/Choice.cpp\item 
+src/ChoiceFrame.cpp\end{DoxyCompactItemize}
