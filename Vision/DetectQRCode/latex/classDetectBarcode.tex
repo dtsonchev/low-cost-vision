@@ -1,0 +1,64 @@
+\hypertarget{classDetectBarcode}{
+\section{DetectBarcode Class Reference}
+\label{classDetectBarcode}\index{DetectBarcode@{DetectBarcode}}
+}
+
+
+This class can detect barcodes from a Mat object.  
+
+
+
+
+{\ttfamily \#include $<$BarcodeDetector.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classDetectBarcode_a5f8bf8e2923ee59d768be7a9d91638e3}{
+\hyperlink{classDetectBarcode_a5f8bf8e2923ee59d768be7a9d91638e3}{DetectBarcode} ()}
+\label{classDetectBarcode_a5f8bf8e2923ee59d768be7a9d91638e3}
+
+\begin{DoxyCompactList}\small\item\em constructor sets the values for the scanner \item\end{DoxyCompactList}\item 
+\hypertarget{classDetectBarcode_ae53bc6d576240e222ff021e6a10dd01e}{
+\hyperlink{classDetectBarcode_ae53bc6d576240e222ff021e6a10dd01e}{$\sim$DetectBarcode} ()}
+\label{classDetectBarcode_ae53bc6d576240e222ff021e6a10dd01e}
+
+\begin{DoxyCompactList}\small\item\em deconstructor \item\end{DoxyCompactList}\item 
+bool \hyperlink{classDetectBarcode_a00f36bd7589d0a1a9747ad404e3de8f0}{detect} (cv::Mat image, std::string \&result)
+\begin{DoxyCompactList}\small\item\em detects codes on the image \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+This class can detect barcodes from a Mat object. 
+
+\subsection{Member Function Documentation}
+\hypertarget{classDetectBarcode_a00f36bd7589d0a1a9747ad404e3de8f0}{
+\index{DetectBarcode@{DetectBarcode}!detect@{detect}}
+\index{detect@{detect}!DetectBarcode@{DetectBarcode}}
+\subsubsection[{detect}]{\setlength{\rightskip}{0pt plus 5cm}bool DetectBarcode::detect (
+\begin{DoxyParamCaption}
+\item[{cv::Mat}]{image, }
+\item[{std::string \&}]{result}
+\end{DoxyParamCaption}
+)}}
+\label{classDetectBarcode_a00f36bd7589d0a1a9747ad404e3de8f0}
+
+
+detects codes on the image 
+
+
+\begin{DoxyParams}{Parameters}
+{\em image} & the image to detect the code on \\
+\hline
+{\em result} & the string to write the result to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if we have a result 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+src/BarcodeDetector.h\item 
+src/BarcodeDetector.cpp\end{DoxyCompactItemize}

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo
+echo
+echo
+
+x=0
+while [ $x -le 48 ]
+do
+  ./bin/ZBar Barcodes/DImage$x.jpg
+  ./bin/ZBar Barcodes/UDImage$x.jpg
+  x=$(( $x + 1 ))
+done

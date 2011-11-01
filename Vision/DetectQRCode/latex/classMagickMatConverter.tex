@@ -1,0 +1,92 @@
+\hypertarget{classMagickMatConverter}{
+\section{MagickMatConverter Class Reference}
+\label{classMagickMatConverter}\index{MagickMatConverter@{MagickMatConverter}}
+}
+
+
+this class can convert an opencv Mat object into a magick image or \par
+ converts a magick image into an opencv Mat object  
+
+
+
+
+{\ttfamily \#include $<$MagickMat.h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classMagickMatConverter_ae7141cb928ad84892bdf0553207fa761}{
+\hyperlink{classMagickMatConverter_ae7141cb928ad84892bdf0553207fa761}{MagickMatConverter} ()}
+\label{classMagickMatConverter_ae7141cb928ad84892bdf0553207fa761}
+
+\begin{DoxyCompactList}\small\item\em constructor \item\end{DoxyCompactList}\item 
+\hypertarget{classMagickMatConverter_a75d2e12483b847337d9475cd56c62af7}{
+\hyperlink{classMagickMatConverter_a75d2e12483b847337d9475cd56c62af7}{$\sim$MagickMatConverter} ()}
+\label{classMagickMatConverter_a75d2e12483b847337d9475cd56c62af7}
+
+\begin{DoxyCompactList}\small\item\em deconstructor \item\end{DoxyCompactList}\item 
+bool \hyperlink{classMagickMatConverter_aceddd38e54bd8008ba76cdb80fa8ef92}{Magick2Mat} (Magick::Image \&magickImage, cv::Mat \&matImage)
+\begin{DoxyCompactList}\small\item\em converts a magick image into an opencv mat \item\end{DoxyCompactList}\item 
+bool \hyperlink{classMagickMatConverter_a9b2c6a781862bc884e890488e8eb2e48}{Mat2Magick} (const cv::Mat \&matImage, Magick::Image \&magickImage)
+\begin{DoxyCompactList}\small\item\em converts an opencv mat to a magick image \item\end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+this class can convert an opencv Mat object into a magick image or \par
+ converts a magick image into an opencv Mat object 
+
+\subsection{Member Function Documentation}
+\hypertarget{classMagickMatConverter_aceddd38e54bd8008ba76cdb80fa8ef92}{
+\index{MagickMatConverter@{MagickMatConverter}!Magick2Mat@{Magick2Mat}}
+\index{Magick2Mat@{Magick2Mat}!MagickMatConverter@{MagickMatConverter}}
+\subsubsection[{Magick2Mat}]{\setlength{\rightskip}{0pt plus 5cm}MagickMatConverter::Magick2Mat (
+\begin{DoxyParamCaption}
+\item[{Magick::Image \&}]{magickImage, }
+\item[{cv::Mat \&}]{matImage}
+\end{DoxyParamCaption}
+)}}
+\label{classMagickMatConverter_aceddd38e54bd8008ba76cdb80fa8ef92}
+
+
+converts a magick image into an opencv mat 
+
+
+\begin{DoxyParams}{Parameters}
+{\em magickImage} & the src image \\
+\hline
+{\em matImage} & the image to convert the src to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if it succeeded 
+\end{DoxyReturn}
+\hypertarget{classMagickMatConverter_a9b2c6a781862bc884e890488e8eb2e48}{
+\index{MagickMatConverter@{MagickMatConverter}!Mat2Magick@{Mat2Magick}}
+\index{Mat2Magick@{Mat2Magick}!MagickMatConverter@{MagickMatConverter}}
+\subsubsection[{Mat2Magick}]{\setlength{\rightskip}{0pt plus 5cm}MagickMatConverter::Mat2Magick (
+\begin{DoxyParamCaption}
+\item[{const cv::Mat \&}]{matImage, }
+\item[{Magick::Image \&}]{magickImage}
+\end{DoxyParamCaption}
+)}}
+\label{classMagickMatConverter_a9b2c6a781862bc884e890488e8eb2e48}
+
+
+converts an opencv mat to a magick image 
+
+
+\begin{DoxyParams}{Parameters}
+{\em matImage} & the src image \\
+\hline
+{\em magickImage} & the image to convert the src to \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following files:\begin{DoxyCompactItemize}
+\item 
+src/MagickMat.h\item 
+src/MagickMat.cpp\end{DoxyCompactItemize}

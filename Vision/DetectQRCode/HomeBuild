@@ -1,0 +1,9 @@
+#!/bin/sh
+
+clear
+
+# build
+g++ src/*.cpp `pkg-config --libs --cflags Magick++` `pkg-config --libs --cflags opencv` -o bin/ZBar -lzbar -lboost_filesystem
+
+# run executable
+./Run
