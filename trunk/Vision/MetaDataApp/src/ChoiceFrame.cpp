@@ -8,10 +8,18 @@ ChoiceFrame::ChoiceFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1;
 	bSizer1 = new wxBoxSizer(wxVERTICAL);
 
+	wxStaticText* m_staticText28 = new wxStaticText( this, wxID_ANY, wxT("Select a directory with an Image \ndirectory and a Values.xml"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText28->Wrap( -1 );
+	bSizer1->Add( m_staticText28, 0, wxALL, 5 );
+
 	dirPicker = new wxDirPickerCtrl(this, wxID_ANY, wxEmptyString,
 			wxT("Select a folder, with an Images directory"),
 			wxDefaultPosition, wxSize(-1, -1), wxDIRP_DEFAULT_STYLE);
 	bSizer1->Add(dirPicker, 0, wxALL | wxEXPAND, 5);
+
+	wxStaticText* m_staticText27 = new wxStaticText( this, wxID_ANY, wxT("Select a .xml file to edit"), wxDefaultPosition, wxDefaultSize, 0 );
+	m_staticText27->Wrap( -1 );
+	bSizer1->Add( m_staticText27, 0, wxALL, 5 );
 
 	XMLPicker = new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString,
 			wxT("Select a file to write, edit or add images to"),
