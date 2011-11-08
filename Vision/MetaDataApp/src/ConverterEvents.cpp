@@ -69,7 +69,7 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 			&& AmountOfObjectsTxtField->GetValue().size() > 0
 			&& AmountOfObjectsTxtField->GetValue().ToLong(&amount, 10)) {
 
-		int values[3 * 4];wxString barcode;
+		int values[3 * 2];wxString barcode;
 		if(ObjectComboBox->GetValue() == wxT("Crate") && !(crateGUI->getValues(values, barcode))) {
 			MessageLabel->SetLabel(wxT("Set all crate values by pressing the crate button"));
 			return;
@@ -77,7 +77,8 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 
 		if(editXML == Edit && currentObjectNr == 1) {
 			//if images available within the xml need to overwritten
-			BOOST_FOREACH( boost::property_tree::ptree::value_type& imageValue, pt.get_child("Test_set") ) {
+			BOOST_FOREACH( boost::property_tree::ptree::value_type& imageValue,
+					pt.get_child("Test_set") ) {
 				//<xmlattr>.path is <image path="/home/...." />
 				path temp = imageValue.second.get("<xmlattr>.path", "");
 				if(temp.leaf() == (*imagePathsIt).leaf()) {
@@ -140,26 +141,19 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "width");
 		property->put("<xmlattr>.name", "center_x");
-		property->put("<xmlattr>.value", ((double)x * widthScale) + (((double)width * widthScale) / 2.0));
+		property->put("<xmlattr>.value", (x * widthScale) + ((width * widthScale) / 2.0));
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "center_y");
-		property->put("<xmlattr>.value", ((double)y * widthScale) + (((double)height * heightScale) / 2.0));
+		property->put("<xmlattr>.value", (y * widthScale) + ((height * heightScale) / 2.0));
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "width");
 		property->put("<xmlattr>.value", (int)(width * widthScale));
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "height");
 		property->put("<xmlattr>.value", (int)(height * heightScale));
-
-		if(NoRotationCheckBox->GetValue()) {
-			property = &(object.add("property", ""));
-			property->put("<xmlattr>.name", "rotation");
-			property->put("<xmlattr>.value", "0");
-		} else {
-			property = &(object.add("property", ""));
-			property->put("<xmlattr>.name", "rotation");
-			property->put("<xmlattr>.value", GetRotation());
-		}
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "rotation");
+		property->put("<xmlattr>.value", GetRotation());
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "object-type");
 		property->put("<xmlattr>.value", ObjectComboBox->GetValue().ToAscii());
@@ -168,33 +162,40 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 
 			string temp[3] = {"markerLT", "markerRT", "markerLB"};
 			stringstream name;
+			boost::property_tree::ptree *crateProperty;
 			for(int i = 0; i < 3; i++) {
-
 				name.str("");
-				name << temp[i] << "_x";
-				property = &(object.add("property", ""));
-				property->put("<xmlattr>.name", name.str().c_str());
-				property->put("<xmlattr>.value", (int)(values[(i*4)+0] * widthScale));
+				name << temp[i] << "_center_x";
+				crateProperty = &(property->add( "property" ,""));
+				crateProperty->put("<xmlattr>.name", name.str().c_str());
+				crateProperty->put("<xmlattr>.value", values[(i*2)+0]);
 				name.str("");
-				name << temp[i] << "_y";
-				property = &(object.add("property", ""));
-				property->put("<xmlattr>.name", name.str().c_str());
-				property->put("<xmlattr>.value", (int)(values[(i*4)+0] * heightScale));
-				name.str("");
-				name << temp[i] << "_width";
-				property = &(object.add("property", ""));
-				property->put("<xmlattr>.name", name.str().c_str());
-				property->put("<xmlattr>.value", (int)(values[(i*4)+0] * widthScale));
-				name.str("");
-				name << temp[i] << "_height";
-				property = &(object.add("property", ""));
-				property->put("<xmlattr>.name", name.str().c_str());
-				property->put("<xmlattr>.value", (int)(values[(i*4)+0] * heightScale));
+				name << temp[i] << "_center_y";
+				crateProperty = &(property->add("property", ""));
+				crateProperty->put("<xmlattr>.name", name.str().c_str());
+				crateProperty->put("<xmlattr>.value", values[(i*2)+1]);
+				/*
+				 name.str("");
+				 name << temp[i] << "_center_x";
+				 property = &(object.add("property", ""));
+				 property->put("<xmlattr>.name", name.str().c_str());
+				 property->put("<xmlattr>.value", values[(i*2)+0]);
+				 name.str("");
+				 name << temp[i] << "_center_y";
+				 property = &(object.add("property", ""));
+				 property->put("<xmlattr>.name", name.str().c_str());
+				 property->put("<xmlattr>.value", values[(i*2)+1]);
+				 */
 			}
 			property = &(object.add("property", ""));
 			property->add("<xmlattr>.name", "barcode");
-			property->add("<xmlattr>.value", barcode);
+			property->add("<xmlattr>.value", barcode.ToAscii());
 		}
+
+		std::stringstream s;
+		s << XMLPath;
+		boost::property_tree::xml_writer_settings<char> w('\t', 1);
+		boost::property_tree::write_xml(s.str().c_str(), pt, std::locale(), w);
 
 		x = 0; y = 0;
 		width = 0; height = 0;
@@ -236,23 +237,23 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 			MessageLabel->SetLabel( wxT("Next Object") );
 		}
 	} else {
-		 if(AmountOfObjectsTxtField->GetValue().size() == 0
-				|| !AmountOfObjectsTxtField->GetValue().ToLong(&amount, 10)){
+		if(AmountOfObjectsTxtField->GetValue().size() == 0
+				|| !AmountOfObjectsTxtField->GetValue().ToLong(&amount, 10)) {
 			AmountOfObjectsTxtField->SetFocus();
 
-		 }else if(ObjectComboBox->GetValue() == wxT("Object")){
+		} else if(ObjectComboBox->GetValue() == wxT("Object")) {
 			ObjectComboBox->SetFocus();
 
-		 }else if (x == 0 || y == 0 || width == 0 || height == 0){
+		} else if (x == 0 || y == 0 || width == 0 || height == 0) {
 			SurroundBox_radioBtn->SetValue(true);
 			SurroundBox_radioBtn->SetFocus();
 
-		 }else if(BottomX == 0 || BottomY == 0 || TopX == 0 || TopY == 0){
+		} else if(BottomX == 0 || BottomY == 0 || TopX == 0 || TopY == 0) {
 			CenterLine_radioBtn->SetValue(true);
 			CenterLine_radioBtn->SetFocus();
 
 		}
-		MessageLabel->SetLabel(wxString(("Give amount of objects,\nBackground color,\nObject type,\nDraw an rectangle around the object,\nDraw an center line"), wxConvLocal));
+		MessageLabel->SetLabel(wxString(("Give amount of objects, Background color, Object type, Draw an rectangle around the object, Draw an center line"), wxConvLocal));
 	}
 }
 
@@ -355,8 +356,6 @@ void GUIFrame::OnLeftMouseRelease(wxMouseEvent& event) {
 		TopX = event.GetX();
 		TopY = event.GetY();
 
-		//CenterBottom_RadioBtn->SetValue(true);
-
 		stringstream s;
 		int rotation = (GetRotation() * 10);
 		s << rotation / 10 << "." << rotation % 10;
@@ -432,19 +431,123 @@ void GUIFrame::OnComboSelect(wxCommandEvent& event) {
 
 void GUIFrame::OnCrateButton(wxCommandEvent& event) {
 	ObjectComboBox->SetValue(wxT("Crate"));
-	if (x > 0 && y > 0 && width > 0 && height > 0) {
+	if (x > 0 && y > 0 && width > 0 && height > 0 && TopX > 0 && TopY > 0
+			&& BottomX > 0 && BottomY > 0) {
 
-		wxImage temp = image.Size(wxSize(x + width, y + height), wxPoint(x, y));
-		temp = (temp.Rotate90(true)).Rotate90(true);
-		temp = temp.Size(wxSize(width, height), wxPoint(0, 0));
+		double rotation = GetRotation();
+
+		wxImage temp = image.Size(
+				wxSize(x * widthScale + width * widthScale,
+						y * heightScale + height * heightScale),
+				wxPoint(x * widthScale, y * heightScale));
+
 		temp = (temp.Rotate90(true)).Rotate90(true);
 
-		crateGUI = new CrateGUI(this, wxID_ANY, wxT("Crate"), wxDefaultPosition,
-				wxSize(700, 510), wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
-		crateGUI->Start(temp, x, y, currentImagePath);
+		temp = temp.Size(wxSize(width * widthScale, height * heightScale),
+				wxPoint(0, 0));
+
+		temp = temp.Rotate(
+				((180 - rotation) * (M_PI / 180.0)), wxPoint(0,0), false);
+
+		crateGUI =
+				new CrateGUI(
+						this,
+						wxID_ANY,
+						wxT("Surround markers with boxes and give the barcode value"),
+						wxDefaultPosition, wxSize(700, 510),
+						wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
+		crateGUI->Start(temp, ((x + (width / 2)) * widthScale),
+		((y + (height / 2)) * heightScale), currentImagePath,
+		rotation);
 
 		NextObjectButton->Show(true);
 	} else {
-		MessageLabel->SetLabel(wxT("First surround the crate with a box"));
+		MessageLabel->SetLabel(
+				wxT("First surround the crate with a box and draw a rotation line"));
 	}
+}
+
+void GUIFrame::OnSizeChange(wxSizeEvent& event) {
+	MessageLabel->SetLabel(
+			wxT("The values of the box and rotation line are reset"));
+	wxSize imageMaxSize = this->GetSize();
+	imageMaxSize.SetWidth(
+			imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
+	imageMaxSize.SetHeight(
+			imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
+					- 20);
+
+	if (image.GetHeight() > imageMaxSize.GetHeight()
+			|| image.GetWidth() > imageMaxSize.GetWidth()) {
+		heightScale = (double) image.GetHeight()
+				/ (double) imageMaxSize.GetHeight();
+		widthScale = (double) image.GetWidth()
+				/ (double) imageMaxSize.GetWidth();
+	} else {
+		heightScale = widthScale = 1;
+	}
+
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+	TopX = 0;
+	TopY = 0;
+	BottomX = 0;
+	BottomY = 0;
+
+	LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterTop_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterBottom_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+
+	SurroundBox_radioBtn->SetValue(true);
+
+	UpdateImageField();
+	CrateButton->Show(true);
+	this->Layout();
+	CrateButton->Show(false);
+}
+
+void GUIFrame::OnDoneButton(wxCommandEvent& event) {
+	this->Close(true);
+}
+
+void GUIFrame::OnReset(wxCommandEvent& event) {
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+	TopX = 0;
+	TopY = 0;
+	BottomX = 0;
+	BottomY = 0;
+
+	LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterTop_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterBottom_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	ObjectComboBox->SetValue(wxT("Object"));
+	CrateButton->Show(false);
+	SurroundBox_radioBtn->SetValue(true);
+
+	BackgroundComboBox->SetValue(wxT("Background"));
+	BackgroundComboBox->Show(true);
+	PerspectiveComboBox->Show(true);
+	PerspectiveComboBox->SetValue(wxT("Perspective"));
+	LightingComboBox->Show(true);
+	LightingComboBox->SetValue(wxT("Light"));
+	AmountOfObjectsTxtField->SetValue(wxT(""));
+	currentObjectNr = 1;
+
+	if (NoRotationCheckBox->GetValue()) {
+		NoRotationCheckBox->SetValue(false);
+		CenterLine_radioBtn->Show(true);
+		CenterBottom_Label->Show(true);
+		CenterBottom_RadioBtn->Show(true);
+		CenterTop_Label->Show(true);
+		CenterTop_RadioBtn->Show(true);
+	}
+
+	UpdateImageField();
 }

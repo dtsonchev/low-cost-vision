@@ -1,40 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<objectTypes>
-<Crate/>
-<!--
-<Lego/>
-<Lego_man/>
-<Ring/>
-<Pepermint/>
-<Pencil/>
-<Nut/>
-<Bolt/>
-<Delta_robot_arm/>
-<Magnet/>
-<Connector/>
-<Tea_spoon/>
--->
-</objectTypes>
-<backgroundTypes>
-<Delta_robot/>
-<!--
-<Red/>
-<Black/>
-<White/>
-<Table_top/>
--->
-</backgroundTypes>
-<LightOptions>
-<Three_points_halogeen/>
-<No_extra_lighting/>
-<!--
-<Tl/>
-<Sun_light/>
--->
-</LightOptions>
-<PerspectiveOptions>
-<Two_dimensional/>
-<!--
-<Three_dimensional/>
--->
-</PerspectiveOptions>
+<values>
+	<objectTypes>
+		<objectType name="Crate"/>
+		<objectType name="Lego"/>
+		<objectType name="Lego Man"/>
+		<objectType name="Ring"/>
+		<objectType name="Pepermint"/>
+		<objectType name="Pencil"/>
+		<objectType name="Nut"/>
+		<objectType name="Bolt"/>
+		<objectType name="Delta robot arm"/>
+		<objectType name="Magnet"/>
+		<objectType name="Connector"/>
+		<objectType name="Tea spoon"/>
+	</objectTypes>
+	<backgroundTypes>
+		<backgroundType name="Delta robot"/>
+		<backgroundType name="Red"/>
+		<backgroundType name="Black"/>
+		<backgroundType name="White"/>
+		<backgroundType name="Table top"/>
+	</backgroundTypes>
+	<LightOptions>
+		<LightOption name="Three points halogen lighting"/>
+		<LightOption name="No extra lighting"/>
+		<LightOption name="Tl ligth"/>
+		<LightOption name="Sun light"/>
+	</LightOptions>
+	<PerspectiveOptions>
+		<PerspectiveOption name="Two dimensional"/>
+		<PerspectiveOption name="Three dimensional"/>
+	</PerspectiveOptions>
+
+</values>

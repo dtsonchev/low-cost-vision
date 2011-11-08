@@ -114,6 +114,7 @@ private:
 	std::vector<boost::filesystem::path>::iterator imagePathsIt;
 	///@brief
 	wxString currentImagePath;
+	boost::filesystem::path XMLPath;
 
 	/**
 	 * @fn UpdateImageField()
@@ -154,6 +155,7 @@ protected:
 	///@brief A pointer to the window which started this one
 	//wxWindow* parentWindow;
 
+	wxBoxSizer* bSizer121;
 	wxStaticText* BackgroundTextField;
 	wxFilePickerCtrl* filePicker;
 	wxStaticBitmap* ImageField;
@@ -181,7 +183,9 @@ protected:
 	wxRadioButton* CenterBottom_RadioBtn;
 	wxStaticText* CenterBottom_Label;
 	wxButton* NextObjectButton;
+	wxButton* DoneButton;
 	wxButton* SkipButton;
+	wxButton* ResetButton;
 	wxStaticText* MessageLabel;
 
 	/**
@@ -240,7 +244,9 @@ protected:
 	 * @brief The function which is called when the mouse leaves the image field
 	 * @param event the event created when the image field is left
 	 */
-	virtual void OnLeftImageField( wxMouseEvent& event ) { mousePressedInImage = false; }
+	virtual void OnLeftImageField(wxMouseEvent& event) {
+		mousePressedInImage = false;
+	}
 	/**
 	 * @fn OnComboSelect(wxCommandEvent& event)
 	 * @brief This function is called when a value is selected in a combo box
@@ -253,6 +259,10 @@ protected:
 	 * @param event the event created when the image field is left
 	 */
 	virtual void OnCrateButton(wxCommandEvent& event);
+
+	virtual void OnSizeChange(wxSizeEvent& event);
+	virtual void OnDoneButton(wxCommandEvent& event);
+	virtual void OnReset(wxCommandEvent& event);
 
 public:
 	///@brief Constructor for the GUIFrame
@@ -317,6 +327,7 @@ public:
 	 * @brief Selects the next image in the image directory and calls the ChangeImage function
 	 */
 	void NextImage();
+	void SetXMLPath(boost::filesystem::path &XMLPath);
 };
 
 #endif //__ConverterGUI__

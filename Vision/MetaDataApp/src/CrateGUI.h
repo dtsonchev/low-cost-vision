@@ -40,8 +40,7 @@ typedef enum markerOptions {
  * @version 2.0
  * @date 10-2011
  */
-class CrateGUI : public wxFrame
-{
+class CrateGUI: public wxFrame {
 private:
 	///@brief a constant for the width of the image
 	static const int imageWidth = 470;
@@ -49,13 +48,14 @@ private:
 	static const int imageHeight = 470;
 
 	wxString barcode;
-	int positionValues[3*4];
+	int positionValues[3 * 4];
 
-	double heightScale;
+double	heightScale;
 	double widthScale;
+	double rotation;
 
 	int LTX, LTY, RBX, RBY;
-	int originalX, originalY;
+	int originalCenterX, originalCenterY;
 
 	/**
 	 * @brief when the left mouse button is pressed the variable is set and cleared when the mouse button is release
@@ -87,6 +87,9 @@ protected:
 	///Image fields
 	wxStaticBitmap* imageField;
 
+	///Box sizer with all the options
+	wxBoxSizer* bSizer12;
+
 	///Label Left top marker left top corner text field
 	wxStaticText* m_staticText132;
 	///Label Left top marker left top corner coordinate text field
@@ -113,6 +116,7 @@ protected:
 	wxStaticText* LBRB_TxtField;
 	///Label for the path of the image
 	wxStaticText* pathField;
+	wxStaticText* m_staticText26;
 
 	///Done button
 	wxButton* DONE_button;
@@ -174,7 +178,8 @@ protected:
 	 * @brief The function which is called when the mouse leaves the image field
 	 * @param event the event created when the image field is left
 	 */
-	virtual void OnLeftImageField( wxMouseEvent& event ) { leftMouseDownInImage = false; }
+	virtual void OnLeftImageField( wxMouseEvent& event ) {leftMouseDownInImage = false;}
+	virtual void OnSizeChange( wxSizeEvent& event );
 
 public:
 	///@brief the constructor
@@ -197,7 +202,7 @@ public:
 	 * @param x the x coordinate from the upper left corner of cutImage in the original
 	 * @param y the y coordinate from the upper left corner of cutImage in the original
 	 */
-	void Start(wxImage cutImage, int x, int y, wxString imagePath);
+	void Start(wxImage cutImage, int x, int y, wxString imagePath, double rotation);
 
 };
 

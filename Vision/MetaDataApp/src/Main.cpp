@@ -14,21 +14,21 @@
  */
 
 ///@brief this class is made to launch the GUI
-class MyApp: public wxApp
-{
+class MyApp: public wxApp {
 	/**
 	 * @brief this function launches the GUI
 	 */
-    virtual bool OnInit();
+	virtual bool OnInit();
 };
 
 IMPLEMENT_APP(MyApp)
 
-bool MyApp::OnInit()
-{
+bool MyApp::OnInit() {
 	ChoiceFrame *startFrame;
-	startFrame = new ChoiceFrame( NULL, wxID_ANY, wxT("Choice"), wxDefaultPosition, wxSize( 250, 290 ), wxDEFAULT_FRAME_STYLE|wxTAB_TRAVERSAL  );
+	startFrame = new ChoiceFrame(NULL, wxID_ANY, wxT("Choice"),
+			wxDefaultPosition, wxSize(250, 320),
+			wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
 	startFrame->Start();
 
-    return true;
+	return true;
 }
