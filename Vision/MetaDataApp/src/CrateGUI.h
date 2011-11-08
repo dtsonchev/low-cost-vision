@@ -90,33 +90,20 @@ protected:
 	///Box sizer with all the options
 	wxBoxSizer* bSizer12;
 
-	///Label Left top marker left top corner text field
-	wxStaticText* m_staticText132;
 	///Label Left top marker left top corner coordinate text field
 	wxStaticText* LTLT_TxtField;
-	///Label Left top marker right bottom corner text field
-	wxStaticText* m_staticText1311;
 	///Label Left top marker right bottom corner coordinate text field
 	wxStaticText* LTRB_TxtField;
-	///Label Right top marker left top corner text field
-	wxStaticText* m_staticText1321;
 	///Label Right top marker left top corner coordinate text field
 	wxStaticText* RTLT_TxtField;
-	///Label Right top marker right bottom corner text field
-	wxStaticText* m_staticText13111;
 	///Label Right top marker right bottom corner coordinate text field
 	wxStaticText* RTRB_TxtField;
-	///Label Left bottom marker left top corner text field
-	wxStaticText* m_staticText1322;
 	///Label Left bottom marker left top corner coordinate text field
 	wxStaticText* LBLT_TxtField;
-	///Label Left bottom marker right bottom corner text field
-	wxStaticText* m_staticText13112;
 	///Label Left bottom marker right bottom corner coordinate text field
 	wxStaticText* LBRB_TxtField;
 	///Label for the path of the image
 	wxStaticText* pathField;
-	wxStaticText* m_staticText26;
 
 	///Done button
 	wxButton* DONE_button;

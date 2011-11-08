@@ -55,7 +55,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1212;
 	bSizer1212 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText132 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
+	wxStaticText* m_staticText132 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText132->SetForegroundColour(wxColour(255, 0, 0));
 	m_staticText132->Wrap(-1);
@@ -72,7 +72,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1213;
 	bSizer1213 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText1311 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
+	wxStaticText* m_staticText1311 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1311->SetForegroundColour(wxColour(255, 0, 0));
 	m_staticText1311->Wrap(-1);
@@ -118,7 +118,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1222;
 	bSizer1222 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText1321 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
+	wxStaticText* m_staticText1321 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1321->SetForegroundColour(wxColour(11, 111, 11));
 	m_staticText1321->Wrap(-1);
@@ -135,7 +135,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1223;
 	bSizer1223 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText13111 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
+	wxStaticText* m_staticText13111 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText13111->SetForegroundColour(wxColour(11, 111, 11));
 	m_staticText13111->Wrap(-1);
@@ -179,7 +179,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer12242;
 	bSizer12242 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText1322 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
+	wxStaticText* m_staticText1322 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1322->SetForegroundColour(wxColour(0, 0, 255));
 	m_staticText1322->Wrap(-1);
@@ -196,7 +196,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer12243;
 	bSizer12243 = new wxBoxSizer(wxHORIZONTAL);
 
-	m_staticText13112 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
+	wxStaticText* m_staticText13112 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
 			wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText13112->SetForegroundColour(wxColour(0, 0, 255));
 	m_staticText13112->Wrap(-1);
@@ -218,7 +218,7 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 
 	bSizer12->Add(bSizer122, 1, wxEXPAND, 5);
 
-	m_staticText26 = new wxStaticText(this, wxID_ANY,
+	wxStaticText* m_staticText26 = new wxStaticText(this, wxID_ANY,
 			wxT("The value of the QR code:"), wxDefaultPosition,
 			wxDefaultSize, 0);
 	m_staticText26->Wrap(-1);
