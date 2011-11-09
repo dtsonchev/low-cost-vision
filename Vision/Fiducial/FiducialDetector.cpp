@@ -98,9 +98,6 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points, 
 			if(bounds.contains(point)) points.push_back(point);
 			else if(verbose) cout << "Center: " << center << " outside ROI!" << endl;
 		}
-		else {
-			if(verbose) cout << "No cross found!" << endl;
-		}
 
 		// Draw the detected circles
 		if(debugImage!=NULL) circle(*debugImage, Point((*it)[0], (*it)[1]), (*it)[2], Scalar(0, 255, 0), 2);
