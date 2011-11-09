@@ -51,7 +51,8 @@ public:
 	 */
 	FiducialDetector(int minRad = 20, int maxRad = 40, int distance = 70,
 			int circleVotes = 100, int minDist = 1, int maxDist = 5,
-			int lineVotes = 20, int lowThreshold = 125, int highThreshold = 300);
+			int lineVotes = 20, int lowThreshold = 125,
+			int highThreshold = 300);
 	virtual ~FiducialDetector();
 
 	/*! \brief Detects all fiducials in an image
@@ -80,13 +81,14 @@ public:
 	 *  \param image Image with the crosshair
 	 *  \param center Output point that will be set to the
 	 *  center point
+	 *  \param mask Operation mask of the same size as image
 	 *  \param debugImage Output image where debug information
 	 *  will be drawn on, set to NULL for no debug information
 	 *  \return <i>true</i> if center point was detected\n
 	 *  <i>false</i> if detection failed
 	 */
 	bool detectCrosshair(cv::Mat& image, cv::Point2f& center,
-			cv::Mat* debugImage = NULL);
+			const cv::Mat& mask = cv::Mat(), cv::Mat* debugImage = NULL);
 
 	/*! \brief Determines the orientation
 	 *
@@ -100,8 +102,8 @@ public:
 	 *  \return <i>true</i> if orientation was determined\n
 	 *  <i>false</i> if calculation failed
 	 */
-	bool getRotatedRect(std::vector<cv::Point2f>& points, cv::RotatedRect& orientation,
-			cv::Mat* debugImage = NULL);
+	bool getRotatedRect(std::vector<cv::Point2f>& points,
+			cv::RotatedRect& orientation, cv::Mat* debugImage = NULL);
 };
 
 #endif /* FIDUCIALDETECTOR_H_ */
