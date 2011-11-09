@@ -9,6 +9,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/features2d/features2d.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <iostream>
 #include <math.h>
 #include <sstream>
@@ -76,15 +77,20 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points, 
 				center.y+rad<image.rows?rad*2:image.rows-center.y);
 		Mat roi = image(bounds);
 
+		// Generate inverted circle mask
+		Mat roiMask = Mat::zeros(roi.rows,roi.cols,CV_8U);
+		Point roiCenter(roi.cols/2,roi.rows/2);
+		circle(roiMask, roiCenter, rad-1, Scalar(255),-1);
+
 		// If lines were found
 		Point2f roiPoint;
 		bool ret = false;
 		if(debugImage!=NULL) {
 			Mat roiDebug = (*debugImage)(bounds);
-			ret = detectCrosshair(roi, roiPoint, &roiDebug);
+			ret = detectCrosshair(roi, roiPoint, roiMask, &roiDebug);
 		}
 		else {
-			ret = detectCrosshair(roi, roiPoint);
+			ret = detectCrosshair(roi, roiPoint, roiMask);
 		}
 
 		if(ret) {
@@ -101,9 +107,15 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points, 
 	}
 }
 
-bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::Mat* debugImage) {
+bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, const cv::Mat& mask, cv::Mat* debugImage) {
 	Mat contours;
 	Canny(image, contours, lowThreshold, highThreshold);
+
+	if(!mask.empty()) {
+		Mat invMask;
+		threshold(mask, invMask, 128, 255, CV_THRESH_BINARY_INV);
+		contours.setTo(Scalar(0), invMask);
+	}
 
 	// Hough tranform for line detection
 	vector<Vec2f> lines;
@@ -135,9 +147,6 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::
 	bool found1 = false;
 	bool found2 = false;
 
-	// The center is probably close to the image center
-	float imageCenterRho = sqrt(pow(image.rows/2.0,2)+pow(image.cols/2.0,2));
-
 	// If the are more than two lines we can detect the line through the center
 	if(lines1.size() >= 2)
 	{
@@ -153,18 +162,15 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::
 
 		// Select the first line
 		float lastTheta = M_PI;
-		float lastDist = maxDist;
 		for(vector<Vec2f>::iterator it=lines1.begin();it!=lines1.end(); it++)
 		{
 			// Check if this line has a better orientation and distance than the last
 			float thetaDist = abs(meanTheta - (*it)[1]);
-			float centerDist = abs(imageCenterRho - (*it)[0]);
-			if(thetaDist < lastTheta && centerDist < lastDist)
+			if(thetaDist < lastTheta)
 			{
 				// Set the first line
 				line1 = *it;
 				lastTheta = thetaDist;
-				//lastDist = centerDist;
 				line1Found = true;
 			}
 		}
@@ -200,7 +206,7 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::
 			}
 			else if(verbose) cout << "Second primary line not found!" << endl;
 		}
-		else if(verbose) cout << "First primary line not found! " << endl;
+		else if(verbose) cout << "First primary line not found!" << endl;
 	}
 	else if(verbose) cout << "Not enough primary lines!" << endl;
 
@@ -219,18 +225,15 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::
 
 		// Select the first line
 		float lastTheta = M_PI;
-		float lastDist = maxDist;
 		for(vector<Vec2f>::iterator it=lines2.begin(); it!=lines2.end(); it++)
 		{
 			// Check if this line has a better orientation than the last
 			float thetaDist = abs(meanTheta - (*it)[1]);
-			float centerDist = abs(imageCenterRho - (*it)[0]);
-			if(thetaDist < lastTheta && centerDist < lastDist)
+			if(thetaDist < lastTheta)
 			{
 				// Set the first line
 				line1 = *it;
 				lastTheta = thetaDist;
-				lastDist = centerDist;
 				line1Found = true;
 			}
 		}
@@ -264,11 +267,11 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cv::
 				// Draw a red line
 				if(debugImage!=NULL) polarLine(*debugImage, rho, theta, Scalar(0, 0, 255), 1);
 			}
-			else if(verbose) cout << "Second primary line not found!" << endl;
+			else if(verbose) cout << "Second secondary line not found!" << endl;
 		}
-		else if(verbose) cout << "First primary line not found!" << endl;
+		else if(verbose) cout << "First secondary line not found!" << endl;
 	}
-	else if(verbose) cout << "Not enough primary lines!" << endl;
+	else if(verbose) cout << "Not enough secondary lines!" << endl;
 
 	// If both have lines on opposing sides we can intersect them and find the center
 	if(found1 && found2)
