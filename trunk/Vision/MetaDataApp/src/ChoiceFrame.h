@@ -35,13 +35,21 @@ private:
 	std::vector<boost::filesystem::path> imagePaths;
 
 protected:
+	///Object to select a directory
 	wxDirPickerCtrl* dirPicker;
+	///Object to select the xml file to output to
 	wxFilePickerCtrl* XMLPicker;
+	///Object to set message in
 	wxStaticText* MessageField;
+	///Exit button
 	wxButton* ExitButton;
+	///Ok button
 	wxButton* OKButton;
+	///Object to select the create new xml option
 	wxRadioButton* CreateNewXMLradioBtn;
+	///Object to select the edit a xml option
 	wxRadioButton* EditExistingXMLradioBtn;
+	///Object to select the add to existing xml option
 	wxRadioButton* AddToExistingXMLradioBtn;
 
 	/**
@@ -69,6 +77,7 @@ protected:
 	 * @fn LoadImagePaths(boost::filesystem::path itPath)
 	 * @brief Loads all the image paths from the image directory
 	 * @param itPath the root map from where the images are supposed to be loaded
+	 * @param xmlPath the path where the xml is located
 	 */
 	void LoadImagePaths(const boost::filesystem::path &itPath,
 			const boost::filesystem::path &xmlPath);

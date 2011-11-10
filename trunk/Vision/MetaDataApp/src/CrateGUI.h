@@ -107,6 +107,8 @@ protected:
 
 	///Done button
 	wxButton* DONE_button;
+	///Reset button
+	wxButton* ResetButton;
 
 	///Barcode text field
 	wxTextCtrl* QRCode_TxtField;
@@ -166,7 +168,18 @@ protected:
 	 * @param event the event created when the image field is left
 	 */
 	virtual void OnLeftImageField( wxMouseEvent& event ) {leftMouseDownInImage = false;}
+	/**
+	 * @brief The function which is called when the window size changes
+	 * @details values concerning the location of the current object are set to 0
+	 * @param event the event created when the window size changes
+	 */
 	virtual void OnSizeChange( wxSizeEvent& event );
+	/**
+	 * @brief The function which is called when the Reset button is pressed
+	 * @details resets all the input values for the whole image
+	 * @param event the event created when the Done button is pressed
+	 */
+	virtual void OnReset( wxCommandEvent& event );
 
 public:
 	///@brief the constructor
@@ -183,11 +196,13 @@ public:
 	 */
 	bool getValues(int *values, wxString &barcode);
 	/**
-	 * @fn Start(wxImage cutImage, int x, int y)
+	 * @fn Start(wxImage cutImage, int x, int y, wxString imagePath, double rotation)
 	 * @brief sets all the variables and shows the crate gui and hides the parent gui
 	 * @param cutImage the part of the image where the crate is located
 	 * @param x the x coordinate from the upper left corner of cutImage in the original
 	 * @param y the y coordinate from the upper left corner of cutImage in the original
+	 * @param imagePath the path to the object
+	 * @param rotation the of the object
 	 */
 	void Start(wxImage cutImage, int x, int y, wxString imagePath, double rotation);
 

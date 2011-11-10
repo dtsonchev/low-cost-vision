@@ -134,17 +134,17 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 		boost::property_tree::ptree &object = tempValue->add("object", "");
 		boost::property_tree::ptree *property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "x");
-		property->put("<xmlattr>.value", (int)(x * widthScale));
+		property->put("<xmlattr>.value", (int)(x * widthScale) + zoomX);
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "y");
-		property->put("<xmlattr>.value", (int)(y * widthScale));
+		property->put("<xmlattr>.value", (int)(y * widthScale) + zoomY);
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "width");
 		property->put("<xmlattr>.name", "center_x");
-		property->put("<xmlattr>.value", (x * widthScale) + ((width * widthScale) / 2.0));
+		property->put("<xmlattr>.value", (x * widthScale) + zoomX + ((width * widthScale) / 2.0));
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "center_y");
-		property->put("<xmlattr>.value", (y * widthScale) + ((height * heightScale) / 2.0));
+		property->put("<xmlattr>.value", (y * widthScale) + zoomY + ((height * heightScale) / 2.0));
 		property = &(object.add("property", ""));
 		property->put("<xmlattr>.name", "width");
 		property->put("<xmlattr>.value", (int)(width * widthScale));
@@ -162,19 +162,7 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 
 			string temp[3] = {"markerLT", "markerRT", "markerLB"};
 			stringstream name;
-			boost::property_tree::ptree *crateProperty;
 			for(int i = 0; i < 3; i++) {
-				name.str("");
-				name << temp[i] << "_center_x";
-				crateProperty = &(property->add( "property" ,""));
-				crateProperty->put("<xmlattr>.name", name.str().c_str());
-				crateProperty->put("<xmlattr>.value", values[(i*2)+0]);
-				name.str("");
-				name << temp[i] << "_center_y";
-				crateProperty = &(property->add("property", ""));
-				crateProperty->put("<xmlattr>.name", name.str().c_str());
-				crateProperty->put("<xmlattr>.value", values[(i*2)+1]);
-				/*
 				 name.str("");
 				 name << temp[i] << "_center_x";
 				 property = &(object.add("property", ""));
@@ -185,7 +173,6 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 				 property = &(object.add("property", ""));
 				 property->put("<xmlattr>.name", name.str().c_str());
 				 property->put("<xmlattr>.value", values[(i*2)+1]);
-				 */
 			}
 			property = &(object.add("property", ""));
 			property->add("<xmlattr>.name", "barcode");
@@ -201,6 +188,14 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 		width = 0; height = 0;
 		TopX = 0; TopY = 0;
 		BottomX = 0; BottomY = 0;
+		zoom = false;
+		zoomX = 0; zoomY = 0;
+		zoomWidth = 0; zoomHeight = 0;
+
+		ZoomBox_radioBtn->Show(true);
+		ZoomCheckBox->Show(true);
+		ZoomButton->Show(true);
+		OriginalImageButton->Show(false);
 
 		LUC_Label->SetLabel(wxString( ("(000,000)"), wxConvLocal));
 		RLC_Label->SetLabel(wxString( ("(000,000)"), wxConvLocal));
@@ -237,23 +232,32 @@ void GUIFrame::OnNextObjectButton(wxCommandEvent& event) {
 			MessageLabel->SetLabel( wxT("Next Object") );
 		}
 	} else {
+		stringstream s;
+		s << "Still need: \t";
 		if(AmountOfObjectsTxtField->GetValue().size() == 0
 				|| !AmountOfObjectsTxtField->GetValue().ToLong(&amount, 10)) {
 			AmountOfObjectsTxtField->SetFocus();
-
-		} else if(ObjectComboBox->GetValue() == wxT("Object")) {
-			ObjectComboBox->SetFocus();
-
-		} else if (x == 0 || y == 0 || width == 0 || height == 0) {
-			SurroundBox_radioBtn->SetValue(true);
-			SurroundBox_radioBtn->SetFocus();
-
-		} else if(BottomX == 0 || BottomY == 0 || TopX == 0 || TopY == 0) {
-			CenterLine_radioBtn->SetValue(true);
-			CenterLine_radioBtn->SetFocus();
+			s << "Amount of objects\t";
 
 		}
-		MessageLabel->SetLabel(wxString(("Give amount of objects, Background color, Object type, Draw an rectangle around the object, Draw an center line"), wxConvLocal));
+		if(ObjectComboBox->GetValue() == wxT("Object")) {
+			ObjectComboBox->SetFocus();
+			s << "Object type\t";
+
+		}
+		if (x == 0 || y == 0 || width == 0 || height == 0) {
+			SurroundBox_radioBtn->SetValue(true);
+			SurroundBox_radioBtn->SetFocus();
+			s << "Object box\t";
+
+		}
+		if(BottomX == 0 || BottomY == 0 || TopX == 0 || TopY == 0) {
+			CenterLine_radioBtn->SetValue(true);
+			CenterLine_radioBtn->SetFocus();
+			s << "Center line";
+
+		}
+		MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 	}
 }
 
@@ -279,6 +283,11 @@ void GUIFrame::OnLeftMousePressed(wxMouseEvent& event) {
 		CenterTop_Label->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 		TopX = event.GetX();
 		TopY = event.GetY();
+
+	} else if (ZoomBox_radioBtn->GetValue()) {
+		zoomX = event.GetX();
+		zoomY = event.GetY();
+
 	}
 
 	DrawOnImageAccordingToRadioButtonOption(event.GetX(), event.GetY());
@@ -372,6 +381,23 @@ void GUIFrame::OnLeftMouseRelease(wxMouseEvent& event) {
 		int rotation = (GetRotation() * 10);
 		s << rotation / 10 << "." << rotation % 10;
 		RotationValue_label->SetLabel(wxString(s.str().c_str(), wxConvLocal));
+
+	} else if (ZoomBox_radioBtn->GetValue()) {
+		if (zoomX > event.GetX()) {
+			zoomWidth = zoomX - event.GetX();
+			zoomX = event.GetX();
+
+		} else {
+			zoomWidth = event.GetX() - zoomX;
+		}
+
+		if (zoomY > event.GetY()) {
+			zoomHeight = zoomY - event.GetY();
+			zoomY = event.GetY();
+
+		} else {
+			zoomHeight = event.GetY() - zoomY;
+		}
 	}
 
 	DrawBoxAndRotationLineOnImage();
@@ -436,10 +462,19 @@ void GUIFrame::OnCrateButton(wxCommandEvent& event) {
 
 		double rotation = GetRotation();
 
-		wxImage temp = image.Size(
-				wxSize(x * widthScale + width * widthScale,
-						y * heightScale + height * heightScale),
-				wxPoint(x * widthScale, y * heightScale));
+		wxImage temp;
+		if (!zoom) {
+			temp = image.Size(
+					wxSize(x * widthScale + width * widthScale,
+							y * heightScale + height * heightScale),
+					wxPoint(x * widthScale, y * heightScale));
+
+		} else {
+			temp = zoomImage.Size(
+					wxSize(x * widthScale + width * widthScale,
+							y * heightScale + height * heightScale),
+					wxPoint(x * widthScale, y * heightScale));
+		}
 
 		temp = (temp.Rotate90(true)).Rotate90(true);
 
@@ -477,14 +512,16 @@ void GUIFrame::OnSizeChange(wxSizeEvent& event) {
 			imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
 					- 20);
 
-	if (image.GetHeight() > imageMaxSize.GetHeight()
-			|| image.GetWidth() > imageMaxSize.GetWidth()) {
+	if (!ZoomCheckBox->GetValue()) {
 		heightScale = (double) image.GetHeight()
 				/ (double) imageMaxSize.GetHeight();
 		widthScale = (double) image.GetWidth()
 				/ (double) imageMaxSize.GetWidth();
 	} else {
-		heightScale = widthScale = 1;
+		heightScale = (double) zoomImage.GetHeight()
+				/ (double) imageMaxSize.GetHeight();
+		widthScale = (double) zoomImage.GetWidth()
+				/ (double) imageMaxSize.GetWidth();
 	}
 
 	x = 0;
@@ -496,6 +533,12 @@ void GUIFrame::OnSizeChange(wxSizeEvent& event) {
 	BottomX = 0;
 	BottomY = 0;
 
+	zoom = false;
+	zoomX = 0;
+	zoomY = 0;
+	zoomWidth = 0;
+	zoomHeight = 0;
+
 	LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
 	RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
 	CenterTop_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
@@ -504,9 +547,7 @@ void GUIFrame::OnSizeChange(wxSizeEvent& event) {
 	SurroundBox_radioBtn->SetValue(true);
 
 	UpdateImageField();
-	CrateButton->Show(true);
 	this->Layout();
-	CrateButton->Show(false);
 }
 
 void GUIFrame::OnDoneButton(wxCommandEvent& event) {
@@ -522,6 +563,11 @@ void GUIFrame::OnReset(wxCommandEvent& event) {
 	TopY = 0;
 	BottomX = 0;
 	BottomY = 0;
+	zoom = false;
+	zoomX = 0;
+	zoomY = 0;
+	zoomWidth = 0;
+	zoomHeight = 0;
 
 	LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
 	RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
@@ -550,4 +596,131 @@ void GUIFrame::OnReset(wxCommandEvent& event) {
 	}
 
 	UpdateImageField();
+}
+
+void GUIFrame::OnColorSlider(wxScrollEvent& event) {
+	DrawBoxAndRotationLineOnImage();
+}
+
+void GUIFrame::OnZoom(wxCommandEvent& event) {
+	if (zoomX > 0 && zoomY > 0 && zoomWidth > 0 && zoomHeight > 0) {
+		zoomImage = image.Size(
+				wxSize(zoomX * widthScale + zoomWidth * widthScale,
+						zoomY * heightScale + zoomHeight * heightScale),
+				wxPoint(zoomX * widthScale, zoomY * heightScale));
+
+		zoomImage = (zoomImage.Rotate90(true)).Rotate90(true);
+		zoomImage = zoomImage.Size(
+				wxSize(zoomWidth * widthScale, zoomHeight * heightScale),
+				wxPoint(0, 0));
+		zoomImage = (zoomImage.Rotate90(true)).Rotate90(true);
+
+		MessageLabel->SetLabel(
+				wxT("The values of the box and rotation line are reset"));
+		wxSize imageMaxSize = this->GetSize();
+		imageMaxSize.SetWidth(
+				imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
+		imageMaxSize.SetHeight(
+				imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
+						- 20);
+
+		zoomX = zoomX * widthScale;
+		zoomY = zoomY * heightScale;
+		zoomWidth = zoomWidth * widthScale;
+		zoomHeight = zoomHeight * heightScale;
+
+		heightScale = (double) zoomImage.GetHeight()
+				/ (double) imageMaxSize.GetHeight();
+		widthScale = (double) zoomImage.GetWidth()
+				/ (double) imageMaxSize.GetWidth();
+
+		x = 0;
+		y = 0;
+		width = 0;
+		height = 0;
+		TopX = 0;
+		TopY = 0;
+		BottomX = 0;
+		BottomY = 0;
+
+		LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+		RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+		CenterTop_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+		CenterBottom_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+
+		zoom = true;
+		SurroundBox_radioBtn->SetValue(true);
+		ZoomButton->Show(false);
+		OriginalImageButton->Show(true);
+		ZoomCheckBox->Show(false);
+		ZoomCheckBox->SetValue(false);
+		ZoomBox_radioBtn->Show(false);
+
+		UpdateImageField();
+	} else {
+		MessageLabel->SetLabel(wxT("Draw box to zoom into"));
+	}
+}
+
+void GUIFrame::OnOriginal(wxCommandEvent& event) {
+	MessageLabel->SetLabel(
+			wxT("The values of the box and rotation line are reset"));
+	wxSize imageMaxSize = this->GetSize();
+	imageMaxSize.SetWidth(
+			imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
+	imageMaxSize.SetHeight(
+			imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
+					- 20);
+
+	heightScale = (double) image.GetHeight()
+			/ (double) imageMaxSize.GetHeight();
+	widthScale = (double) image.GetWidth() / (double) imageMaxSize.GetWidth();
+
+	x = 0;
+	y = 0;
+	width = 0;
+	height = 0;
+	TopX = 0;
+	TopY = 0;
+	BottomX = 0;
+	BottomY = 0;
+	zoomX = 0;
+	zoomY = 0;
+	zoomWidth = 0;
+	zoomHeight = 0;
+
+	LUC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	RLC_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterTop_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+	CenterBottom_Label->SetLabel(wxString(("(000,000)"), wxConvLocal));
+
+	zoom = false;
+	ZoomButton->Show(true);
+	OriginalImageButton->Show(false);
+	ZoomCheckBox->Show(true);
+	ZoomBox_radioBtn->Show(true);
+
+	UpdateImageField();
+}
+
+void GUIFrame::OnZoomChange(wxMouseEvent& event) {
+	if (ZoomCheckBox->GetId() == event.GetId()) {
+		if (!ZoomCheckBox->GetValue()) {
+			ZoomBox_radioBtn->SetValue(true);
+			ZoomCheckBox->SetValue(true);
+		} else {
+			SurroundBox_radioBtn->SetValue(true);
+			ZoomCheckBox->SetValue(false);
+		}
+	}
+
+	if (ZoomBox_radioBtn->GetId() == event.GetId()) {
+		if (ZoomBox_radioBtn->GetValue()) {
+			SurroundBox_radioBtn->SetValue(true);
+			ZoomCheckBox->SetValue(false);
+		} else {
+			ZoomBox_radioBtn->SetValue(true);
+			ZoomCheckBox->SetValue(true);
+		}
+	}
 }

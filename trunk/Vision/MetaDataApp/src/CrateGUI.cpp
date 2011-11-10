@@ -55,8 +55,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1212;
 	bSizer1212 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText132 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText132 = new wxStaticText(this, wxID_ANY,
+			wxT("Left top"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText132->SetForegroundColour(wxColour(255, 0, 0));
 	m_staticText132->Wrap(-1);
 	bSizer1212->Add(m_staticText132, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -72,8 +72,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1213;
 	bSizer1213 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText1311 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText1311 = new wxStaticText(this, wxID_ANY,
+			wxT("Right bottom"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1311->SetForegroundColour(wxColour(255, 0, 0));
 	m_staticText1311->Wrap(-1);
 	bSizer1213->Add(m_staticText1311, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -118,8 +118,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1222;
 	bSizer1222 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText1321 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText1321 = new wxStaticText(this, wxID_ANY,
+			wxT("Left top"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1321->SetForegroundColour(wxColour(11, 111, 11));
 	m_staticText1321->Wrap(-1);
 	bSizer1222->Add(m_staticText1321, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -135,8 +135,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer1223;
 	bSizer1223 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText13111 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText13111 = new wxStaticText(this, wxID_ANY,
+			wxT("Right bottom"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText13111->SetForegroundColour(wxColour(11, 111, 11));
 	m_staticText13111->Wrap(-1);
 	bSizer1223->Add(m_staticText13111, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -179,8 +179,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer12242;
 	bSizer12242 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText1322 = new wxStaticText(this, wxID_ANY, wxT("Left top"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText1322 = new wxStaticText(this, wxID_ANY,
+			wxT("Left top"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText1322->SetForegroundColour(wxColour(0, 0, 255));
 	m_staticText1322->Wrap(-1);
 	bSizer12242->Add(m_staticText1322, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -196,8 +196,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	wxBoxSizer* bSizer12243;
 	bSizer12243 = new wxBoxSizer(wxHORIZONTAL);
 
-	wxStaticText* m_staticText13112 = new wxStaticText(this, wxID_ANY, wxT("Right bottom"),
-			wxDefaultPosition, wxDefaultSize, 0);
+	wxStaticText* m_staticText13112 = new wxStaticText(this, wxID_ANY,
+			wxT("Right bottom"), wxDefaultPosition, wxDefaultSize, 0);
 	m_staticText13112->SetForegroundColour(wxColour(0, 0, 255));
 	m_staticText13112->Wrap(-1);
 	bSizer12243->Add(m_staticText13112, 1, wxALL | wxALIGN_CENTER_VERTICAL, 5);
@@ -229,11 +229,15 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 	bSizer12->Add(QRCode_TxtField, 0, wxALL | wxEXPAND, 5);
 
 	wxBoxSizer* bSizer123;
-	bSizer123 = new wxBoxSizer(wxVERTICAL);
+	bSizer123 = new wxBoxSizer(wxHORIZONTAL);
 
-	DONE_button = new wxButton(this, wxID_ANY, wxT("DONE"), wxDefaultPosition,
+	DONE_button = new wxButton(this, wxID_ANY, wxT("Done"), wxDefaultPosition,
 			wxDefaultSize, 0);
 	bSizer123->Add(DONE_button, 0, wxALL | wxALIGN_CENTER_HORIZONTAL, 5);
+
+	ResetButton = new wxButton(this, wxID_ANY, wxT("Reset"), wxDefaultPosition,
+			wxDefaultSize, 0);
+	bSizer123->Add(ResetButton, 0, wxALL, 5);
 
 	bSizer12->Add(bSizer123, 0, wxEXPAND, 5);
 
@@ -263,6 +267,8 @@ CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 			wxMouseEventHandler( CrateGUI::OnDonePressed ), NULL, this);
 	QRCode_TxtField->Connect(wxEVT_SET_FOCUS,
 			wxFocusEventHandler( CrateGUI::OnQRFocus ), NULL, this);
+	ResetButton->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+			wxCommandEventHandler( CrateGUI::OnReset ), NULL, this);
 }
 
 CrateGUI::~CrateGUI() {
@@ -281,4 +287,6 @@ CrateGUI::~CrateGUI() {
 			wxMouseEventHandler( CrateGUI::OnDonePressed ), NULL, this);
 	QRCode_TxtField->Disconnect(wxEVT_SET_FOCUS,
 			wxFocusEventHandler( CrateGUI::OnQRFocus ), NULL, this);
+	ResetButton->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
+			wxCommandEventHandler( CrateGUI::OnReset ), NULL, this);
 }

@@ -19,7 +19,9 @@
 #include <wx/statline.h>
 #include <wx/checkbox.h>
 #include <wx/filepicker.h>
+#include <wx/slider.h>
 #include <wx/frame.h>
+#include <wx/scrolwin.h>
 #include <wx/dc.h>
 #include <wx/dcclient.h>
 
@@ -74,6 +76,14 @@ private:
 	int width;
 	///@brief The height for the box for surrounding the object
 	int height;
+	///@brief The top left X coordinate for the box for surrounding the object
+	int zoomX;
+	///@brief The top left Y coordinate for the box for surrounding the object
+	int zoomY;
+	///@brief The width for the box for surrounding the object
+	int zoomWidth;
+	///@brief The height for the box for surrounding the object
+	int zoomHeight;
 	///@brief The top X coordinate for the center line for the object
 	int TopX;
 	///@brief The top Y coordinate for the center line for the object
@@ -101,9 +111,11 @@ private:
 	///@brief is an variable for which is set if the image is available in the xml
 	bool AlreadyInXML;
 	bool noMarkerValues;
+	bool zoom;
 
 	///@brief A variable for the current image
 	wxImage image;
+	wxImage zoomImage;
 	///@brief A variable for stepping through all the images
 	boost::filesystem::directory_iterator imgIt;
 	///@brief A variable for the path which you selected
@@ -152,9 +164,6 @@ private:
 	double GetRotation();
 
 protected:
-	///@brief A pointer to the window which started this one
-	//wxWindow* parentWindow;
-
 	wxBoxSizer* bSizer121;
 	wxStaticText* BackgroundTextField;
 	wxFilePickerCtrl* filePicker;
@@ -187,9 +196,15 @@ protected:
 	wxButton* SkipButton;
 	wxButton* ResetButton;
 	wxStaticText* MessageLabel;
+	wxSlider* ColorSlider;
+	wxRadioButton* ZoomBox_radioBtn;
+	wxRadioButton* LUZC_RadioBtn;
+	wxRadioButton* RLZC_RadioBtn;
+	wxButton* ZoomButton;
+	wxButton* OriginalImageButton;
+	wxCheckBox* ZoomCheckBox;
 
 	/**
-	 * @fn OnNextObjectButton(wxCommandEvent& event)
 	 * @brief The function which is called when the next button is pressed
 	 * @details when this button is pressed the inputed values are written to an xml
 	 * also is either an new image loaded are values cleared.
@@ -197,7 +212,6 @@ protected:
 	 */
 	virtual void OnNextObjectButton(wxCommandEvent& event);
 	/**
-	 * @fn OnAmountOfObjects(wxFocusEvent& event)
 	 * @brief The function which is called when the focus on AmountOfObjectsTxtField is lost
 	 * @details when there are more than one objects within the image the next buttons
 	 * label changes into next image or into next object
@@ -205,14 +219,12 @@ protected:
 	 */
 	virtual void OnAmountOfObjects(wxFocusEvent& event);
 	/**
-	 * @fn OnLeftMouseRelease(wxMouseEvent& event)
 	 * @brief The function which is called when the left mouse left mouse button is released within the image field
 	 * @details only when the mouse is released the values inputed by the user are updated
 	 * @param event the event created when the left mouse button is released within the image field
 	 */
 	virtual void OnLeftMouseRelease(wxMouseEvent& event);
 	/**
-	 * @fn OnLeftMousePressed(wxMouseEvent& event)
 	 * @brief The function which is called when the left mouse button is pressed within the image field
 	 * @details while the left mouse button is pressed the a rectangle or line is drawn real time onto the image
 	 * @param event the event created when the left mouse button is pressed within the image field
@@ -226,21 +238,18 @@ protected:
 	 */
 	virtual void OnImageMotion(wxMouseEvent& event);
 	/**
-	 * @fn NoRotation(wxMouseEvent& event)
 	 * @brief The function which is called when the left mouse button is pressed on the box
 	 * @details makes the center line option (in)visible
 	 * @param event the event created when the left mouse button is pressed on the box
 	 */
 	virtual void NoRotation(wxMouseEvent& event);
 	/**
-	 * @fn OnSkip( wxMouseEvent& event )
 	 * @brief The function which is called when the skip button is pressed
 	 * @details calls NextImage()
 	 * @param event the event created when the skip button is pressed
 	 */
 	virtual void OnSkip(wxMouseEvent& event);
 	/**
-	 * @fn OnLeftImageField( wxMouseEvent& event )
 	 * @brief The function which is called when the mouse leaves the image field
 	 * @param event the event created when the image field is left
 	 */
@@ -248,21 +257,57 @@ protected:
 		mousePressedInImage = false;
 	}
 	/**
-	 * @fn OnComboSelect(wxCommandEvent& event)
 	 * @brief This function is called when a value is selected in a combo box
 	 * @param event the event created when the image field is left
 	 */
 	virtual void OnComboSelect(wxCommandEvent& event);
 	/**
-	 * @fn OnCrateButton(wxCommandEvent& event)
 	 * @brief This function is called when the crate button is pressed
 	 * @param event the event created when the image field is left
 	 */
 	virtual void OnCrateButton(wxCommandEvent& event);
-
+	/**
+	 * @brief The function which is called when the window size changes
+	 * @details values concerning the location of the current object are set to 0
+	 * @param event the event created when the window size changes
+	 */
 	virtual void OnSizeChange(wxSizeEvent& event);
+	/**
+	 * @fn OnDoneButton(wxCommandEvent& event)
+	 * @brief The function which is called when the Done button is pressed
+	 * @param event the event created when the Done button is pressed
+	 */
 	virtual void OnDoneButton(wxCommandEvent& event);
+	/**
+	 * @brief The function which is called when the Reset button is pressed
+	 * @details resets all the input values for the whole image
+	 * @param event the event created when the Done button is pressed
+	 */
 	virtual void OnReset(wxCommandEvent& event);
+	/**
+	 * @brief The function which is called when the slider for the drawing color changes
+	 * @details the color for each object changes
+	 * @param event the event created when the slider moves
+	 */
+	virtual void OnColorSlider( wxScrollEvent& event );
+	/**
+	 * @brief The function which is called when the zoom button is pressed
+	 * @details zooms in on the part which is selected and places it in the image field
+	 * @param event the event created when the zoom button is pressed
+	 */
+	virtual void OnZoom( wxCommandEvent& event );
+	/**
+	 * @brief The function which is called when the original button is pressed
+	 * @details places the original image in the image field
+	 * @param event the event created when the original button is pressed
+	 */
+	virtual void OnOriginal( wxCommandEvent& event );
+	/**
+	 * @brief The function which is called when either the zoom On check box is changed ore the radio button is pressed
+	 * @details inverts the values of these two objects
+	 * @param event the event created when either the zoom On check box is changed ore the radio button is pressed
+	 */
+	virtual void OnZoomChange( wxMouseEvent& event );
 
 public:
 	///@brief Constructor for the GUIFrame
@@ -321,13 +366,18 @@ public:
 	 * @brief sets the directory path
 	 * @param path the value at which dirPath is set
 	 */
-	void SetDirPath(boost::filesystem::path path);
+	void SetDirPath(const boost::filesystem::path path);
 	/**
 	 * @fn NextImage()
 	 * @brief Selects the next image in the image directory and calls the ChangeImage function
 	 */
 	void NextImage();
-	void SetXMLPath(boost::filesystem::path &XMLPath);
+	/**
+	 * @fn SetXMLPath(const boost::filesystem::path &XMLPath)
+	 * @brief Selects the next image in the image directory and calls the ChangeImage function
+	 * @param XMLPath the location of the xml.
+	 */
+	void SetXMLPath(const boost::filesystem::path &XMLPath);
 };
 
 #endif //__ConverterGUI__

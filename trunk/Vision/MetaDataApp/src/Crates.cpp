@@ -213,15 +213,9 @@ void CrateGUI::Start(wxImage cutImage, int centerX, int centerY,
 	imageMaxSize.SetHeight(
 			imageMaxSize.GetHeight() - pathField->GetSize().GetHeight() - 20);
 
-	if (image.GetHeight() > imageMaxSize.GetHeight()
-			|| image.GetWidth() > imageMaxSize.GetWidth()) {
-		heightScale = (double) image.GetHeight()
-				/ (double) imageMaxSize.GetHeight();
-		widthScale = (double) image.GetWidth()
-				/ (double) imageMaxSize.GetWidth();
-	} else {
-		heightScale = widthScale = 1;
-	}
+	heightScale = (double) image.GetHeight()
+			/ (double) imageMaxSize.GetHeight();
+	widthScale = (double) image.GetWidth() / (double) imageMaxSize.GetWidth();
 
 	UpdateImageField();
 
@@ -333,15 +327,10 @@ void CrateGUI::OnSizeChange(wxSizeEvent& event) {
 	imageMaxSize.SetHeight(
 			imageMaxSize.GetHeight() - pathField->GetSize().GetHeight() - 20);
 
-	if (image.GetHeight() > imageMaxSize.GetHeight()
-			|| image.GetWidth() > imageMaxSize.GetWidth()) {
-		heightScale = (double) image.GetHeight()
-				/ (double) imageMaxSize.GetHeight();
-		widthScale = (double) image.GetWidth()
-				/ (double) imageMaxSize.GetWidth();
-	} else {
-		heightScale = widthScale = 1.0;
-	}
+	heightScale = (double) image.GetHeight()
+			/ (double) imageMaxSize.GetHeight();
+	widthScale = (double) image.GetWidth()
+			/ (double) imageMaxSize.GetWidth();
 
 	ClearPositionValues();
 
@@ -349,4 +338,11 @@ void CrateGUI::OnSizeChange(wxSizeEvent& event) {
 
 	UpdateImageField();
 	this->Layout();
+}
+
+void CrateGUI::OnReset( wxCommandEvent& event ){
+	ClearPositionValues();
+	QRCode_TxtField->SetValue(wxT("QR code"));
+	LT_Radio->SetValue(true);
+	UpdateImageField();
 }
