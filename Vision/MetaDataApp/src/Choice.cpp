@@ -40,7 +40,7 @@ void ChoiceFrame::OnOK(wxMouseEvent& event) {
 	}
 
 	frame = new GUIFrame(this, wxID_ANY, wxT("Give for each object the values"),
-			wxDefaultPosition, wxSize(-1, -1),
+			wxDefaultPosition, wxSize(500, 780),
 			wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
 	frame->SetDirPath(dirPath);
 	frame->SetXMLPath(xmlPath);
@@ -61,7 +61,7 @@ void ChoiceFrame::OnOK(wxMouseEvent& event) {
 			{
 				string objectType = image.second.get("<xmlattr>.name", "");
 
-				if (objectType.c_str() != "") {
+				if (objectType != "") {
 					frame->AddObject(wxString(objectType.c_str(), wxConvLocal));
 				}
 			}
@@ -70,7 +70,7 @@ void ChoiceFrame::OnOK(wxMouseEvent& event) {
 			{
 				string backgroundType = image.second.get("<xmlattr>.name", "");
 
-				if (backgroundType.c_str() != "") {
+				if (backgroundType != "") {
 					frame->AddBackground(
 							wxString(backgroundType.c_str(), wxConvLocal));
 				}
@@ -80,7 +80,7 @@ void ChoiceFrame::OnOK(wxMouseEvent& event) {
 			{
 				string LightOption = image.second.get("<xmlattr>.name", "");
 
-				if (LightOption.c_str() != "") {
+				if (LightOption!= "") {
 					frame->AddLight(wxString(LightOption.c_str(), wxConvLocal));
 				}
 			}
@@ -90,17 +90,20 @@ void ChoiceFrame::OnOK(wxMouseEvent& event) {
 				string PerspectiveOption = image.second.get("<xmlattr>.name",
 						"");
 
-				if (PerspectiveOption.c_str() != "") {
+				if (PerspectiveOption != "") {
 					frame->AddPerspective(
 							wxString(PerspectiveOption.c_str(), wxConvLocal));
 				}
 			}
 
 	frame->Start();
+	frame->SetPosition( wxPoint (0, 0));
+	EditExistingXMLradioBtn->SetValue(true);
 	this->Show(false);
 }
 
 void ChoiceFrame::Start() {
+	EditExistingXMLradioBtn->SetValue(true);
 	this->Show(true);
 }
 
