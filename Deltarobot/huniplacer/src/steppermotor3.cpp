@@ -1,4 +1,4 @@
-#include "steppermotor3.h"
+#include "huniplacer/steppermotor3.h"
 
 #include <cstdio>
 #include <cmath>
@@ -6,8 +6,8 @@
 #include <iostream>
 
 #include "utils.h"
-#include "CRD514_KD.h"
-#include "crd514_kd_exception.h"
+#include <huniplacer/CRD514_KD.h>
+#include <huniplacer/crd514_kd_exception.h>
 
 namespace huniplacer
 {

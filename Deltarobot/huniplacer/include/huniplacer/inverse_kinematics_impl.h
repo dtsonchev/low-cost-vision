@@ -1,8 +1,8 @@
 #pragma once
 
-#include "point3.h"
-#include "motion.h"
-#include "inverse_kinematics_model.h"
+#include <huniplacer/point3.h>
+#include <huniplacer/motion.h>
+#include <huniplacer/inverse_kinematics_model.h>
 
 namespace huniplacer
 {
@@ -22,10 +22,10 @@ namespace huniplacer
             
         public:
             inverse_kinematics_impl(
-            		const double base, const double hip, const double effector, const double ankle,
-            		const double hip_ankle_angle_max);
+				const double base, const double hip, const double effector, const double ankle,
+				const double hip_ankle_angle_max);
 
-            ~inverse_kinematics_impl(void);
+            virtual ~inverse_kinematics_impl(void);
 
             /**
              * @brief translates a point to a motion

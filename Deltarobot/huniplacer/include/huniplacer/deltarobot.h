@@ -2,8 +2,8 @@
 
 #include <vector>
 
-#include "point3.h"
-#include "imotor3.h"
+#include <huniplacer/point3.h>
+#include <huniplacer/imotor3.h>
 
 /**
  * @brief holds huniplacer related classes

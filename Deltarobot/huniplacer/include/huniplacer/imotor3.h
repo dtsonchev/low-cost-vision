@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "motion.h"
+#include <huniplacer/motion.h>
 
 namespace huniplacer
 {

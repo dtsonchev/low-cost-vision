@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-#include "motion.h"
-#include "point3.h"
+#include <huniplacer/motion.h>
+#include <huniplacer/point3.h>
 
 namespace huniplacer
 {
@@ -22,7 +22,7 @@ namespace huniplacer
             {
             }
             
-            ~inverse_kinematics_exception(void) throw()
+            virtual ~inverse_kinematics_exception(void) throw()
             {
             }
 

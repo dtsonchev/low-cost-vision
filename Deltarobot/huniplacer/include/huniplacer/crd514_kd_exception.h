@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CRD514_KD.h"
+#include <huniplacer/CRD514_KD.h>
 
 #include <stdexcept>
 #include <string>
@@ -9,7 +9,7 @@
 namespace huniplacer
 {
 	/**
-	 * @brief raised if the alarm flag
+	 * @brief raised if the alarm flag is set
 	 **/
 	class crd514_kd_exception : public std::runtime_error
 	{
@@ -30,7 +30,7 @@ namespace huniplacer
 				message = ss.str();
 			}
 
-			~crd514_kd_exception() throw()
+			virtual ~crd514_kd_exception() throw()
 			{ }
 
 			const char* what()

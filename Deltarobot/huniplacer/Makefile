@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.4 alpha
+# version: v0.4.1 alpha
 #######################################################################
 
 #######################################################################
@@ -126,8 +126,11 @@ OBJS                := $(foreach X, $(subst .cpp,.o,$(notdir $(SOURCES))), $(BUI
 # list '-l' flags
 LIBFLAGS            := $(foreach LIB, $(LIBRARIES), -l$(LIB))
 
-# append '-I' and '-iquote' flags to preprocessor flags
-CPPFLAGS            += $(foreach INC, $(EXTINCLUDEPATHS), -I$(INC)) $(foreach INC, $(INCLUDEDIR), -iquote$(INC))
+# append external includes
+CPPFLAGS            += $(foreach INC, $(EXTINCLUDEPATHS), -I$(INC))
+
+# append local includes
+CPPFLAGS            += $(foreach INC, $(INCLUDEDIR), -I$(INC))
 
 # append '-L' paths (from LINKERPATHS) and LIBFLAGS to LFLAGS
 LFLAGS              += $(foreach LP, $(LINKERPATHS), -L$(LP)) $(LIBFLAGS)

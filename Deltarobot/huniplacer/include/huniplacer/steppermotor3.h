@@ -3,14 +3,14 @@
 #include <queue>
 #include <boost/thread.hpp>
 
-#include "motion.h"
-#include "modbus_exception.h"
-#include "modbus_ctrl.h"
-#include "imotor3.h"
+#include <huniplacer/motion.h>
+#include <huniplacer/modbus_exception.h>
+#include <huniplacer/modbus_ctrl.h>
+#include <huniplacer/imotor3.h>
 
 namespace huniplacer
 {
-    /// @brief exception handler to which modbus_exception's will be passed that occur in motion_thread
+	/// @brief exception handler to which modbus_exception's will be passed that occur in motion_thread
     typedef void (*motion_thread_exception_handler)(std::runtime_error& ex);
 
     /// @brief implementation of imotor3 for steppermotors
@@ -57,7 +57,7 @@ namespace huniplacer
         
         public:
             steppermotor3(modbus_t* context, double min_angle, double max_angle, motion_thread_exception_handler exhandler);
-            ~steppermotor3(void);
+            virtual ~steppermotor3(void);
             
             /**
              * @brief pushes a motion into the motion queue
