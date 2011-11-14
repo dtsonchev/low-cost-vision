@@ -30,13 +30,16 @@ int main(int argc, char** argv)
 	steppermotor3 motors(modbus_rtu, -45, 75, modbus_exhandler);
 
 	deltarobot robot(kinematics, motors);
+	robot.power_on();
 
-#define M(x, y) robot.moveto(point3(x, y, -100), 360)
+#define M(x, y) robot.moveto(point3(x, y, -150), 360)
 	M(-20, -20);
 	M(-20, 20);
 	M(20, -20);
 	M(20, 20);
 #undef M
+
+    robot.wait_for_idle();
 
 	return 0;
 }
