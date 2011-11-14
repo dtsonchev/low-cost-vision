@@ -1,12 +1,12 @@
-#include "modbus_ctrl.h"
-#include "modbus_exception.h"
+#include <huniplacer/modbus_ctrl.h>
+#include <huniplacer/modbus_exception.h>
 #include "utils.h"
 
 #include <sstream>
 #include <string>
 #include <stdexcept>
 #include <boost/thread.hpp>
-#include "CRD514_KD.h"
+#include <huniplacer/CRD514_KD.h>
 #include <cstdio>
 #include <iostream>
 

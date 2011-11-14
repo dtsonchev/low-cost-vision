@@ -5,7 +5,7 @@
 #include <sstream>
 #include <cerrno>
 
-#include "modbus/modbus.h"
+#include <modbus/modbus.h>
 
 namespace huniplacer
 {
@@ -32,7 +32,7 @@ namespace huniplacer
                 msg = ss.str();
             }
             
-            ~modbus_exception(void) throw()
+            virtual ~modbus_exception(void) throw()
             {
             }
             

@@ -70,7 +70,7 @@ namespace huniplacer
         };
 
         template<typename T>
-        bool contains(std::vector<T>& vec, const T& elem)
+        bool vector_contains(const std::vector<T>& vec, const T& elem)
         {
         	return std::find(vec.begin(), vec.end(), elem) != vec.end();
         }

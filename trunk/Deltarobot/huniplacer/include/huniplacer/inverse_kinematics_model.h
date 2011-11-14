@@ -1,7 +1,7 @@
 #pragma once
 
-#include "point3.h"
-#include "motion.h"
+#include <huniplacer/point3.h>
+#include <huniplacer/motion.h>
 
 namespace huniplacer
 {

@@ -1,13 +1,13 @@
-#include "deltarobot.h"
+#include "huniplacer/deltarobot.h"
 
 #include <sstream>
 #include <string>
 #include <cstdio>
 #include <stdexcept>
 
-#include "motion.h"
-#include "inverse_kinematics_model.h"
-#include "inverse_kinematics_exception.h"
+#include <huniplacer/motion.h>
+#include <huniplacer/inverse_kinematics_model.h>
+#include <huniplacer/inverse_kinematics_exception.h>
 
 namespace huniplacer
 {
@@ -52,8 +52,8 @@ namespace huniplacer
         
         if(
             !is_valid_angle(mf.angles[0]) ||
-            !is_valid_angle(mf.angles[0]) ||
-            !is_valid_angle(mf.angles[0]))
+            !is_valid_angle(mf.angles[1]) ||
+            !is_valid_angle(mf.angles[2]))
         {
             throw inverse_kinematics_exception("motion angles outside of valid range", p);
         }

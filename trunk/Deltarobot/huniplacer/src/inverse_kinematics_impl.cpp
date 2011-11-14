@@ -1,9 +1,9 @@
-#include "inverse_kinematics_impl.h"
+#include "huniplacer/inverse_kinematics_impl.h"
 
 #include <cmath>
 #include <cstdio>
 #include <boost/math/special_functions/fpclassify.hpp>
-#include "inverse_kinematics_exception.h"
+#include <huniplacer/inverse_kinematics_exception.h>
 
 #include "utils.h"
 
