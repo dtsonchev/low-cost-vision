@@ -8,7 +8,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := library
+BUILDTYPE           := binary
 
 TARGET              := Fiducial
 
@@ -31,10 +31,10 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   :=
+PKGCONF_LIBRARIES   := opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := opencv
+LIBRARIES           :=
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 
