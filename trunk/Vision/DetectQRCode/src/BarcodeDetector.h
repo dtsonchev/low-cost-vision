@@ -3,6 +3,7 @@
 
 #include <zbar.h>
 #include <iostream>
+#include "MagickMat.h"
 #include <Magick++.h>
 #include <opencv2/core/core.hpp>
 
@@ -13,8 +14,6 @@ class DetectBarcode{
 private:
 	///@brief the scanner which scans the code from an image
     zbar::ImageScanner scanner;
-
-
 	MagickMatConverter converter;
 
 public:
