@@ -44,7 +44,7 @@ namespace huniplacer
             
             /**
              * @brief rotate over the Y axis
-             * @param phi rotation in degrees
+             * @param phi rotation in radians
              **/
             inline point3 rotate_y(double phi) const
             {
@@ -53,7 +53,7 @@ namespace huniplacer
             
             /**
              * @brief rotate over the Z axis
-             * @param phi rotation in degrees
+             * @param phi rotation in radians
              **/
             inline point3 rotate_z(double phi) const
             {

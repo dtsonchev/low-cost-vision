@@ -1,6 +1,6 @@
 #include <huniplacer/modbus_ctrl.h>
 #include <huniplacer/modbus_exception.h>
-#include "utils.h"
+#include <huniplacer/utils.h>
 
 #include <sstream>
 #include <string>

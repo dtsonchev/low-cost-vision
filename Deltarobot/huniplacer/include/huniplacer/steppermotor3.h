@@ -53,7 +53,7 @@ namespace huniplacer
              * @param mi angles(0-360), speed(?-?), acceleration(?-?), deceleration(?-?)
              * @param mf angles(0-5000), speed(?-?), acceleration(?-?), deceleration(?-?)
              **/
-            static void motion_float_to_int(motioni& mi, motionf& mf);
+            static void motion_float_to_int(motioni& mi, const motionf& mf);
         
         public:
             steppermotor3(modbus_t* context, double min_angle, double max_angle, motion_thread_exception_handler exhandler);

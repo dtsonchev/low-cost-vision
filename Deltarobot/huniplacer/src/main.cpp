@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <stdexcept>
+#include <iostream>
 #include <huniplacer/huniplacer.h>
 
 using namespace huniplacer;
@@ -7,8 +8,8 @@ using namespace huniplacer;
 static void modbus_exhandler(std::runtime_error& ex)
 {
 	printf(
-		"runtime error in modbus controller\n"
-		"what(): %s\n", ex.what());
+		"runtime error of type '%s' in modbus controller\n"
+		"what(): %s\n", typeid(ex).name(), ex.what());
 }
 
 int main(int argc, char** argv)
@@ -27,13 +28,13 @@ int main(int argc, char** argv)
 		crd514_kd::rtu_config::DATA_BITS,
 		crd514_kd::rtu_config::STOP_BITS);
 
-	steppermotor3 motors(modbus_rtu, -45, 75, modbus_exhandler);
+	steppermotor3 motors(modbus_rtu, utils::rad(-45), utils::rad(75), modbus_exhandler);
 
 	deltarobot robot(kinematics, motors);
 	robot.power_on();
 
-#define M(x, y) robot.moveto(point3(x, y, -150), 360)
-	M(-20, -20);
+#define M(x, y) robot.moveto(point3(x, y, -150), utils::rad(20))
+	M(-30, -30);
 	M(-20, 20);
 	M(20, -20);
 	M(20, 20);

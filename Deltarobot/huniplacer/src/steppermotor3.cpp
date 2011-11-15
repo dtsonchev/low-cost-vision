@@ -1,11 +1,11 @@
-#include "huniplacer/steppermotor3.h"
+#include <huniplacer/steppermotor3.h>
 
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
 
-#include "utils.h"
+#include <huniplacer/utils.h>
 #include <huniplacer/CRD514_KD.h>
 #include <huniplacer/crd514_kd_exception.h>
 
@@ -275,7 +275,7 @@ namespace huniplacer
 		return true;
     }
 
-    void steppermotor3::motion_float_to_int(motioni& mi, motionf& mf)
+    void steppermotor3::motion_float_to_int(motioni& mi, const motionf& mf)
     {
         for(int i = 0; i < 3; i++)
         {

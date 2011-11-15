@@ -1,12 +1,14 @@
 #pragma once
+#include <cmath>
 
 /**
  * @brief holds various CRD514_KD related constants
  **/
 namespace crd514_kd
 {
-    const double MOTOR_STEP_ANGLE = 0.072;
+    const double MOTOR_STEP_ANGLE = (0.072 / 180.) * M_PI;
     
+
     /// @brief crd514_kd slave addresses
     namespace slaves
     {
