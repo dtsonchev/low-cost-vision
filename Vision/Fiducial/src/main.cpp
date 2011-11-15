@@ -21,7 +21,6 @@ void process(Mat& image, Mat& debug) {
 		crate.draw(debug);
 	}
 
-
     rectangle(debug, Point(10, 5), Point(210, 90), Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
 	stringstream ss;
 	ss << "Votes: " << detector.lineVotes << " | " << detector.circleVotes;
@@ -66,9 +65,6 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	detector.minRad = 20;
-	detector.maxRad = 150;
-	detector.maxDist = 20;
 	detector.verbose = true;
 
 	if(!strcmp(argv[1], "image")) {
