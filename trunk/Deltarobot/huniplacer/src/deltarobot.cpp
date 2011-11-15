@@ -1,21 +1,25 @@
-#include "huniplacer/deltarobot.h"
+#include <huniplacer/deltarobot.h>
 
 #include <sstream>
 #include <string>
 #include <cstdio>
 #include <stdexcept>
+#include <cmath>
 
 #include <huniplacer/motion.h>
 #include <huniplacer/inverse_kinematics_model.h>
 #include <huniplacer/inverse_kinematics_exception.h>
+#include <huniplacer/utils.h>
 
 namespace huniplacer
 {
     deltarobot::deltarobot(inverse_kinematics_model& kinematics, imotor3& motors) :
         kinematics(kinematics),
         motors(motors),
-        ison(false)
+        ison(false),
+        previous_motion(true)
     {
+
     }
 
     deltarobot::~deltarobot(void)
@@ -24,9 +28,9 @@ namespace huniplacer
         motors.moveto(
             motionf(
                 0, 0, 0,
-                90, 90, 90,
-                360, 360, 360,
-                360, 360, 360),
+                utils::rad(90), utils::rad(90), utils::rad(90),
+                utils::rad(360), utils::rad(360), utils::rad(360),
+                utils::rad(360), utils::rad(360), utils::rad(360)),
             false);
     }
     
@@ -58,10 +62,29 @@ namespace huniplacer
             throw inverse_kinematics_exception("motion angles outside of valid range", p);
         }
         
-        //quickfix
-        mf.speed[0] = speed;
-        mf.speed[1] = speed;
-        mf.speed[2] = speed;
+		//the given speed is for the fastest moving motor,
+		//the speeds of the other motors are calculated so that all motors will reach their destination at the same moment
+		double distance_0 = fabs(mf.angles[0] - previous_motion.angles[0]);
+		double distance_1 = fabs(mf.angles[1] - previous_motion.angles[1]);
+		double distance_2 = fabs(mf.angles[2] - previous_motion.angles[2]);
+
+		double distance_max = std::max(distance_0,std::max(distance_1, distance_2));
+
+		double move_time = distance_max / speed;
+
+		mf.speed[0] = distance_0 / move_time;
+		mf.speed[1] = distance_1 / move_time;
+		mf.speed[2] = distance_2 / move_time;
+
+		printf(
+			"speed0 = %lf\n"
+			"speed1 = %lf\n"
+			"speed2 = %lf\n\n",
+			mf.speed[0],
+			mf.speed[1],
+			mf.speed[2]);
+
+		previous_motion = mf;
         
         try
         {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <cstring>
 
 namespace huniplacer
 {
@@ -16,7 +17,16 @@ namespace huniplacer
             T acceleration[3];
             T deceleration[3];
             
-            motion(void) { }
+            motion(bool clear = false)
+            {
+            	if(clear)
+            	{
+            		memset(angles, 0, 3 * sizeof(T));
+            		memset(speed, 0, 3 * sizeof(T));
+            		memset(acceleration, 0, 3 * sizeof(T));
+            		memset(deceleration, 0, 3 * sizeof(T));
+            	}
+            }
             
             motion(
                 T angle0, T angle1, T angle2,

@@ -15,7 +15,7 @@ namespace huniplacer
             /**
              * @brief translates a point to an angle for a motor
              * @param p destination point
-             * @param angle angle of the motor relative to motor 0 (in degrees)
+             * @param angle angle of the motor relative to motor 0 (in radians)
              * @return angle the motor should move to
              **/
             double moveto(const point3& p, double angle);

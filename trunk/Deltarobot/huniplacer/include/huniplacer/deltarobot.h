@@ -21,7 +21,9 @@ namespace huniplacer
             inverse_kinematics_model& kinematics;
             imotor3& motors;
             bool ison;
-        
+
+			motionf previous_motion;
+
             bool is_valid_angle(double angle);
         
         public:

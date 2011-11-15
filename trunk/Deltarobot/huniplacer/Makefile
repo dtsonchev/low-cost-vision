@@ -19,7 +19,7 @@ VPATH               :=
 CXX                 := g++
 
 # c++ compiler flags
-CXXFLAGS            := -Wall
+CXXFLAGS            := -Wall -g3
 
 # preprocessor flags
 CPPFLAGS            := 

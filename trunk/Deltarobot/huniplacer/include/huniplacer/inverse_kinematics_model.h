@@ -32,7 +32,7 @@ namespace huniplacer
             /// @brief length of the ankle in millimeters
             const double ankle;
 
-            /// @brief maximum angle between hip and angle on x-z plane
+            /// @brief maximum angle between hip and angle on x-z plane in radians
             const double hip_ankle_angle_max;
         
             inverse_kinematics_model(
