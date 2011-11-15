@@ -72,7 +72,7 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points, 
 		Point center((*it)[0], (*it)[1]);
 		float rad = (*it)[2];
 		Rect bounds(
-				MAX(center.x - rad, 0), MAX(center.y - rad,0),
+				MAX(center.x - rad, 0), MAX(center.y - rad, 0),
 				center.x+rad<image.cols?rad*2:image.cols-center.x,
 				center.y+rad<image.rows?rad*2:image.rows-center.y);
 		Mat roi = image(bounds);
@@ -323,79 +323,4 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center, cons
 		return true;
 	}
 	return false;
-}
-
-bool FiducialDetector::getRotatedRect(vector<Point2f>& points, RotatedRect& rect, Mat* debugImage) {
-	if(points.size() != 3) return false;
-
-	Point2f start;
-	Point2f end;
-	Point2f extra;
-	float distance = 0;
-	vector<Point2f>::iterator it;
-	vector<Point2f>::iterator subIt;
-	for(it = points.begin(); it!=points.end(); it++) {
-		for(subIt = points.begin(); subIt!=points.end(); subIt++) {
-			float dist = sqrt(pow(it->x - subIt->x, 2) + pow(it->y - subIt->y, 2));
-			if(dist > distance)
-			{
-				distance = dist;
-				if(it->x < subIt->x) {
-					start = *it;
-					end = *subIt;
-				}
-				else {
-					start = *subIt;
-					end = *it;
-				}
-			}
-		}
-	}
-	for(it = points.begin(); it!=points.end(); it++) {
-		if(*it != start && *it != end)
-			extra = *it;
-	}
-
-	// Detect angles
-	float angle = atan2(start.y - end.y, end.x - start.x);
-	rect.center = Point2f(start.x + (distance / 2.0) * cos(-angle),
-			start.y + (distance / 2.0) * sin(-angle));
-	float orientation = atan2(rect.center.y - extra.y, extra.x - rect.center.x);
-	rect.angle = orientation - 3.0*M_PI/4.0;
-	if(rect.angle < -M_PI) rect.angle += M_PI*2.0;
-
-	float extraDistance = sqrt(pow(rect.center.x - extra.x, 2) + pow(rect.center.y - extra.y, 2));
-	vector<Point2f> boundingPoints(points);
-	Point2f boundPoint = Point2f(rect.center.x + extraDistance*cos(-orientation-M_PI), rect.center.y + extraDistance*sin(-orientation-M_PI));
-	boundingPoints.push_back(boundPoint);
-	rect.size = boundingRect(boundingPoints).size();
-
-	if(debugImage!=NULL) {
-		// Draw the angle points with a line
-		line(*debugImage, start, end, Scalar(255, 255, 255), 2);
-		circle(*debugImage,extra, 1, Scalar(0, 0, 255), 2);
-		circle(*debugImage,start, 1, Scalar(0, 255, 0), 2);
-		circle(*debugImage,end, 1, Scalar(255, 0, 0), 2);
-		circle(*debugImage,boundPoint, 1, Scalar(0, 0, 0), 2);
-
-		// Draw arrow
-		Point pt1(start.x + (distance / 2.0) * cos(-angle),
-							start.y + (distance / 2.0) * sin(-angle));
-		Point pt2(pt1.x - 50 * cos(-rect.angle+M_PI/2.0),
-				pt1.y - 50 * sin(-rect.angle+M_PI/2.0));
-		line(*debugImage, pt1, pt2, Scalar(0, 0, 0), 2);
-		line(*debugImage, pt2,
-				Point(pt2.x + 10 * cos(-rect.angle+3*M_PI/4.0),
-						pt2.y + 10 * sin(-rect.angle+3*M_PI/4.0)),
-				Scalar(0, 0, 0), 2);
-		line(*debugImage, pt2,
-				Point(pt2.x + 10 * cos(-rect.angle+M_PI/4.0),
-						pt2.y + 10 * sin(-rect.angle+M_PI/4.0)),
-				Scalar(0, 0, 0), 2);
-		stringstream ss;
-		ss << saturate_cast<int>(rect.angle / (M_PI/180.0));
-		putText(*debugImage, ss.str(), pt1-Point(15,0), CV_FONT_HERSHEY_SIMPLEX, .5, Scalar(255,0,0), 2);
-	}
-
-	return true;
 }

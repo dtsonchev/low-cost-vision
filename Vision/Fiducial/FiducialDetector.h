@@ -89,21 +89,6 @@ public:
 	 */
 	bool detectCrosshair(cv::Mat& image, cv::Point2f& center,
 			const cv::Mat& mask = cv::Mat(), cv::Mat* debugImage = NULL);
-
-	/*! \brief Determines the orientation
-	 *
-	 *  Determines the orientation when given three center points.
-	 *
-	 *  \param points Vector containing the three center points
-	 *  \param orientation Output floating-point containing the
-	 *  orientation angle
-	 *  \param debugImage Output image where debug information
-	 *  will be drawn on, set to NULL for no debug information
-	 *  \return <i>true</i> if orientation was determined\n
-	 *  <i>false</i> if calculation failed
-	 */
-	bool getRotatedRect(std::vector<cv::Point2f>& points,
-			cv::RotatedRect& orientation, cv::Mat* debugImage = NULL);
 };
 
 #endif /* FIDUCIALDETECTOR_H_ */
