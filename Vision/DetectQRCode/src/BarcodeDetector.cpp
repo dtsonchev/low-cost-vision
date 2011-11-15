@@ -31,16 +31,14 @@ using namespace zxing::qrcode;*/
 
 DetectBarcode::DetectBarcode(){
     scanner.set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
-	converter;
 }
 
 bool DetectBarcode::detect(cv::Mat image, std::string &result){
 	Magick::Image magickImage;
+	MagickMatConverter converter;
 
 	if(converter.Mat2Magick(image, magickImage)){
-
-		try{
-			/*
+		/*try{
 			zxing::Ref<Binarizer> binarizer(NULL);
 			zxing::Ref<Magick::MagickBitmapSource> source(new Magick::MagickBitmapSource(magickImage));
 

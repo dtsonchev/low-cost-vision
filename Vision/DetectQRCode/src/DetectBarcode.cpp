@@ -7,17 +7,19 @@
 
 int main (int argc, char **argv)
 {
-	DetectBarcode db;
-	cv::Mat image = cv::imread(argv[1]);
-	std::string result;
+	if(argc>1){
+		DetectBarcode db;
+		cv::Mat image = cv::imread(argv[1]);
+		std::string result;
 
-	result = "BARCODE: ";
-
-	std::cout << "Image: " << argv[1] << "\t";
-	if(db.detect(image, result)){
-		std::cout << result << std::endl;
+		result = "BARCODE: ";
+		if(db.detect(image, result)){
+			std::cout << result << std::endl;
+		}else{
+			std::cout << "NOTHING FOUND" << std::endl;
+		}
 	}else{
-		std::cout << "NOTHING FOUND" << std::endl;
+		std::cout<<"giva a image"<<std::endl;
 	}
 
     return 0;
