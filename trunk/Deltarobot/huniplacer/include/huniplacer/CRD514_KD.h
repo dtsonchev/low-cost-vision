@@ -38,6 +38,7 @@ namespace crd514_kd
             CFG_POSLIMIT_POSITIVE   = 0x254, //32-bit
             CFG_POSLIMIT_NEGATIVE   = 0x256, //32-bit
             CFG_STOP_ACTION         = 0x202, //16-bit
+            CFG_START_SPEED         = 0x228, //32-bit
             
             CLEAR_COUNTER           = 0x04b, //16-bit
             RESET_ALARM             = 0x040, //16-bit
