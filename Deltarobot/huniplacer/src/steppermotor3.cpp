@@ -303,11 +303,13 @@ namespace huniplacer
     	double distance1 = fabs(current_angles[1] - mf.angles[1]);
     	double distance2 = fabs(current_angles[2] - mf.angles[2]);
 
-    	mf.speed[0] = distance0 / time;
-    	mf.speed[1] = distance1 / time;
-    	mf.speed[2] = distance2 / time;
+    	motionf newmf = mf;
 
-    	moveto(mf, async);
+    	newmf.speed[0] = distance0 / time;
+    	newmf.speed[1] = distance1 / time;
+    	newmf.speed[2] = distance2 / time;
+
+    	moveto(newmf, async);
     }
 
     void steppermotor3::power_on(void)
