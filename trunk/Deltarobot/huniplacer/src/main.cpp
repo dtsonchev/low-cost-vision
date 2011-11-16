@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	deltarobot robot(kinematics, motors);
 	robot.power_on();
 
-#define M(x, y) robot.moveto(point3(x, y, -150), utils::rad(20))
+#define M(x, y) robot.moveto(point3(x, y, -150), 10)
 	M(-30, -30);
 	M(-20, 20);
 	M(20, -20);

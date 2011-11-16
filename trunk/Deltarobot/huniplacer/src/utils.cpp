@@ -26,3 +26,4 @@ namespace huniplacer
 			return (deg / 180) * M_PI;
 		}
     }
+}
