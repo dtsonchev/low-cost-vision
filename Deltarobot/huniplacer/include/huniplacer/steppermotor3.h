@@ -19,6 +19,7 @@ namespace huniplacer
         private:
             std::queue<motionf> motion_queue;
             bool thread_running;
+            double current_angles[3];
             
             bool idle;
             boost::mutex idle_mutex;
@@ -67,6 +68,13 @@ namespace huniplacer
              * @note may wait for queue_empty_flag
              **/
             void moveto(const motionf& mf, bool async = true);
+
+            /**
+             * @brief same as moveto, but rotates to an angle within a certain time.
+             * @param time time in seconds that the motors will take to rotate to the given angle
+             * speed members of given motion is ignored
+             */
+            void moveto_within(const motionf& mf, double time, bool async);
 
             /**
              * @brief stops the motors & clears the motion queue

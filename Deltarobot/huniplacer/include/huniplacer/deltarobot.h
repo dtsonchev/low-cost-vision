@@ -22,7 +22,7 @@ namespace huniplacer
             imotor3& motors;
             bool ison;
 
-			motionf previous_motion;
+            point3 effector_location;
 
             bool is_valid_angle(double angle);
         

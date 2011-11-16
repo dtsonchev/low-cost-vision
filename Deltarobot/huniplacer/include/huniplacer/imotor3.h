@@ -24,6 +24,14 @@ namespace huniplacer
              **/
             virtual void moveto(const motionf& mf, bool async) = 0;
 
+
+            /**
+             * @brief same as moveto, but rotates to an angle within a certain time.
+             * @param time time in seconds that the motors will take to rotate to the given angle
+             * speed members of given motion is ignored
+             */
+            virtual void moveto_within(const motionf& mf, double time, bool async) = 0;
+
             /**
              * @brief get the minimal angle the motors can move to
              * @return angle in radians
