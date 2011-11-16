@@ -83,47 +83,27 @@ namespace huniplacer
 
 						//write motion
 						boost::lock_guard<boost::mutex> lock(owner->modbus_mutex);
-						stopwatch sw1("motor1", true);
-						stopwatch sw4("1e actie", true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::OP_SPEED, mi.speed[0], true);
-					 //   sw4.stop_and_print(stdout);
-						stopwatch sw5("2e actie", true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::OP_POS, mi.angles[0], true);
-					  //  sw5.stop_and_print(stdout);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::OP_ACC, mi.acceleration[0], true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::OP_DEC, mi.deceleration[0], true);
-					  //  sw1.stop_and_print(stdout);
 
-						stopwatch sw2("motor2", true);
-						stopwatch sw6("3e actie", true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::OP_SPEED, mi.speed[1], false);
-					//    sw6.stop_and_print(stdout);
-						stopwatch sw7("4e actie", true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::OP_POS, mi.angles[1], false);
-					  //  sw7.stop_and_print(stdout);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::OP_ACC, mi.acceleration[1], true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::OP_DEC, mi.deceleration[1], true);
-					  //  sw2.stop_and_print(stdout);
 
-						stopwatch sw3("motor3", true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::OP_SPEED, mi.speed[2], true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::OP_POS, mi.angles[2], true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::OP_ACC, mi.acceleration[2], true);
 						owner->modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::OP_DEC, mi.deceleration[2], true);
-					   // sw3.stop_and_print(stdout);
-
-						//motion_index = (motion_index + 1) % motion_index_max;
 
 						//execute motion
-						stopwatch sw_wait("wait till ready", true);
 						owner->wait_till_ready();
-					  //  sw_wait.stop_and_print(stdout);
 
-						stopwatch sw_start("start", true);
 						owner->modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, crd514_kd::cmd1_bits::EXCITEMENT_ON);
 						owner->modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, crd514_kd::cmd1_bits::EXCITEMENT_ON | crd514_kd::cmd1_bits::START);
 						owner->modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, crd514_kd::cmd1_bits::EXCITEMENT_ON);
-					 //   sw_start.stop_and_print(stdout);
                     }
                 }
                 else //empty
@@ -299,15 +279,15 @@ namespace huniplacer
 
     void steppermotor3::moveto_within(const motionf & mf, double time, bool async)
     {
-    	double distance0 = fabs(current_angles[0] - mf.angles[0]);
-    	double distance1 = fabs(current_angles[1] - mf.angles[1]);
-    	double distance2 = fabs(current_angles[2] - mf.angles[2]);
-
     	motionf newmf = mf;
 
-    	newmf.speed[0] = distance0 / time;
-    	newmf.speed[1] = distance1 / time;
-    	newmf.speed[2] = distance2 / time;
+    	newmf.speed[0] = fabs(current_angles[0] - mf.angles[0]) / time;
+    	newmf.speed[1] = fabs(current_angles[1] - mf.angles[1]) / time;
+    	newmf.speed[2] = fabs(current_angles[2] - mf.angles[2]) / time;
+
+    	current_angles[0] = mf.angles[0];
+    	current_angles[1] = mf.angles[1];
+    	current_angles[2] = mf.angles[2];
 
     	moveto(newmf, async);
     }
@@ -332,6 +312,7 @@ namespace huniplacer
             //set motors limits
             modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle / crd514_kd::MOTOR_STEP_ANGLE)));
             modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle / crd514_kd::MOTOR_STEP_ANGLE)));
+            modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_START_SPEED, 1);
 
             //clear counter
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 1);

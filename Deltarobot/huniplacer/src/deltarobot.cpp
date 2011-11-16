@@ -17,7 +17,7 @@ namespace huniplacer
         kinematics(kinematics),
         motors(motors),
         ison(false),
-        effector_location(point3(0,0,0))
+        effector_location(point3(0,0,-205))
     {
 
 
