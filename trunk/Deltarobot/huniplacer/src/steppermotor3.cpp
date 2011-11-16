@@ -24,6 +24,7 @@ namespace huniplacer
         exhandler(exhandler),
         on(false)
     {
+    	current_angles[0] = current_angles[1] = current_angles[2] = 0;
         //start motion thread
         motion_thread = new boost::thread(motion_thread_func, this);
     }
@@ -279,17 +280,16 @@ namespace huniplacer
     {
         for(int i = 0; i < 3; i++)
         {
-            mi.angles[i] = (uint32_t)(mf.angles[i] / crd514_kd::MOTOR_STEP_ANGLE);
-            mi.speed[i] = (uint32_t)(mf.speed[i] / crd514_kd::MOTOR_STEP_ANGLE);
-            mi.acceleration[i] = (uint32_t)(crd514_kd::MOTOR_STEP_ANGLE * 1000000000.0 / mf.acceleration[i]);
-            mi.deceleration[i] = (uint32_t)(crd514_kd::MOTOR_STEP_ANGLE * 1000000000.0 / mf.deceleration[i]);
+            mi.angles[i] = (uint32_t)((mf.angles[i] / crd514_kd::MOTOR_STEP_ANGLE));
+            mi.speed[i] = (uint32_t)((mf.speed[i] / crd514_kd::MOTOR_STEP_ANGLE));
+            mi.acceleration[i] = (uint32_t)((crd514_kd::MOTOR_STEP_ANGLE * 1000000000.0 / mf.acceleration[i]));
+            mi.deceleration[i] = (uint32_t)((crd514_kd::MOTOR_STEP_ANGLE * 1000000000.0 / mf.deceleration[i]));
         }
     }
 
     void steppermotor3::power_off(void)
     {
-        if(on)
-        {
+        if(on){
             stop();
             boost::lock_guard<boost::mutex> lock(modbus_mutex);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, 0);
@@ -297,29 +297,39 @@ namespace huniplacer
         }
     }
 
+    void steppermotor3::moveto_within(const motionf & mf, double time, bool async)
+    {
+    	double distance0 = fabs(current_angles[0] - mf.angles[0]);
+    	double distance1 = fabs(current_angles[1] - mf.angles[1]);
+    	double distance2 = fabs(current_angles[2] - mf.angles[2]);
+
+    	mf.speed[0] = distance0 / time;
+    	mf.speed[1] = distance1 / time;
+    	mf.speed[2] = distance2 / time;
+
+    	moveto(mf, async);
+    }
+
     void steppermotor3::power_on(void)
     {
-        if(!on)
-        {
+        if(!on){
             boost::lock_guard<boost::mutex> lock(modbus_mutex);
-
             //reset alarm
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::RESET_ALARM, 0);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::RESET_ALARM, 1);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::RESET_ALARM, 0);
-
             //set operating modes
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, 0);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_POSMODE, 1);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_OPMODE, 0);
-            modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_SEQ_MODE+0, 1);
-            modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_SEQ_MODE+1, /*1*/0);
+            modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_SEQ_MODE + 0, 1);
+            modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_SEQ_MODE + 1, /*1*/
+            0);
             //modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::OP_SEQ_MODE+2, 0); //loopback @ 2
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, crd514_kd::cmd1_bits::EXCITEMENT_ON);
-
             //set motors limits
-            modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)(max_angle / crd514_kd::MOTOR_STEP_ANGLE));
-            modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)(min_angle / crd514_kd::MOTOR_STEP_ANGLE));
+            modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle / crd514_kd::MOTOR_STEP_ANGLE)));
+            modbus.write_u32(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle / crd514_kd::MOTOR_STEP_ANGLE)));
 
             //clear counter
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 1);
