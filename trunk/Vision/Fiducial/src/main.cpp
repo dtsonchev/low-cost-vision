@@ -1,4 +1,5 @@
 #include "FiducialDetector.h"
+#include "CrateDetector.h"
 #include "Crate.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -9,52 +10,75 @@
 using namespace cv;
 using namespace std;
 
-FiducialDetector detector;
+FiducialDetector fidDetector;
+CrateDetector crateDetector;
 
 void process(Mat& image, Mat& debug) {
 	vector<Point2f> points;
 	RotatedRect rect;
-	detector.detect(image, points, &debug);
+	fidDetector.detect(image, points, &debug);
 
-	if(points.size() == 3) {
+	/*Mat canny;
+	Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
+	imshow("Canny", canny);
+
+	vector<vector<Point> > contoursCanny;
+	findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+	Mat cannyContours = Mat::zeros(image.rows, image.cols, CV_8UC3);
+
+	for(unsigned int i=0; i<contoursCanny.size(); i++)
+		drawContours(cannyContours, contoursCanny, i, Scalar(rand()%255,rand()%255,rand()%255), 2);
+	imshow("Contours", cannyContours);*/
+
+	if(points.size() > 3) {
+		vector<Crate> crates;
+		crateDetector.detect(crates, points, image);
+
+		for(vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+	}
+	else if(points.size() == 3) {
 		Crate crate(points);
 		crate.draw(debug);
 	}
 
     rectangle(debug, Point(10, 5), Point(210, 90), Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
 	stringstream ss;
-	ss << "Votes: " << detector.lineVotes << " | " << detector.circleVotes;
+	ss << "Votes: " << fidDetector.lineVotes << " | " << fidDetector.circleVotes;
     cv::putText(debug, ss.str(), cv::Point(20, 20), FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
     ss.str("");
-    ss << "Circle radius: " << detector.minRad << "/" << detector.maxRad;
+    ss << "Circle radius: " << fidDetector.minRad << "/" << fidDetector.maxRad;
     cv::putText(debug, ss.str(), cv::Point(20, 40), FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
     ss.str("");
-    ss << "Line distance:  " << detector.minDist << "/" << detector.maxDist;
+    ss << "Line distance:  " << fidDetector.minDist << "/" << fidDetector.maxDist;
     cv::putText(debug, ss.str(), cv::Point(20, 60), FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
     ss.str("");
-    ss << "Threshold:  " << detector.lowThreshold << "/" << detector.highThreshold;
+    ss << "Threshold:  " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
     cv::putText(debug, ss.str(), cv::Point(20, 80), FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 }
 
 void callback(char key) {
 	switch(key)
 	{
-		case 'w': detector.lineVotes++; break;
-		case 's': detector.lineVotes--; break;
-		case 'a': detector.circleVotes--; break;
-		case 'd': detector.circleVotes++; break;
-		case 'u': detector.minRad++; break;
-		case 'j': detector.minRad--; break;
-		case 'h': detector.maxRad--; break;
-		case 'k': detector.maxRad++; break;
-		case 'r': detector.minDist++; break;
-		case 'f': detector.minDist--; break;
-		case 't': detector.maxDist++; break;
-		case 'g': detector.maxDist--; break;
-		case 'x': detector.lowThreshold++; break;
-		case 'z': detector.lowThreshold--; break;
-		case 'v': detector.highThreshold++; break;
-		case 'c': detector.highThreshold--; break;
+		case 'w': fidDetector.lineVotes++; break;
+		case 's': fidDetector.lineVotes--; break;
+		case 'a': fidDetector.circleVotes--; break;
+		case 'd': fidDetector.circleVotes++; break;
+		case 'u': fidDetector.minRad++; break;
+		case 'j': fidDetector.minRad--; break;
+		case 'h': fidDetector.maxRad--; break;
+		case 'k': fidDetector.maxRad++; break;
+		case 'r': fidDetector.minDist++; break;
+		case 'f': fidDetector.minDist--; break;
+		case 't': fidDetector.maxDist++; break;
+		case 'g': fidDetector.maxDist--; break;
+		case 'x': fidDetector.lowThreshold+=10; break;
+		case 'z': fidDetector.lowThreshold-=10; break;
+		case 'v': fidDetector.highThreshold+=10; break;
+		case 'c': fidDetector.highThreshold-=10; break;
+		case 'm': crateDetector.lowThreshold+=10; break;
+		case 'n': crateDetector.lowThreshold-=10; break;
+		case '>': crateDetector.highThreshold+=10; break;
+		case '<': crateDetector.highThreshold-=10; break;
 	}
 }
 
@@ -65,7 +89,7 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
-	detector.verbose = true;
+	fidDetector.verbose = true;
 
 	if(!strcmp(argv[1], "image")) {
 		Mat image = imread(argv[2], CV_LOAD_IMAGE_COLOR); // Read the file

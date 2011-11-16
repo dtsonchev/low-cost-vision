@@ -20,6 +20,7 @@ public:
 
 	Crate();
 	Crate(const std::vector<cv::Point2f>& points);
+	Crate(const Crate& crate);
 	virtual ~Crate();
 
 	cv::RotatedRect rect();
