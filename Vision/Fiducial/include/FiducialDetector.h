@@ -50,7 +50,7 @@ public:
 	 *  the public fields after construction.
 	 */
 	FiducialDetector(int minRad = 20, int maxRad = 40, int distance = 70,
-			int circleVotes = 20, int minDist = 1, int maxDist = 5,
+			int circleVotes = 100, int minDist = 1, int maxDist = 5,
 			int lineVotes = 20, int lowThreshold = 125,
 			int highThreshold = 300);
 	virtual ~FiducialDetector();

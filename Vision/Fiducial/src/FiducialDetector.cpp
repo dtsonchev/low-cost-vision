@@ -59,7 +59,7 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points, 
 	// Detect circles
 	vector<Vec3f> circles;
 	HoughCircles(image, circles, CV_HOUGH_GRADIENT,
-			1, // accumulator resolution divisor
+			2, // accumulator resolution divisor
 			distance, // minimum distance between circles
 			highThreshold, // Canny high threshold
 			circleVotes, // minimum number of votes
