@@ -12,18 +12,21 @@
 using namespace cv;
 using namespace std;
 
-Crate::Crate() : points(3) {
+Crate::Crate() {
 }
 
 Crate::Crate(const std::vector<cv::Point2f>& points) {
 	if(points.size() == 3) this->points.assign(points.begin(), points.begin()+3);
 }
 
+Crate::Crate(const Crate& crate) : bounds(crate.bounds), points(crate.points) {
+}
+
 Crate::~Crate() {
 }
 
 RotatedRect Crate::rect() {
-	if(bounds.size.area() != 0 || points.size() != 3) return bounds;
+	if(bounds.size.area() != 0.0f || points.size() != 3) return bounds;
 
 	Point2f start;
 	Point2f end;
@@ -92,4 +95,6 @@ void Crate::draw(cv::Mat& image) {
 	stringstream ss;
 	ss << saturate_cast<int>(bounds.angle / (M_PI/180.0));
 	putText(image, ss.str(), pt1-Point(15,0), CV_FONT_HERSHEY_SIMPLEX, .5, Scalar(255,0,0), 2);
+
+	rectangle(image, rect.boundingRect(), Scalar(0,255,0), 2);
 }
