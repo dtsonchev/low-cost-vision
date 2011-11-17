@@ -37,7 +37,7 @@ PKGCONF_LIBRARIES   :=
 LIBRARIES           := boost_system
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := /include
+EXTINCLUDEPATHS     := 
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 
@@ -54,7 +54,7 @@ DEP_PROJ            :=
 
 SHELL                = /bin/sh
 PRINTF               = /usr/bin/printf
-DEPGEN              := $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
+DEPGEN               = $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
 
 # directories
 BINDIR              := bin
