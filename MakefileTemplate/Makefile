@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.4.2
+# version: v0.4.3
 #######################################################################
 
 #######################################################################
@@ -54,7 +54,7 @@ DEP_PROJ            :=
 
 SHELL                = /bin/sh
 PRINTF               = /usr/bin/printf
-DEPGEN              := $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
+DEPGEN               = $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
 
 # directories
 BINDIR              := bin
@@ -72,18 +72,6 @@ ANSI_CYAN           := \e[1;36m
 ANSI_BLUE           := \e[1;34m
 ANSI_MAGENTA        := \e[1;35m
 ANSI_RESET          := \e[0m
-endif
-
-# check if all packages exists according pkg-config
-# extract flags from pkg-config
-$(foreach PKG, $(PKGCONF_LIBRARIES), \
-	$(if $(subst 0,,$(shell pkg-config --exists $(PKG); echo $$?)), \
-		$(error library "$(PKG)" was not found by pkg-config), \
-	) \
-)
-ifneq ($(words $(PKGCONF_LIBRARIES)), 0)
-CXXFLAGS += $(shell pkg-config --cflags $(PKGCONF_LIBRARIES))
-LFLAGS   += $(shell pkg-config --libs $(PKGCONF_LIBRARIES))
 endif
 
 # search dependency projects
@@ -105,14 +93,14 @@ $(error number of specified dependency projects does not match number of found d
 endif
 
 # add paths of required projects
-EXTINCLUDEPATHS     += $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(INCLUDEDIR))
-LINKERPATHS         += $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(LIBDIR))
-LIBRARIES           += \
+EXTINCLUDEPATHS     := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(INCLUDEDIR)) $(EXTINCLUDEPATHS)
+LINKERPATHS         := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(LIBDIR)) $(LINKERPATHS)
+LIBRARIES           := \
 	$(foreach PRJ, $(PROJ_DIRS), \
 		$(foreach LIB, $(wildcard $(PRJ)$(LIBDIR)/lib*.a), \
 			$(patsubst lib%.a,%,$(notdir $(LIB))) \
         ) \
-	)
+	) $(LIBRARIES)
 
 # append headers and sourcefiles to virtual path
 VPATH               += $(foreach PTH, $(strip $(SRCDIR)) $(strip $(EXTINCLUDEPATHS)) $(strip $(INCLUDEDIR)),$(PTH):)
@@ -137,6 +125,18 @@ CPPFLAGS            += $(foreach INC, $(INCLUDEDIR), -I$(INC))
 
 # append '-L' paths (from LINKERPATHS) and LIBFLAGS to LFLAGS
 LFLAGS              += $(foreach LP, $(LINKERPATHS), -L$(LP)) $(LIBFLAGS)
+
+# check if all packages exists according pkg-config
+# extract flags from pkg-config
+$(foreach PKG, $(PKGCONF_LIBRARIES), \
+	$(if $(subst 0,,$(shell pkg-config --exists $(PKG); echo $$?)), \
+		$(error library "$(PKG)" was not found by pkg-config), \
+	) \
+)
+ifneq ($(words $(PKGCONF_LIBRARIES)), 0)
+CXXFLAGS += $(shell pkg-config --cflags $(PKGCONF_LIBRARIES))
+LFLAGS   += $(shell pkg-config --libs $(PKGCONF_LIBRARIES))
+endif
 
 # files removed during clean
 CLEANFILES           = $(OBJS) $(DFILES) $(TARGET)
