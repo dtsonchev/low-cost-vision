@@ -30,7 +30,7 @@ void process(cv::Mat& image, cv::Mat& debug) {
 
 	if(points.size() > 3) {
 		std::vector<Crate> crates;
-		crateDetector.detect(crates, points, image);
+		crateDetector.detect(image, crates, points);
 
 		for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
 	}
