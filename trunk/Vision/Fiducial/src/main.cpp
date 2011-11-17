@@ -1,3 +1,4 @@
+#include "unicap_cv_bridge.hpp"
 #include "FiducialDetector.h"
 #include "CrateDetector.h"
 #include "Crate.h"
