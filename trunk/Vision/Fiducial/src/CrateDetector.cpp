@@ -20,7 +20,7 @@ CrateDetector::CrateDetector(int lowThreshold, int highThreshold) {
 CrateDetector::~CrateDetector() {
 }
 
-void CrateDetector::detect(std::vector<Crate>& crates, const std::vector<cv::Point2f>& points, const cv::Mat& image) {
+void CrateDetector::detect(const cv::Mat& image, std::vector<Crate>& crates, const std::vector<cv::Point2f>& points) {
 	cv::Mat canny;
 	cv::Canny(image, canny, lowThreshold, highThreshold);
 

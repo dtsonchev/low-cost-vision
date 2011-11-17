@@ -2,7 +2,7 @@
  * Crate.cpp
  *
  *  Created on: Nov 11, 2011
- *      Author: armada
+ *      Author: Jules Blok
  */
 
 #include "Crate.h"
