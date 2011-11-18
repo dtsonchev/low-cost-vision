@@ -37,7 +37,7 @@ PKGCONF_LIBRARIES   := libunicap
 LIBRARIES           := boost_thread
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := /usr/include/unicap
+EXTINCLUDEPATHS     := /usr/include/unicap /usr/include/local/unicap
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 
@@ -187,7 +187,7 @@ dep:
 
 $(BUILDDIR)/%.o: $(SRCDIR)/%.cpp | $(BUILDDIR)
 	@$(PRINTF) '$(ANSI_BLUE)CXX\t$<$(ANSI_RESET)\n'
-	@$(COMPILE.cpp) $(OUTPUT_OPTION) $<
+	$(COMPILE.cpp) $(OUTPUT_OPTION) $<
 
 $(BUILDDIR):
 	@$(PRINTF) '$(ANSI_YELLOW)MKDIR\t$@$(ANSI_RESET)\n'
@@ -205,7 +205,7 @@ $(BUILDDIR)/%.d: $(SRCDIR)/%.cpp | $(BUILDDIR)
 ifeq ($(BUILDTYPE),binary)
 $(TARGET): $(OBJS) | $(BINDIR)
 	@$(PRINTF) '$(ANSI_GREEN)LINK\t$^$(ANSI_RESET)\n'
-	@$(CXX) $(OBJS) -o $@ $(LFLAGS)
+	$(CXX) $(OBJS) -o $@ $(LFLAGS)
 
 $(BINDIR):
 	@$(PRINTF) '$(ANSI_YELLOW)MKDIR\t$@$(ANSI_RESET)\n'
@@ -214,7 +214,7 @@ else
 ifeq ($(BUILDTYPE),library)
 $(TARGET): $(OBJS) | $(LIBDIR)
 	@$(PRINTF) '$(ANSI_MAGENTA)AR\t$@$(ANSI_RESET)\n'
-	@ar r $(ARFLAGS) $@ $^
+	ar r $(ARFLAGS) $@ $^
 
 $(LIBDIR):
 	@$(PRINTF) '$(ANSI_YELLOW)MKDIR\t$@$(ANSI_RESET)\n'

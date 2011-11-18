@@ -1,7 +1,9 @@
 #pragma once
 
+#define private reserved
 #include <unicap.h>
 #include <unicap_status.h>
+#undef private
 #include <boost/thread.hpp>
 #include <opencv2/core/core.hpp>
 #include <stdexcept>
