@@ -39,7 +39,7 @@ public:
 	 *
 	 *  Detects all crates in the image and segments points
 	 *  belonging to each crate into Crate instances. These
-	 *  are added the the crates vector.
+	 *  are added to the crates vector.
 	 *
 	 *	\param crates Output vector for the crates
 	 *  \param points Detected fiducial points
