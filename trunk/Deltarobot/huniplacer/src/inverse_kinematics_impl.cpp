@@ -34,7 +34,8 @@ namespace huniplacer
     	p_fixed.y -= effector;
     	p_fixed.y += base;
 
-    	double c = sqrt(SQR(p_fixed.x) + SQR(p_fixed.y) + SQR(p_fixed.z));
+    	//double c = sqrt(SQR(p_fixed.x) + SQR(p_fixed.y) + SQR(p_fixed.z));
+    	double c = sqrt(SQR(p_fixed.y) + SQR(p_fixed.z));
 
     	double alpha_acos_input =
     			(-(SQR(ankle) - SQR(p_fixed.x)) + SQR(hip) + SQR(c))
