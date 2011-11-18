@@ -8,7 +8,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
+BUILDTYPE           := library
 
 TARGET              := qrDetect
 
@@ -34,7 +34,7 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   := zbar Magick++
 
 # libraries that are linked against with '-l'
-LIBRARIES           := 
+LIBRARIES           := boost_filesystem
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 

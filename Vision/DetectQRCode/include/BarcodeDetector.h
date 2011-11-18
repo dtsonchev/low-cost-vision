@@ -1,6 +1,7 @@
 #ifndef DETECTBARCODE_H_
 #define DETECTBARCODE_H_
 
+#include <stdlib.h>
 #include <zbar.h>
 #include <iostream>
 #include "MagickMat.h"
