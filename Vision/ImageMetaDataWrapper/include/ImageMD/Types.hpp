@@ -68,12 +68,7 @@ public:
 //========================================================================
 	template<typename ValueType>
 	operator ValueType() {
-		try {
-			return boost::any_cast<ValueType>(content);
-		} catch (boost::bad_any_cast& e) {
-			std::cerr << e.what();
-			exit(-1);
-		}
+		return boost::any_cast<ValueType>(content);
 	}
 
 //========================================================================
