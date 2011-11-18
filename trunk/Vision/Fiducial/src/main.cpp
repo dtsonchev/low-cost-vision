@@ -1,4 +1,3 @@
-#include "unicap_cv_bridge.hpp"
 #include "FiducialDetector.h"
 #include "CrateDetector.h"
 #include "Crate.h"
@@ -11,50 +10,67 @@
 FiducialDetector fidDetector;
 CrateDetector crateDetector;
 
+bool showValues = true;
+bool showContours = false;
+bool showDebug = true;
+
 void process(cv::Mat& image, cv::Mat& debug) {
 	std::vector<cv::Point2f> points;
 	cv::RotatedRect rect;
-	fidDetector.detect(image, points, &debug);
+	if(showDebug)
+		fidDetector.detect(image, points, &debug);
+	else
+		fidDetector.detect(image, points);
 
-	/*cv::Mat canny;
-	cv::Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
-	cv::imshow("Canny", canny);
+	if(showContours) {
+		cv::Mat canny;
+		cv::Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
+		std::vector<std::vector<cv::Point> > contoursCanny;
+		cv::findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+		cv::Mat cannyContours = cv::Mat::zeros(image.rows, image.cols, CV_8UC3);
 
-	std::vector<std::vector<cv::Point> > contoursCanny;
-	cv::findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-	cv::Mat cannyContours = cv::Mat::zeros(image.rows, image.cols, CV_8UC3);
+		for(unsigned int i=0; i<contoursCanny.size(); i++)
+			cv::drawContours(cannyContours, contoursCanny, i, cv::Scalar(rand()%255,rand()%255,rand()%255), 2);
 
-	for(unsigned int i=0; i<contoursCanny.size(); i++)
-		cv::drawContours(cannyContours, contoursCanny, i, cv::Scalar(rand()%255,rand()%255,rand()%255), 2);
-	cv::imshow("Contours", cannyContours);*/
+		if(showValues) {
+			cv::rectangle(cannyContours, cv::Point(10, 5), cv::Point(210, 22), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
+			std::stringstream ss;
+			ss << "Threshold: " << crateDetector.lowThreshold << "/" << crateDetector.highThreshold;
+			cv::putText(cannyContours, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		}
+
+		cv::imshow("Contours", cannyContours);
+	}
 
 	if(points.size() > 3) {
 		std::vector<Crate> crates;
 		crateDetector.detect(image, crates, points);
 
-		for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+		if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
 	}
 	else if(points.size() == 3) {
 		Crate crate(points);
-		crate.draw(debug);
+		if(showDebug) crate.draw(debug);
 	}
 
-    cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 90), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
-	std::stringstream ss;
-	ss << "Votes: " << fidDetector.lineVotes << " | " << fidDetector.circleVotes;
-    cv::putText(debug, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
-    ss.str("");
-    ss << "Circle radius: " << fidDetector.minRad << "/" << fidDetector.maxRad;
-    cv::putText(debug, ss.str(), cv::Point(20, 40), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
-    ss.str("");
-    ss << "Line distance:  " << fidDetector.minDist << "/" << fidDetector.maxDist;
-    cv::putText(debug, ss.str(), cv::Point(20, 60), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
-    ss.str("");
-    ss << "Threshold:  " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
-    cv::putText(debug, ss.str(), cv::Point(20, 80), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+	if(showValues) {
+		cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 90), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
+		std::stringstream ss;
+		ss << "Votes: " << fidDetector.lineVotes << " | " << fidDetector.circleVotes;
+		cv::putText(debug, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		ss.str("");
+		ss << "Circle radius: " << fidDetector.minRad << "/" << fidDetector.maxRad;
+		cv::putText(debug, ss.str(), cv::Point(20, 40), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		ss.str("");
+		ss << "Line distance:  " << fidDetector.minDist << "/" << fidDetector.maxDist;
+		cv::putText(debug, ss.str(), cv::Point(20, 60), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		ss.str("");
+		ss << "Threshold:  " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
+		cv::putText(debug, ss.str(), cv::Point(20, 80), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+	}
 }
 
-void callback(char key) {
+void callback(char key, cv::Mat* image = NULL) {
 	switch(key)
 	{
 		case 'w': fidDetector.lineVotes++; break;
@@ -75,15 +91,18 @@ void callback(char key) {
 		case 'c': fidDetector.highThreshold-=10; break;
 		case 'm': crateDetector.lowThreshold+=10; break;
 		case 'n': crateDetector.lowThreshold-=10; break;
-		case '>': crateDetector.highThreshold+=10; break;
-		case '<': crateDetector.highThreshold-=10; break;
+		case '.': crateDetector.highThreshold+=10; break;
+		case ',': crateDetector.highThreshold-=10; break;
+		case 'b': showValues=!showValues; break;
+		case '/': showContours=!showContours; break;
+		case 'p': showDebug=!showDebug; break;
+		case 'y': imwrite("screenshot.png", *image); break;
 	}
 }
 
 void usage(char* cmd) {
 	std::cout << "Usage:\t" << cmd << " image <path>" << std::endl;
 	std::cout << "\t" << cmd << " cam <index>" << std::endl;
-	std::cout << "\t" << cmd << " unicap <index> <format>" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -118,7 +137,7 @@ int main(int argc, char* argv[]) {
 
 			cv::imshow("Image", debug);
 			key = cv::waitKey();
-			callback(key);
+			callback(key, &image);
 		}
 	}
 	else if(!strcmp(argv[1], "cam")) {
@@ -148,37 +167,7 @@ int main(int argc, char* argv[]) {
 
 			cv::imshow("Frame", frame);
 			key = cv::waitKey(10);
-			callback(key);
-		}
-	}
-	else if(!strcmp(argv[1], "unicap")) {
-		if(argc < 4) {
-			usage(argv[0]);
-			return 1;
-		}
-
-		// Initialize camera
-		int device = atoi(argv[2]);
-		int format = atoi(argv[3]);
-		unicap_cv_bridge::unicap_cv_camera cam(device,format);
-		cv::Mat frame(cam.get_img_height(), cam.get_img_width(), cam.get_img_format());
-
-		cam.set_exposure(0.01);
-		cam.set_auto_white_balance(true);
-
-		// Retrieve camera frames
-		char key = 0;
-		while (key != 'q') {
-			cam.get_frame(&frame);
-
-			cv::Mat gray;
-			cv::cvtColor(frame, gray, CV_BGR2GRAY);
-
-			process(gray, frame);
-
-			imshow("Frame", frame);
-			key = cv::waitKey(10);
-			callback(key);
+			callback(key, &frame);
 		}
 	}
 
