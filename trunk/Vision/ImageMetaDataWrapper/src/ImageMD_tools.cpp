@@ -14,8 +14,8 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-std::vector<ImageMetaData::ImageMD> ImageMetaData::getMetaData(std::string path,
-		std::string rootTag) {
+std::vector<ImageMetaData::ImageMD> ImageMetaData::getMetaData(const std::string& path,
+		const std::string& rootTag) {
 	using std::string;
 	using std::stringstream;
 	using std::vector;
@@ -56,7 +56,7 @@ std::vector<ImageMetaData::ImageMD> ImageMetaData::getMetaData(std::string path,
 	return md;
 }
 
-ImageMetaData::AnyType ImageMetaData::AnyTypeFromString(std::string str){
+ImageMetaData::AnyType ImageMetaData::AnyTypeFromString(const std::string& str){
 	using std::stringstream;
 
 	stringstream ss;

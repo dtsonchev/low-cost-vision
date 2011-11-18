@@ -16,14 +16,14 @@ namespace ImageMetaData {
  * @param rootTag the first tag in the XML file
  * @return a vector of ImageMD objects with the extracted meta data
  */
-std::vector<ImageMD> getMetaData(std::string path, std::string rootTag);
+std::vector<ImageMD> getMetaData(const std::string& path, const std::string& rootTag);
 
 /**
  * Parses the contents of a string and puts it in a AnyType as either an int, a double or a string
  * @param str the string to be interpreted
  * @return an AnyType object containing the parsed information
  */
-AnyType AnyTypeFromString(std::string str);
+AnyType AnyTypeFromString(const std::string& str);
 
 /**
  * Checks if a map contains a certain key
