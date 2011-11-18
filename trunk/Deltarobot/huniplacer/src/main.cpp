@@ -48,12 +48,12 @@ int main(int argc, char** argv)
 	deltarobot robot(kinematics, motors);
 	robot.power_on();
 
-#define M(x, y) robot.moveto(point3(x, y, -150), 20)
-	M(-20, -20);
-	M(-20, 20);
-	M(20, -20);
-	M(20, 20);
-#undef M
+	robot.moveto(point3(0, 0, -160), 20);
+	getchar();
+	robot.moveto(point3(30, -30, -160), 20);
+	getchar();
+	robot.moveto(point3(30, 30, -160), 20);
+	getchar();
 
     robot.wait_for_idle();
 

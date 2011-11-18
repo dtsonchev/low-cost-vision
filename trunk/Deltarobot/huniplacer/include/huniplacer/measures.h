@@ -7,7 +7,7 @@ namespace huniplacer
 	{
 		const double BASE 				  = 101.3; //mm
 		const double HIP 				  = 61.1;  //mm
-		const double EFFECTOR 			  = 42.15; //mm
+		const double EFFECTOR 			  = 46.19; //mm old value: 42.15
 		const double ANKLE				  = 150.8; //mm
 		const double HIP_ANKLE_ANGLE_MAX  = utils::rad(26.50);  //radians
 		const double MOTOR_ROT_MIN 	      = utils::rad(-45);   //radians
