@@ -2,71 +2,78 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <iostream>
-#include "Cell.hpp"
-#include "cellActions.hpp"
-#include "ReportField.hpp"
-#include "ReportList.hpp"
+#include <Cell.hpp>
+#include <cellActions.hpp>
+#include <ReportField.hpp>
+#include <ReportList.hpp>
+
+ReportList::ReportList() {
+	hasSumRow = false;
+	hasAverageRow = false;
+	hasPercentRow = false;
+	percPartRow = -1;
+	percFullRow = -1;
+}
 
 ReportList::ReportList(std::vector<Type> col) {
-	hasSumRow =false;
-	hasAverageRow =false;
-	hasPercentRow =false;
+	hasSumRow = false;
+	hasAverageRow = false;
+	hasPercentRow = false;
+	percPartRow = -1;
+	percFullRow = -1;
 	using std::vector;
 	columns = col;
 	numberOfColumns = columns.size();
-	for (uint i = 0; i < col.size(); i++) {
+	for (unsigned int i = 0; i < col.size(); i++) {
 		vector<Cell *> row;
 		data.push_back(row);
 	}
 }
 
-void ReportList::appendRow(const int * cell1, ...) {
+void ReportList::appendRow(const int cell1, ...) {
 	using std::string;
 	using std::vector;
-	data.at(0).push_back(report::newCell(*(int*)(cell1)));
+	data.at(0).push_back(report::newCell(cell1));
 	va_list ap;
 	va_start(ap, cell1);
-	uint cellCounter = 1;
-	void * param = va_arg(ap,void *);
-	while(!(param == NULL || cellCounter >= columns.size())) {
+	unsigned int cellCounter = 1;
+	while(!(cellCounter >= columns.size())) {
 		switch(columns.at(cellCounter)) {
 			case INT:
-			data.at(cellCounter).push_back(report::newCell(*(int*)(param)));
+			appendCell(cellCounter,va_arg(ap,int));
 			break;
 			case DOUBLE:
-			data.at(cellCounter).push_back(report::newCell(*(double*)(param)));
+			appendCell(cellCounter,va_arg(ap,double));
 			break;
 			case STRING:
-			data.at(cellCounter).push_back(report::newCell(*(char *)(param)));
+			appendCell(cellCounter,va_arg(ap,char *));
 			break;
 		}
 		cellCounter++;
-		param = va_arg(ap,void *);
 	}
 	va_end(ap);
 }
-void ReportList::appendRow(const double * cell1, ...) {
+
+void ReportList::appendRow(const double cell1, ...) {
 	using std::string;
 	using std::vector;
-	data.at(0).push_back(report::newCell(*(double*)(cell1)));
+	data.at(0).push_back(report::newCell(cell1));
 	va_list ap;
 	va_start(ap, cell1);
-	uint cellCounter = 1;
-	void * param = va_arg(ap,void *);
-	while(!(param == NULL || cellCounter >= columns.size())) {
+	unsigned int cellCounter = 1;
+	while(!(cellCounter >= columns.size())) {
 		switch(columns.at(cellCounter)) {
 			case INT:
-			data.at(cellCounter).push_back(report::newCell(*(int*)(param)));
+			appendCell(cellCounter,va_arg(ap,int));
 			break;
 			case DOUBLE:
-			data.at(cellCounter).push_back(report::newCell(*(double*)(param)));
+			appendCell(cellCounter,va_arg(ap,double));
 			break;
 			case STRING:
-			data.at(cellCounter).push_back(report::newCell(*(char *)(param)));
+			appendCell(cellCounter,va_arg(ap,char *));
 			break;
 		}
 		cellCounter++;
-		param = va_arg(ap,void *);
 	}
 	va_end(ap);
 }
@@ -77,24 +84,33 @@ void ReportList::appendRow(const char * cell1, ...) {
 	data.at(0).push_back(report::newCell(cell1));
 	va_list ap;
 	va_start(ap, cell1);
-	uint cellCounter = 1;
-	void * param = va_arg(ap,void *);
-	while(!(param == NULL || cellCounter >= columns.size())) {
+	unsigned int cellCounter = 1;
+	while(!(cellCounter >= columns.size())) {
 		switch(columns.at(cellCounter)) {
 			case INT:
-			appendCell(cellCounter,*(int*)(param));
+			appendCell(cellCounter,va_arg(ap,int));
 			break;
 			case DOUBLE:
-			appendCell(cellCounter,*(double*)(param));
+			appendCell(cellCounter,va_arg(ap,double));
 			break;
 			case STRING:
-			appendCell(cellCounter,*(char*)(param));
+			appendCell(cellCounter,va_arg(ap,char *));
 			break;
 		}
 		cellCounter++;
-		param = va_arg(ap,void *);
 	}
 	va_end(ap);
+}
+
+void ReportList::enablePercentRow(bool perc, unsigned int partRow, unsigned int fullRow) {
+	if ((columns.at(partRow) == INT || columns.at(partRow) == DOUBLE)
+			&& (columns.at(fullRow) == INT || columns.at(fullRow) == DOUBLE)) {
+		hasPercentRow = true;
+		percPartRow = partRow;
+		percFullRow = fullRow;
+	} else {
+		hasPercentRow = false;
+	}
 }
 
 void ReportList::enableSumRow(bool sum) {
@@ -103,10 +119,6 @@ void ReportList::enableSumRow(bool sum) {
 
 void ReportList::enableAverageRow(bool avg) {
 	hasAverageRow = avg;
-}
-
-void ReportList::enablePercentRow(bool perc) {
-	hasPercentRow = perc;
 }
 
 void ReportList::appendSumRowToSs(std::stringstream& ss) {
@@ -187,24 +199,55 @@ void ReportList::appendAverageRowToSs(std::stringstream& ss) {
 	ss << std::endl;
 }
 
+void ReportList::appendPercentRowToSs(std::stringstream& ss) {
+	double partSum = 0;
+	double fullSum = 0;
+	for (std::vector<Cell *>::iterator it = data.at(percPartRow).begin();
+			it < data.at(percPartRow).end(); ++it) {
+		if (columns.at(percPartRow) == INT) {
+			partSum += (double) (((IntegerCell *) (*it))->getValue());
+		} else if (columns.at(percPartRow) == DOUBLE) {
+			partSum += ((DoubleCell *) (*it))->getValue();
+		}
+	}
+	for (std::vector<Cell *>::iterator it = data.at(percFullRow).begin();
+			it < data.at(percFullRow).end(); ++it) {
+		if (columns.at(percFullRow) == INT) {
+			fullSum += (double) ((((IntegerCell *) (*it))->getValue()));
+		} else if (columns.at(percFullRow) == DOUBLE) {
+			fullSum += (((DoubleCell *) (*it))->getValue());
+		}
+	}
+	for (unsigned int i = 0; i < columns.size(); ++i) {
+		if (i != percFullRow) {
+			ss << "\t";
+
+		} else {
+			ss << ((partSum * 100.0) / fullSum) << "%\t" << "(" << partSum
+					<< "/" << fullSum << ")\t";
+		}
+	}
+	ss << std::endl;
+}
+
 std::string ReportList::toString() {
 	std::stringstream ss;
-	for (uint row = 0; row < data.at(0).size(); row++) {
-		for (uint col = 0; col < data.size(); col++) {
+	for (unsigned int row = 0; row < data.at(0).size(); row++) {
+		for (unsigned int col = 0; col < data.size(); col++) {
 			ss << data.at(col).at(row)->toString() << "\t";
 		}
 
 		ss << std::endl;
 
 	}
-	if(hasSumRow){
+	if (hasSumRow) {
 		appendSumRowToSs(ss);
 	}
-	if(hasAverageRow){
+	if (hasAverageRow) {
 		appendAverageRowToSs(ss);
 	}
-	if(hasPercentRow){
-		//TODO: this
+	if (hasPercentRow) {
+		appendPercentRowToSs(ss);
 	}
 	return ss.str();
 }
