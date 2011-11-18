@@ -62,11 +62,9 @@ cv::RotatedRect Crate::rect() {
 	bounds.angle = orientation - 3.0*M_PI/4.0;
 	if(bounds.angle < -M_PI) bounds.angle += M_PI*2.0;
 
-	float extraDistance = sqrt(pow(bounds.center.x - extra.x, 2) + pow(bounds.center.y - extra.y, 2));
-	std::vector<cv::Point2f> boundingPoints(points);
-	cv::Point2f boundPoint = cv::Point2f(bounds.center.x + extraDistance*cos(-orientation-M_PI), bounds.center.y + extraDistance*sin(-orientation-M_PI));
-	boundingPoints.push_back(boundPoint);
-	bounds.size = boundingRect(boundingPoints).size();
+	float startDistance = sqrt(pow(start.x - extra.x, 2) + pow(start.y - extra.y, 2));
+	float endDistance = sqrt(pow(end.x - extra.x, 2) + pow(end.y - extra.y, 2));
+	bounds.size = cv::Size(startDistance, endDistance);
 
 	return bounds;
 }
