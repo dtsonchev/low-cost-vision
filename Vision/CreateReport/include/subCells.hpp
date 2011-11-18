@@ -2,7 +2,7 @@
 
 #include <string>
 #include <sstream>
-#include "Cell.hpp"
+#include <Cell.hpp>
 
 
 class IntegerCell : public Cell {
