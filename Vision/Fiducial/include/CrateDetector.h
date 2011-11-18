@@ -31,7 +31,7 @@ public:
 	 *  Supply more arguments to change the thresholds or change
 	 *  the public fields after construction.
 	 */
-	CrateDetector(int lowThreshold = 300, int highThreshold = 800);
+	CrateDetector(int lowThreshold = 50, int highThreshold = 150);
 	virtual ~CrateDetector();
 
 
