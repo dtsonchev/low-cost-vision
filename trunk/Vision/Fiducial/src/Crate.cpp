@@ -79,21 +79,50 @@ void Crate::draw(cv::Mat& image) {
 	cv::RotatedRect rect = this->rect();
 
 	// Draw arrow
-	cv::Point pt1 = rect.center;
-	cv::Point pt2(pt1.x - 50 * cos(-bounds.angle+M_PI/2.0),
-			pt1.y - 50 * sin(-bounds.angle+M_PI/2.0));
-	cv::line(image, pt1, pt2, cv::Scalar(0, 0, 0), 2);
-	cv::line(image, pt2,
-			cv::Point(pt2.x + 10 * cos(-bounds.angle+3*M_PI/4.0),
-					pt2.y + 10 * sin(-bounds.angle+3*M_PI/4.0)),
-					cv::Scalar(0, 0, 0), 2);
-	cv::line(image, pt2,
-			cv::Point(pt2.x + 10 * cos(-bounds.angle+M_PI/4.0),
-					pt2.y + 10 * sin(-bounds.angle+M_PI/4.0)),
-					cv::Scalar(0, 0, 0), 2);
-	std::stringstream ss;
-	ss << cv::saturate_cast<int>(bounds.angle / (M_PI/180.0));
-	cv::putText(image, ss.str(), pt1-cv::Point(15,0), CV_FONT_HERSHEY_SIMPLEX, .5, cv::Scalar(255,0,0), 2);
+	{
+		cv::Point pt1 = rect.center;
+		cv::Point pt2(pt1.x - 50 * cos(-rect.angle+M_PI/2.0),
+				pt1.y - 50 * sin(-rect.angle+M_PI/2.0));
+		cv::line(image, pt1, pt2, cv::Scalar(0, 0, 0), 2);
+		cv::line(image, pt2,
+				cv::Point(pt2.x + 10 * cos(-rect.angle+3*M_PI/4.0),
+						pt2.y + 10 * sin(-rect.angle+3*M_PI/4.0)),
+						cv::Scalar(0, 0, 0), 2);
+		cv::line(image, pt2,
+				cv::Point(pt2.x + 10 * cos(-rect.angle+M_PI/4.0),
+						pt2.y + 10 * sin(-rect.angle+M_PI/4.0)),
+						cv::Scalar(0, 0, 0), 2);
+		std::stringstream ss;
+		ss << cv::saturate_cast<int>(rect.angle / (M_PI/180.0));
+		cv::putText(image, ss.str(), pt1-cv::Point(15,0), CV_FONT_HERSHEY_SIMPLEX, .5, cv::Scalar(255,0,0), 2);
+	}
 
-	cv::rectangle(image, rect.boundingRect(), cv::Scalar(0,255,0), 2);
+	// Draw bounds
+	{
+		cv::Point2f pt1(
+				rect.center.x + (rect.size.width / 2.0) * cos(-rect.angle)
+						- (rect.size.height / 2.0) * sin(-rect.angle),
+				rect.center.y + (rect.size.height / 2.0) * cos(-rect.angle)
+						+ (rect.size.width / 2.0) * sin(-rect.angle));
+		cv::Point2f pt2(
+				rect.center.x - (rect.size.width / 2.0) * cos(-rect.angle)
+						- (rect.size.height / 2.0) * sin(-rect.angle),
+				rect.center.y + (rect.size.height / 2.0) * cos(-rect.angle)
+						- (rect.size.width / 2.0) * sin(-rect.angle));
+		cv::Point2f pt3(
+				rect.center.x - (rect.size.width / 2.0) * cos(-rect.angle)
+						+ (rect.size.height / 2.0) * sin(-rect.angle),
+				rect.center.y - (rect.size.height / 2.0) * cos(-rect.angle)
+						- (rect.size.width / 2.0) * sin(-rect.angle));
+		cv::Point2f pt4(
+				rect.center.x + (rect.size.width / 2.0) * cos(-rect.angle)
+						+ (rect.size.height / 2.0) * sin(-rect.angle),
+				rect.center.y - (rect.size.height / 2.0) * cos(-rect.angle)
+						+ (rect.size.width / 2.0) * sin(-rect.angle));
+
+		cv::line(image, pt1, pt2, cv::Scalar(0,255,0), 2);
+		cv::line(image, pt2, pt3, cv::Scalar(0,255,0), 2);
+		cv::line(image, pt3, pt4, cv::Scalar(0,255,0), 2);
+		cv::line(image, pt4, pt1, cv::Scalar(0,255,0), 2);
+	}
 }
