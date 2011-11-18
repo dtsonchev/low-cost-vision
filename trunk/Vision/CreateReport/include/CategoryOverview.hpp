@@ -8,5 +8,6 @@ public:
 	CatergoryOverview(const ImageMetaData::CategoryResults& cr);
 	std::string toString();
 private:
+	std::string name;
 	ReportList reportlist;
 };
