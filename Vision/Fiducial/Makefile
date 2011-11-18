@@ -8,7 +8,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
+BUILDTYPE           := library
 
 TARGET              := Fiducial
 
@@ -31,20 +31,20 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := libunicap opencv
+PKGCONF_LIBRARIES   := opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_thread
+LIBRARIES           := 
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := /usr/include/unicap
+EXTINCLUDEPATHS     := 
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
-DEP_PROJ            := unicap_cv_bridge
+DEP_PROJ            := 
 
 #######################################################################
 # constants
