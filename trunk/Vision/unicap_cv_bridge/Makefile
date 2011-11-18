@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.4.3
+# version: v0.4.4
 #######################################################################
 
 #######################################################################
@@ -163,7 +163,7 @@ endif
 .PHONY: all
 all: $(TARGET)
 
-# recursively make al dependency projects
+# recursively make all dependency projects
 .PHONY: dep
 dep:
 	@ERR=0; \
