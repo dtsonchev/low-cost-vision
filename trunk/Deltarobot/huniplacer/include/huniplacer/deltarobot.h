@@ -5,6 +5,8 @@
 #include <huniplacer/point3.h>
 #include <huniplacer/imotor3.h>
 
+//TODO: implement forward kinematics and use that to calculate the current effector position
+
 /**
  * @brief holds huniplacer related classes
  **/
@@ -20,7 +22,6 @@ namespace huniplacer
         private:
             inverse_kinematics_model& kinematics;
             imotor3& motors;
-            bool ison;
 
             point3 effector_location;
 

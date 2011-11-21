@@ -8,6 +8,7 @@
 #include <huniplacer/utils.h>
 #include <huniplacer/CRD514_KD.h>
 #include <huniplacer/crd514_kd_exception.h>
+#include <huniplacer/motor3_exception.h>
 
 namespace huniplacer
 {
@@ -22,7 +23,7 @@ namespace huniplacer
         min_angle(min_angle), max_angle(max_angle),
         modbus(context),
         exhandler(exhandler),
-        on(false)
+        powered_on(false)
     {
     	current_angles[0] = current_angles[1] = current_angles[2] = 0;
         //start motion thread
@@ -38,16 +39,15 @@ namespace huniplacer
         motion_thread->join();
         delete motion_thread;
         wait_till_ready();
-        if(on)
+        if(powered_on)
+        {
         	modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, 0);
+        }
     }
 
     bool steppermotor3::is_idle(void)
     {
-        if(!on)
-        	return false;
-
-    	if(idle)
+    	if(!powered_on && idle)
         {
         	boost::lock_guard<boost::mutex> lock(modbus_mutex);
         	return
@@ -78,7 +78,7 @@ namespace huniplacer
                     
                     owner->queue_mutex.unlock();
                     
-                    if(owner->on)
+                    if(owner->powered_on)
                     {
 
 						//write motion
@@ -133,7 +133,6 @@ namespace huniplacer
             owner->exhandler(ex);
         }
     }
-    
 
     void steppermotor3::wait_till_ready(void)
     {
@@ -158,8 +157,10 @@ namespace huniplacer
 
     void steppermotor3::moveto(const motionf& mf, bool async)
     {
-        if(!on)
-        	return; //TODO fix! how will the user ever know his motion wasn't executed?
+        if(!powered_on)
+        {
+        	throw motor3_exception("motor drivers are not powered on");
+        }
 
         if(mf.angles[0] <= min_angle || mf.angles[1] <= min_angle || mf.angles[2] <= min_angle ||
            mf.angles[0] >= max_angle || mf.angles[1] >= max_angle || mf.angles[2] >= max_angle)
@@ -186,8 +187,10 @@ namespace huniplacer
 
     void steppermotor3::stop(void)
     {
-        if(!on)
-        	return;
+    	if(!powered_on)
+		{
+			throw motor3_exception("motor drivers are not powered on");
+		}
 
     	boost::lock_guard<boost::mutex> queue_lock(queue_mutex);
         boost::lock_guard<boost::mutex> modbus_lock(modbus_mutex);
@@ -212,8 +215,10 @@ namespace huniplacer
 
     bool steppermotor3::wait_for_idle(long timeout)
     {
-        if(!on)
-        	return false;
+    	if(!powered_on)
+		{
+			throw motor3_exception("motor drivers are not powered on");
+		}
 
     	if(idle)
     	{
@@ -269,15 +274,16 @@ namespace huniplacer
 
     void steppermotor3::power_off(void)
     {
-        if(on){
+        if(powered_on)
+        {
             stop();
             boost::lock_guard<boost::mutex> lock(modbus_mutex);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, 0);
-            on = false;
+            powered_on = false;
         }
     }
 
-    void steppermotor3::moveto_within(const motionf & mf, double time, bool async)
+    void steppermotor3::moveto_within(const motionf& mf, double time, bool async)
     {
     	motionf newmf = mf;
 
@@ -294,7 +300,8 @@ namespace huniplacer
 
     void steppermotor3::power_on(void)
     {
-        if(!on){
+        if(!powered_on)
+        {
             boost::lock_guard<boost::mutex> lock(modbus_mutex);
             //reset alarm
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::RESET_ALARM, 0);
@@ -318,7 +325,12 @@ namespace huniplacer
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 1);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 0);
 
-            on = true;
+            powered_on = true;
         }
+    }
+
+    bool steppermotor3::is_powerd_on(void)
+    {
+    	return powered_on;
     }
 }
