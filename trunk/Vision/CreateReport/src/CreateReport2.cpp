@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 #include <CategoryOverview.hpp>
+#include <ReportHistogram.hpp>
 
 #ifdef __CDT_PARSER__
 #define foreach(a, b) for(a : b)
 #else
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
-
 
 using namespace std;
 using namespace ImageMetaData;
@@ -58,40 +58,57 @@ int main(int argc, char** argv) {
 //	reportList2.enablePercentRow(true,0,1);
 //	cout << reportList2.toString();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Load the metadata of the images from an XML file
-		vector<ImageMD> images = ImageMetaData::getMetaData("/home/wouter/workspace/CreateReport/misc/test.xml", "Test_set");
+//	// Load the metadata of the images from an XML file
+//		vector<ImageMD> images = ImageMetaData::getMetaData("/home/wouter/workspace/CreateReport/misc/test.xml", "Test_set");
+//
+//		// Create a container for storing the categories and their results
+//		CategoriesResults catsResults;
+//
+//		map<string, double> imgResults;
+//
+//		// Loop through all the images
+//		foreach(ImageMD& img, images){
+//			bool test = false;
+//			// Do something with the image
+//			// ...
+//
+//			int width = 1200; // int width = image.width;
+//			// Check if the obtained result corresponds with the given property
+//			if(!img.objects.empty() && ContainsKey(img.objects[0], string("x"))){
+//				double deviation = abs(12 - img.objects[0]["x"]) / (double)width;
+//				imgResults[img.path] = deviation;
+//				test = (deviation <= 0.1);
+//			}
+//
+//			// Store the results in the categories container
+//			foreach(Category c, img.categories){
+//				if(test){
+//					// Increment number of correct images in category
+//					catsResults[c.first][c.second].first++;
+//				}
+//				// Increment total number images in category
+//				catsResults[c.first][c.second].second++;
+//			}
+//		}
+//
+//		CatergoryOverview cat = CatergoryOverview(*catsResults.begin());
+//		cout << cat.toString();
 
-		// Create a container for storing the categories and their results
-		CategoriesResults catsResults;
+	std::vector<double> list;
+	list.push_back(8.1);
+	list.push_back(13.1);
+	list.push_back(18.1);
+	list.push_back(22.1);
+	list.push_back(34.1);
+	list.push_back(34.1);
+	list.push_back(15.1);
+	list.push_back(80.1);
+	list.push_back(90.1);
+	list.push_back(99.1);
+	list.push_back(3.1);
 
-		map<string, double> imgResults;
+	ReportHistogram rH(list,100,100);
+	cout << rH.toString();
 
-		// Loop through all the images
-		foreach(ImageMD& img, images){
-			bool test = false;
-			// Do something with the image
-			// ...
-
-			int width = 1200; // int width = image.width;
-			// Check if the obtained result corresponds with the given property
-			if(!img.objects.empty() && ContainsKey(img.objects[0], string("x"))){
-				double deviation = abs(12 - img.objects[0]["x"]) / (double)width;
-				imgResults[img.path] = deviation;
-				test = (deviation <= 0.1);
-			}
-
-			// Store the results in the categories container
-			foreach(Category c, img.categories){
-				if(test){
-					// Increment number of correct images in category
-					catsResults[c.first][c.second].first++;
-				}
-				// Increment total number images in category
-				catsResults[c.first][c.second].second++;
-			}
-		}
-
-		CatergoryOverview cat = CatergoryOverview(*catsResults.begin());
-		cout << cat.toString();
 	return 0;
 }
