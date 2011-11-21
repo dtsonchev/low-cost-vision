@@ -58,6 +58,7 @@ void updateHH(int, void* stereovisiondepthobject){
 	temp->hh.P1 = 8 * cn * temp->hh.SADWindowSize * temp->hh.SADWindowSize;
 	temp->hh.P2 = 32 * cn * temp->hh.SADWindowSize * temp->hh.SADWindowSize;
 	temp->hh.minDisparity = temp->hh_minDisparity;
+
 	temp->hh.numberOfDisparities =  ((temp->hh_numberOfDisparities <= 15 ? 16 : temp->hh_numberOfDisparities) / 16) * 16;
 	temp->hh.uniquenessRatio = temp->hh_uniquenessRatio;
 	temp->hh.speckleWindowSize = temp->hh_speckleWindowSize;
@@ -69,7 +70,6 @@ stereovisiondepth::stereovisiondepth(Mat imgL, Mat imgR) {
 	this->imgL = imgL;
 	this->imgR =imgR;
 
-
 	resultBM = imgL.clone();
 	resultSGBM = imgL.clone();
 	resultHH = imgL.clone();
@@ -79,9 +79,6 @@ stereovisiondepth::stereovisiondepth(Mat imgL, Mat imgR) {
 	imshow("sgbm", resultSGBM);
 	imshow("hh", resultHH);
 	imshow("var", resultVAR);
-
-	initVar();
-	initTrackBars();
 }
 
 stereovisiondepth::stereovisiondepth(Mat imgL, Mat imgR, Rect roiL, Rect roiR) {
@@ -100,13 +97,10 @@ stereovisiondepth::stereovisiondepth(Mat imgL, Mat imgR, Rect roiL, Rect roiR) {
 	imshow("sgbm", resultSGBM);
 	imshow("hh", resultHH);
 	imshow("var", resultVAR);
-
-	initVar();
-	initTrackBars();
 }
 
 void stereovisiondepth::initTrackBars(){
-	createTrackbar( "preFilterCap", "bm", &bm_preFilterCapValue, 63, updateBM, this );
+     createTrackbar( "preFilterCap", "bm", &bm_preFilterCapValue, 63, updateBM, this );
 	 createTrackbar( "SADWindowSize", "bm", &bm_SADWindowSize, 33 , updateBM, this);
 	 createTrackbar( "minDisparity", "bm", &bm_minDisparity, 30 ,updateBM, this);
 	 createTrackbar( "numberOfDisparities", "bm", &bm_numberOfDisparities, 255 ,updateBM, this);
@@ -179,7 +173,7 @@ void stereovisiondepth::initVar(){
 }
 
 void stereovisiondepth::DoBM(){
-	Mat imgLL , imgRR,temp;
+	Mat imgLL, imgRR, temp;
 	cvtColor(imgL,imgLL, CV_RGB2GRAY);
 	cvtColor(imgR, imgRR, CV_RGB2GRAY);
 	bm(imgLL, imgRR, temp);
@@ -201,6 +195,7 @@ void stereovisiondepth::DoHH(){
 	hh.disp12MaxDiff = 1;
 	hh.numberOfDisparities = (hh.numberOfDisparities == 0 ? 16 : hh.numberOfDisparities);
 	hh(imgL, imgR, temp);
+
 	temp.convertTo(resultHH, CV_8U, 255 / (hh.numberOfDisparities * 16.));
 }
 

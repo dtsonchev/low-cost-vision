@@ -51,10 +51,12 @@ int main(int argc, char** argv)
 				allValues = allValues | 4;
 			}
 		}
+
 		if(allValues !=3 && allValues != 7){
 			cout<<"incorrect arguments";
 			return -1;
 		}
+
 		camL = cv::VideoCapture(camLnr);
 		camR = cv::VideoCapture(camRnr);
 
@@ -94,12 +96,16 @@ int main(int argc, char** argv)
 				cout<<"Someting wrong with the xml";
 				exit(-1);
 			}
+
 			fs.release();
 			svd = stereovisiondepth(imgL, imgR,roiL,roiR);
 		}else{
-			svd= stereovisiondepth(imgL,imgR);
+			svd = stereovisiondepth(imgL,imgR);
 			xmlUsed = false;
 		}
+
+		svd.initVar();
+		svd.initTrackBars();
 
 		Mat tempL,tempR;
 		tempL = imgL.clone();
@@ -154,10 +160,12 @@ int main(int argc, char** argv)
 					allValues = allValues | 4;
 				}
 			}
+
 			if(allValues !=3 && allValues != 7){
 				cout<<"incorrect arguments";
 				exit(-1);
 			}
+
 			imgL = cv::imread(imgPathLeft,1);
 			imgR = cv::imread(imgPathRight,1);
 
@@ -166,6 +174,7 @@ int main(int argc, char** argv)
 				cout<<"img path Left: \n\t" << imgPathLeft << "\nimg path right: \n\t" << imgPathRight <<endl;
 				exit(-1);
 			}
+
 			const char* undistorgenXMLpathtemp = undistorgenXMLpath.c_str();
 			if((strcmp(undistorgenXMLpathtemp,""))){
 				FileStorage fs(undistorgenXMLpathtemp, CV_STORAGE_READ);
@@ -195,11 +204,15 @@ int main(int argc, char** argv)
 					cout<<"Someting wrong with the xml";
 					exit(-1);
 				}
+
 				fs.release();
 				svd = stereovisiondepth(imgL, imgR,roiL,roiR);
 			}else{
-				svd= stereovisiondepth(imgL,imgR);
+				svd = stereovisiondepth(imgL,imgR);
 			}
+
+			svd.initVar();
+			svd.initTrackBars();
 
 			while((char)cv::waitKey(100) !='q'){
 				svd.DoBM();
@@ -211,7 +224,3 @@ int main(int argc, char** argv)
 	}
 	return 0;
 }
-
-
-
-

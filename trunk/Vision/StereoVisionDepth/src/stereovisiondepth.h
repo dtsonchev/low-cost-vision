@@ -207,7 +207,7 @@ public:
 	int var_flags ;
 	///A parameter of the VAR algorithm.(currently no opencv documentation).
 
-private:
+public:
 
 	void initVar();
 	void initTrackBars();
