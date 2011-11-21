@@ -42,7 +42,9 @@ namespace huniplacer
     			/
     			(2*hip*c);
     	if(alpha_acos_input < -1 || alpha_acos_input > 1)
+    	{
     		throw inverse_kinematics_exception("point out of range", p);
+    	}
 
     	double alpha = acos(alpha_acos_input);
 
