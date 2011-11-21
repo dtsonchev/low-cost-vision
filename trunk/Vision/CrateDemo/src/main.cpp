@@ -54,13 +54,19 @@ void process(cv::Mat& image, cv::Mat& debug) {
 		for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) {
 			cv::RotatedRect rect = it->rect();
 			rect.size = cv::Size(rect.size.width * 2, rect.size.height * 2);
-			cv::Mat roi = image(rect.boundingRect());
-			imshow("ROI", roi);
-			std::string result;
-			barDetector.detect(roi, result);
-			it->draw(debug);
-			if(!result.empty()) {
-				cv::putText(debug, result, cv::Point(rect.center.x, rect.center.y-20), CV_FONT_HERSHEY_COMPLEX, 1, cv::Scalar(0,0,255), 2);
+			cv::Rect bounds = rect.boundingRect();
+			if ((bounds.tl().x >= 0 && bounds.tl().y >= 0)
+					&& (bounds.br().x < image.cols && bounds.br().y < image.rows)) {
+				cv::Mat roi = image(bounds);
+
+				cv::rectangle(debug, bounds, cv::Scalar(255, 0, 0), 2);
+
+				std::string result;
+				barDetector.detect(roi, result);
+				it->draw(debug);
+				if(!result.empty()) {
+					cv::putText(debug, result, cv::Point(rect.center.x, rect.center.y-20), CV_FONT_HERSHEY_COMPLEX, 1, cv::Scalar(0,0,255), 2);
+				}
 			}
 		}
 	}
@@ -230,6 +236,10 @@ int main(int argc, char* argv[]) {
 			key = cv::waitKey(10);
 			callback(key, &frame);
 		}
+	}
+	else {
+		usage(argv[0]);
+		return 1;
 	}
 
 	return 0;

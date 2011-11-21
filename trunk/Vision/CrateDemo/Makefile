@@ -35,7 +35,7 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   := opencv libunicap zbar Magick++
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_filesystem boost_thread
+LIBRARIES           := boost_filesystem boost_thread boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 
@@ -96,7 +96,7 @@ PROJ_DIRS  := \
 	)
 PROJ_DIRS := $(strip $(PROJ_DIRS))
 
-# TODO implement project dependecy crap generation
+# TODO implement project dependecy generation
 # generate and execute project expose script
 #VOID := $(shell \
 #    if [ ! -e $(BUILDDIR)/expose.sh ] ; then \
