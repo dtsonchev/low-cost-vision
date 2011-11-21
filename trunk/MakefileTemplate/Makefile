@@ -96,7 +96,7 @@ PROJ_DIRS  := \
 	)
 PROJ_DIRS := $(strip $(PROJ_DIRS))
 
-# TODO implement project dependecy crap generation
+# TODO implement project dependecy generation
 # generate and execute project expose script
 #VOID := $(shell \
 #    if [ ! -e $(BUILDDIR)/expose.sh ] ; then \
