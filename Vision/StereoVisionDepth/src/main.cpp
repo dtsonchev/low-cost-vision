@@ -158,8 +158,8 @@ int main(int argc, char** argv)
 				cout<<"incorrect arguments";
 				exit(-1);
 			}
-			imgL = cv::imread(imgPathLeft,-1);
-			imgR = cv::imread(imgPathRight,-1);
+			imgL = cv::imread(imgPathLeft,1);
+			imgR = cv::imread(imgPathRight,1);
 
 			if(!imgL.data || !imgR.data){
 				cout<<"img are not loaded  corectly"<<endl;
@@ -200,6 +200,7 @@ int main(int argc, char** argv)
 			}else{
 				svd= stereovisiondepth(imgL,imgR);
 			}
+
 			while((char)cv::waitKey(100) !='q'){
 				svd.DoBM();
 				svd.DoSGBM();
