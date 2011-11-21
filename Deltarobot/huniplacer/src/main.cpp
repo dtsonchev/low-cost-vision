@@ -2,6 +2,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <huniplacer/huniplacer.h>
+#include <modbus/modbus.h>
 
 using namespace huniplacer;
 
@@ -41,8 +42,6 @@ int main(int argc, char** argv)
 	m.speed[0] = m.speed[1] = m.speed[2] = utils::rad(90);
 
 	motors.moveto_within(m, 5, false);
-
-
 
 	*/
 	deltarobot robot(kinematics, motors);

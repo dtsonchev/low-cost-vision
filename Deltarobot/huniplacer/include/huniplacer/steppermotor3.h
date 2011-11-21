@@ -36,7 +36,7 @@ namespace huniplacer
             motion_thread_exception_handler exhandler;
             boost::thread* motion_thread;
             
-            volatile bool on;
+            volatile bool powered_on;
 
             /**
              * @brief function passed to motion_thread
@@ -84,15 +84,11 @@ namespace huniplacer
             bool wait_for_idle(long timeout = 0);
             bool is_idle(void);
             
-            /**
-             * @brief shuts down the motors
-             */
             void power_off(void);
 
-            /**
-             * @brief turns on the motors
-             */
             void power_on(void);
+
+            bool is_powerd_on(void);
 
             inline double get_min_angle(void) { return min_angle; }
             inline double get_max_angle(void) { return max_angle; }

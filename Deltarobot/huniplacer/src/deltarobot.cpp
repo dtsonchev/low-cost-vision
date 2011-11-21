@@ -10,17 +10,15 @@
 #include <huniplacer/inverse_kinematics_model.h>
 #include <huniplacer/inverse_kinematics_exception.h>
 #include <huniplacer/utils.h>
+#include <huniplacer/motor3_exception.h>
 
 namespace huniplacer
 {
     deltarobot::deltarobot(inverse_kinematics_model& kinematics, imotor3& motors) :
         kinematics(kinematics),
         motors(motors),
-        ison(false),
-        effector_location(point3(0,0,-205))
+        effector_location(point3(0, 0, -205))
     {
-
-
     }
 
     deltarobot::~deltarobot(void)
@@ -42,10 +40,10 @@ namespace huniplacer
 
     void deltarobot::moveto(const point3& p, double speed, bool async)
     {
-    	if(!ison)
-    	    return;
-
-
+    	if(!motors.is_powerd_on())
+    	{
+    		throw motor3_exception("motor drivers are not powered on");
+    	}
 
         motionf mf;
         try
@@ -78,40 +76,40 @@ namespace huniplacer
     
     void deltarobot::stop(void)
     {
-    	if(!ison)
-    	    return;
+    	if(!motors.is_powerd_on())
+		{
+			throw motor3_exception("motor drivers are not powered on");
+		}
         motors.stop();
     }
     
     bool deltarobot::wait_for_idle(long timeout)
     {
-    	if(!ison)
-    	    return false;
-        return motors.wait_for_idle(timeout);
+    	if(motors.is_powerd_on())
+    	{
+    		return motors.wait_for_idle(timeout);
+    	}
+    	return true;
     }
     
     bool deltarobot::is_idle(void)
     {
-    	if(!ison)
-    	    return false;
         return motors.is_idle();
     }
 
     void huniplacer::deltarobot::power_off(void)
     {
-        if(ison)
+        if(motors.is_powerd_on())
         {
-            motors.power_off();
-            ison = false;
+        	motors.power_off();
         }
     }
 
     void huniplacer::deltarobot::power_on(void)
     {
-        if(!ison)
+        if(!motors.is_powerd_on())
         {
-            motors.power_on();
-            ison = true;
+        	motors.power_on();
         }
     }
 }

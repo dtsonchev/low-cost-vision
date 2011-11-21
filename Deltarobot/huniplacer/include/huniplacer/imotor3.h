@@ -71,5 +71,11 @@ namespace huniplacer
              * @brief turns on the motors
              */
             virtual void power_on(void) = 0;
+
+            /**
+             * @brief determine if the motor driver(s) are powered on
+             * @return true of powered on, false otherwise
+             */
+            virtual bool is_powerd_on(void) = 0;
     };
 }
