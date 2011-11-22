@@ -5,11 +5,19 @@
 #include <report/ReportField.hpp>
 
 namespace report {
-
+/**
+ * Class which can make a histogram of a given vector<int> vector<double>
+ */
 class ReportHistogram : public ReportField {
 public:
+	/**
+	 * Creates a histogram from vector<T> vec, with bns bins and a range from 0 to rnge
+	 */
 	template<class T>
 	ReportHistogram(const std::vector<T>& vec, unsigned int bns, unsigned int rnge);
+	/**
+	 * returns a std::string representation of the histogram
+	 */
 	std::string toString();
 
 private:
