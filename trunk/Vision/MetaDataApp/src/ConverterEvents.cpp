@@ -1,4 +1,4 @@
-#include "ConverterGUI.h"
+#include <MetaDataApp/ConverterGUI.h>
 #include <boost/foreach.hpp>
 
 using namespace std;

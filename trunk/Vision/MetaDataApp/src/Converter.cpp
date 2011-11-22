@@ -1,4 +1,4 @@
-#include "ConverterGUI.h"
+#include <MetaDataApp/ConverterGUI.h>
 
 using namespace std;
 using namespace boost::filesystem;

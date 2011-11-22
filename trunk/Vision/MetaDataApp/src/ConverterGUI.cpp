@@ -1,4 +1,4 @@
-#include "ConverterGUI.h"
+#include <MetaDataApp/ConverterGUI.h>
 //wxImage::AddHandler(new wxJPEGHandler);
 
 GUIFrame::GUIFrame(wxWindow* parent, wxWindowID id, const wxString& title,

@@ -5,7 +5,7 @@
  *      Author: glenn
  */
 
-#include "CrateGUI.h"
+#include <MetaDataApp/CrateGUI.h>
 #include <wx/dc.h>
 #include <wx/dcclient.h>
 #include <sstream>
