@@ -4,8 +4,8 @@
 #include <opencv2/core/core.hpp>
 #include <dirent.h>
 #include <sstream>
-#include "FGBGSeparation.h"
-#include "variableException.h"
+#include <FGBGSeperation/FGBGSeparation.h>
+#include <FGBGSeperation/variableException.h>
 
 using namespace cv;
 using namespace std;
