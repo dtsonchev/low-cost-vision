@@ -3,15 +3,42 @@
 
 namespace report {
 
+/**
+ * Base class of the objects available to reports
+ */
 class ReportField {
 public:
-	ReportField() : fieldName("noName") {}
-	ReportField(std::string name) : fieldName(name) {}
+	/**
+	 * Creates a new reportfield with name 'noName'
+	 */
+	ReportField() :
+			fieldName("noName") {
+	}
+	/***
+	 * Creates a new reportfield with std::string name as name
+	 */
+	ReportField(std::string name) :
+			fieldName(name) {
+	}
+	/**
+	 * pure virtual function forces the child classes to implement this method
+	 */
 	virtual std::string toString() =0;
-	std::string getFieldName() const { return fieldName; }
-	void setFieldName(std::string fieldName){ this->fieldName = fieldName; }
+	/**
+	 * getter for the name of the field
+	 */
+	std::string getFieldName() const {
+		return fieldName;
+	}
+	/**
+	 * setter for the name of the field
+	 */
+	void setFieldName(std::string fieldName) {
+		this->fieldName = fieldName;
+	}
 
-	virtual ~ReportField(){}
+	virtual ~ReportField() {
+	}
 
 protected:
 	std::string fieldName;

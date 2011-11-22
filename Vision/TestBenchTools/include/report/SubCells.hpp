@@ -4,7 +4,9 @@
 #include <report/Cell.hpp>
 
 namespace report {
-
+/**
+ * Integer representation of the base class Cell
+ */
 class IntegerCell : public Cell {
 public:
 	IntegerCell(int val) : Cell(INT), value(val) {}
@@ -18,6 +20,9 @@ private:
 	int value;
 };
 
+/**
+ * Double representation of the base class Cell
+ */
 class DoubleCell : public Cell {
 public:
 	DoubleCell(double val) : Cell(DOUBLE), value(val) {}
@@ -28,6 +33,9 @@ private:
 	double value;
 };
 
+/**
+ * String representation of the base class Cell
+ */
 class StringCell : public Cell {
 public:
 	StringCell(std::string val) : Cell(STRING), value(val) {}
