@@ -1,5 +1,5 @@
-#include <DifferensesSeperation/liblocator.h>
-#include <DifferensesSeperation/cameraException.h>
+#include <Locator/liblocator.h>
+#include <Locator/cameraException.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
