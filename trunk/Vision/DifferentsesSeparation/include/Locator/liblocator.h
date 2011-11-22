@@ -11,7 +11,7 @@
 */
 
 #include <opencv2/highgui/highgui.hpp>
-#include "cameraException.h"
+#include <Locator/cameraException.h>
 
 //Locator class
 class Locator{

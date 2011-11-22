@@ -13,8 +13,8 @@
 
 #include <iostream>
 #include <cstdio>
-#include <DifferensesSeperation/liblocator.h>
-#include <DifferensesSeperation/cameraException.h>
+#include <Locator/liblocator.h>
+#include <Locator/cameraException.h>
 
 using namespace std;
 
