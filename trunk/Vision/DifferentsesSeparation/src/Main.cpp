@@ -13,8 +13,9 @@
 
 #include <iostream>
 #include <cstdio>
-#include "liblocator.h"
-#include "cameraException.h"
+#include <DifferensesSeperation/liblocator.h>
+#include <DifferensesSeperation/cameraException.h>
+
 using namespace std;
 
 /*! 
@@ -30,12 +31,15 @@ int main(int argc, char** argv){
 		int key = 0;
 		cv::Mat Background;
 
-		while (key != 'b'){
+		std::cout << "Waiting on b(ackground) || q(uit)" << std::endl;
+		while (key != 'b' && key != 'q'){
 			key = cv::waitKey(100);
 			loca.setBackground(Background);
 			cv::imshow("background",Background);
 		}
 		cv::Mat view, difference, blobs;
+
+		std::cout << "Press q to quit" << std::endl;
 		while(key != 'q'){
 			loca.WaitForStableViewAndTakeImage(view);
 			loca.showDifference(difference);
