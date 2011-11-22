@@ -7,7 +7,7 @@
 #include <vector>
 #include <cstdio>
 #include <limits>
-#include "FGBGSeparation.h"
+#include <FGBGSeperation/FGBGSeparation.h>
 
 using namespace cv;
 using namespace std;
