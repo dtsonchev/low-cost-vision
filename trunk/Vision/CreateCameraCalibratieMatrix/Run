@@ -1,6 +1,0 @@
-#!/bin/sh
-
-./bin/Calibrate train src/Images lens1.xml
-./bin/Calibrate correct lens1.xml src/Images/frame42.jpg
-./bin/Calibrate correct lens1.xml src/Images/frame41.jpg
-echo DONE ...
