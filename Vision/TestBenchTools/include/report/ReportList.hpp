@@ -1,37 +1,31 @@
 #pragma once
+#include <stdarg.h>
 #include <string>
 #include <vector>
 #include <report/ReportField.hpp>
 #include <report/Cell.hpp>
+#include <report/CellActions.hpp>
 
 namespace report {
 /**
  * Class which can contain a list.
  */
 class ReportList: public ReportField {
-
 public:
-	/**
-	 * Create an empty reportlist
-	 */
 	ReportList();
 	/**
 	 * Create an reportlist which contains columns with the types that are given in the vector<Type> col.
 	 * Available types are INT, DOUBLE and STRING.
 	 */
-	ReportList(std::vector<Type> col);
+	ReportList(const char* name, std::vector<Type> col);
+	ReportList(const char* name, int numCols, ...);
+
 	/**
 	 * Append a new row to the reportlist
 	 */
-	void appendRow(const int cell1, ...);
-	/**
-	 * Append a new row to the reportlist
-	 */
-	void appendRow(const double cell1, ...);
-	/**
-		 * Append a new row to the reportlist
-		 */
-	void appendRow(const char * cell1, ...);
+	template <class T>
+	void appendRow(T  cell1, ...);
+
 	/**
 	 * Enable an extra row with sum per column
 	 * @param sum bool to enable/disable this row
@@ -49,12 +43,19 @@ public:
 	 * @param fullRow the column number of the full part of the percent
 	 */
 	void enablePercentRow(bool perc, unsigned int partRow, unsigned int fullRow);
+
 	/**
 	 * Returns a std::string representation of the reportlist
 	 * @return
 	 */
-	std::string toString();
-private:
+	virtual std::string toString();
+
+	virtual void setColumnNames(const char* first, ...);
+	void vsetColumnNames(const char* first, va_list ap);
+
+	virtual ~ReportList(){}
+
+protected:
 	bool hasSumRow;
 	bool hasAverageRow;
 	bool hasPercentRow;
@@ -73,4 +74,29 @@ private:
 
 };
 
+}
+
+template <class T>
+void report::ReportList::appendRow(T cell1, ...) {
+	using std::string;
+	using std::vector;
+	data.at(0).push_back(report::newCell(cell1));
+	va_list ap;
+	va_start(ap, cell1);
+	unsigned int cellCounter = 1;
+	while(!(cellCounter >= columns.size())) {
+		switch(columns.at(cellCounter)) {
+			case INT:
+			appendCell(cellCounter,va_arg(ap,int));
+			break;
+			case DOUBLE:
+			appendCell(cellCounter,va_arg(ap,double));
+			break;
+			case STRING:
+			appendCell(cellCounter,va_arg(ap,char *));
+			break;
+		}
+		cellCounter++;
+	}
+	va_end(ap);
 }

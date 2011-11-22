@@ -12,20 +12,18 @@ public:
 	 * save the report to a html-file
 	 */
 	void saveHTML(const std::string& path);
-
 	/***
 	 * Add a reportfield to the report
 	 */
-	void addField(const ReportField& field);
-
-
+	void addField(ReportField* field);
+	
 private:
 	/**
 	 * List of reportfields in the report
 	 */
 	std::vector<ReportField*> fields;
 	//TODO: doxygen
-	std::vector<std::vector<std::string> > splitText(const std::string& text);
-};
+	std::vector<std::vector<std::string> > splitText(const std::string& text, std::string anyOf);
+	};
 
 }

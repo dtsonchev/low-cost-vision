@@ -14,23 +14,26 @@ public:
 	 * Creates a histogram from vector<T> vec, with bns bins and a range from 0 to rnge
 	 */
 	template<class T>
-	ReportHistogram(const std::vector<T>& vec, unsigned int bns, unsigned int rnge);
+	ReportHistogram(const char* name, const std::vector<T>& vec, double bns, double rnge);
+
+	virtual void setColumnNames(const char* first, ...);
 	/**
 	 * returns a std::string representation of the histogram
 	 */
-	std::string toString();
+	virtual std::string toString();
 
 private:
-	unsigned int bins;
-	unsigned int range;
+	double bins;
+	double range;
 	std::vector<int> binList;
-
 };
 
 }
 
 template<class T>
-report::ReportHistogram::ReportHistogram(const std::vector<T>& vec, unsigned int bns, unsigned int rnge) {
+report::ReportHistogram::ReportHistogram(const char* name, const std::vector<T>& vec, double bns, double rnge) :
+ReportField(name)
+{
 	bins = bns;
 	range = rnge;
 
@@ -38,7 +41,6 @@ report::ReportHistogram::ReportHistogram(const std::vector<T>& vec, unsigned int
 		binList.push_back(0);
 	}
 	for (unsigned int it = 0; it < vec.size(); it++) {
-		std::cout << ((vec.at(it) / (range/bins)))+1 << std::endl;
 		binList.at((vec.at(it) / (range/bins)))++ ;
 	}
 }
