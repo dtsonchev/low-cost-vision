@@ -1,4 +1,5 @@
-#include "liblocator.h"
+#include <DifferensesSeperation/liblocator.h>
+#include <DifferensesSeperation/cameraException.h>
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -6,7 +7,6 @@
 #include <cstdio>
 #include <limits>
 #include <iostream>
-#include "cameraException.h"
 
 Locator::Locator(int device){
 	cam = cv::VideoCapture(device);
