@@ -5,7 +5,7 @@
  *      Author: glenn
  */
 
-#include "CrateGUI.h"
+#include <MetaDataApp/CrateGUI.h>
 
 CrateGUI::CrateGUI(wxWindow* parent, wxWindowID id, const wxString& title,
 		const wxPoint& pos, const wxSize& size, long style) :

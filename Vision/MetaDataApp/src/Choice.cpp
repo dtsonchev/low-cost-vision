@@ -1,5 +1,6 @@
-#include "ChoiceFrame.h"
+#include <MetaDataApp/ChoiceFrame.h>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string.hpp>
 
 using namespace std;

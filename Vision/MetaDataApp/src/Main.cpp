@@ -1,6 +1,6 @@
 #include <wx/wx.h>
-#include "ChoiceFrame.h"
-#include "ConverterGUI.h"
+#include <MetaDataApp/ChoiceFrame.h>
+#include <MetaDataApp/ConverterGUI.h>
 
 /**
  * @mainpage Meta data GUI

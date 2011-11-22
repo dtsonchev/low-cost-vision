@@ -1,4 +1,4 @@
-#include "ChoiceFrame.h"
+#include <MetaDataApp/ChoiceFrame.h>
 
 ChoiceFrame::ChoiceFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 		const wxPoint& pos, const wxSize& size, long style) :
