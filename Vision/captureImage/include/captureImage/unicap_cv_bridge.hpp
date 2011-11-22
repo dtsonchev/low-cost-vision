@@ -11,6 +11,7 @@ extern "C"
 #include <boost/thread.hpp>
 #include <opencv2/core/core.hpp>
 #include <stdexcept>
+#include <iostream>
 #include <string>
 #include <vector>
 
