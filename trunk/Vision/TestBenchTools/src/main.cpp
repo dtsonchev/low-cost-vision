@@ -6,8 +6,10 @@
 #include <boost/foreach.hpp>
 #include <imageMetaData/Types.hpp>
 #include <imageMetaData/Tools.hpp>
-#include <report/CategoryOverview.hpp>
 #include <report/Report.hpp>
+#include <report/CategoryOverview.hpp>
+#include <report/ReportHistogram.hpp>
+
 
 #ifdef __CDT_PARSER__
 #define foreach(a, b) for(a : b)
@@ -34,6 +36,7 @@ int main(int argc, char** argv){
 	CategoriesResults catsResults;
 
 	map<string, double> imgResults;
+	vector<double> histResults;
 
 	// Loop through all the images
 	foreach(ImageMD& img, images){
@@ -48,6 +51,7 @@ int main(int argc, char** argv){
 			double deviation = abs(12 - img.objects[0]["x"]) / (double)width;
 			imgResults[img.path] = deviation;
 			test = (deviation <= 0.1);
+			histResults.push_back(deviation);
 		}
 
 		// Store the results in the categories container
@@ -61,9 +65,23 @@ int main(int argc, char** argv){
 		}
 	}
 
-	CategoryOverview cat = CategoryOverview(*catsResults.begin());
+//========================================================================
+// Create the report
+//========================================================================
 	Report r;
-	r.addField(cat);
+
+	foreach(CategoryResults cr, catsResults){
+		CategoryOverview* cat = new CategoryOverview(cr);
+		cat->setColumnNames("Category", "Correct images", "Percentage correct");
+		r.addField(cat);
+		cout << cat->toString() << endl;
+	}
+
+	ReportHistogram his("Histogram", histResults, 10, 1);
+	his.setColumnNames("Range", "Correct images");
+	r.addField(&his);
+	cout << his.toString();
+
 	r.saveHTML("results.html");
 
 	return 0;

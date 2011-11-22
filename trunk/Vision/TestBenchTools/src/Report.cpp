@@ -14,11 +14,11 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-void report::Report::addField(const ReportField& field){
-	fields.push_back((ReportField* const)&field);
+void report::Report::addField(ReportField* field){
+	fields.push_back(field);
 }
 
-std::vector<std::vector<std::string> > report::Report::splitText(const std::string& text){
+std::vector<std::vector<std::string> > report::Report::splitText(const std::string& text, std::string anyOf){
 	using namespace std;
 	using namespace boost::algorithm;
 
@@ -29,7 +29,7 @@ std::vector<std::vector<std::string> > report::Report::splitText(const std::stri
 	getline(ss, s);
 	while(!ss.fail()){
 		std::vector<std::string> words;
-		split(words, s, is_any_of("\t "));
+		split(words, s, is_any_of(anyOf));
 		if(words[words.size() - 1] == ""){
 			words.pop_back();
 		}
@@ -49,8 +49,16 @@ void report::Report::saveHTML(const std::string& path){
 	foreach(ReportField* field, fields){
 		out << HTML_TABLE_START;
 		out << HTML_TABLE_CAPTION_START << field->getFieldName() << HTML_TABLE_CAPTION_END;
-		vector<vector<string> > lines = splitText(field->toString());
 
+		if(!field->getColumnNames().empty()){
+			out << HTML_TABLE_ROW_START;
+			foreach(string header, field->getColumnNames()){
+				out << HTML_TABLE_HEADER_START << header << HTML_TABLE_HEADER_END;
+			}
+			out << HTML_TABLE_ROW_END;
+		}
+
+		vector<vector<string> > lines = splitText(field->toString(), ";");
 		foreach(vector<string> line, lines){
 			out << HTML_TABLE_ROW_START;
 			foreach(string word, line){
