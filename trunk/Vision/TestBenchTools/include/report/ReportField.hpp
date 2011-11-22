@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <vector>
 
 namespace report {
 
@@ -23,7 +24,12 @@ public:
 	/**
 	 * pure virtual function forces the child classes to implement this method
 	 */
-	virtual std::string toString() =0;
+	virtual std::string toString() = 0;
+	
+	virtual ~ReportField(){}
+
+	
+
 	/**
 	 * getter for the name of the field
 	 */
@@ -37,11 +43,12 @@ public:
 		this->fieldName = fieldName;
 	}
 
-	virtual ~ReportField() {
-	}
+	virtual void setColumnNames(const char*  first, ...) = 0;
+	std::vector<const char*> getColumnNames(){return columnNames;}
 
 protected:
 	std::string fieldName;
+	std::vector<const char*> columnNames;
 };
 
 }
