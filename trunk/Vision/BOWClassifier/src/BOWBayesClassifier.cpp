@@ -1,4 +1,4 @@
-#include "BOWSVMClassifier.h"
+#include "BOWClassifier/BOWBayesClassifier.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/features2d/features2d.hpp"
 #include "opencv2/ml/ml.hpp"
@@ -12,20 +12,20 @@ using namespace cv;
 using namespace std;
 using namespace boost::filesystem;
 
-BOWSVMClassifier::BOWSVMClassifier(cv::Ptr<cv::FeatureDetector> detector,
+BOWBayesClassifier::BOWBayesClassifier(cv::Ptr<cv::FeatureDetector> detector,
 		cv::Ptr<cv::DescriptorExtractor> extractor,
 		cv::Ptr<cv::DescriptorMatcher> matcher) {
 	this->detector = detector;
 	this->extractor = extractor;
 	this->matcher = matcher;
 	this->bowExtractor = new BOWImgDescriptorExtractor(extractor, matcher);
-	this->classifier = new CvSVM();
+	this->classifier = new CvNormalBayesClassifier();
 }
 
-BOWSVMClassifier::~BOWSVMClassifier() {
+BOWBayesClassifier::~BOWBayesClassifier() {
 }
 
-bool BOWSVMClassifier::train(const std::vector<std::string>& paths,
+bool BOWBayesClassifier::train(const std::vector<std::string>& paths,
 		const cv::Mat& labels) {
 	// Construct the BoW trainer
 	BOWKMeansTrainer trainer(paths.size(), // Dictionary size
@@ -103,10 +103,11 @@ bool BOWSVMClassifier::train(const std::vector<std::string>& paths,
 	}
 
 	cout << "Training classifier..." << endl;
-	return static_cast<CvSVM*>(classifier)->train(trainingData, labels);
+	return static_cast<CvNormalBayesClassifier*>(classifier)->train(
+			trainingData, labels);
 }
 
-bool BOWSVMClassifier::classify(const cv::Mat& image, float& result) {
+bool BOWBayesClassifier::classify(const cv::Mat& image, float& result) {
 	// Vector of keypoints
 	vector<KeyPoint> keypoints;
 	// Detect the SURF features
@@ -121,12 +122,13 @@ bool BOWSVMClassifier::classify(const cv::Mat& image, float& result) {
 	bowExtractor->compute(image, keypoints, descriptors);
 
 	// Run the classifier
-	result = static_cast<CvSVM*>(classifier)->predict(descriptors);
+	result = static_cast<CvNormalBayesClassifier*>(classifier)->predict(
+			descriptors);
 
 	return true;
 }
 
-bool BOWSVMClassifier::classify(const std::vector<std::string>& paths,
+bool BOWBayesClassifier::classify(const std::vector<std::string>& paths,
 		cv::Mat& results) {
 	Mat descriptors(0, paths.size(), CV_32FC1);
 	for (vector<string>::const_iterator iter = paths.begin();
@@ -159,7 +161,8 @@ bool BOWSVMClassifier::classify(const std::vector<std::string>& paths,
 	}
 
 	// Run the classifier
-	static_cast<CvSVM*>(classifier)->predict(descriptors, &results);
+	static_cast<CvNormalBayesClassifier*>(classifier)->predict(descriptors,
+			&results);
 
 	return true;
 }

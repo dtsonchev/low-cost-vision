@@ -1,9 +1,9 @@
-#include "BOWNeuralClassifier.h"
-#include "opencv2/core/core.hpp"
-#include "opencv2/features2d/features2d.hpp"
-#include "opencv2/ml/ml.hpp"
-#include "opencv2/highgui/highgui.hpp"
-#include "boost/filesystem.hpp"
+#include <BOWClassifier/BOWSVMClassifier.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/features2d/features2d.hpp>
+#include <opencv2/ml/ml.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <boost/filesystem.hpp>
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -12,23 +12,21 @@ using namespace cv;
 using namespace std;
 using namespace boost::filesystem;
 
-BOWNeuralClassifier::BOWNeuralClassifier(cv::Mat& layers,
-		cv::Ptr<cv::FeatureDetector> detector,
+BOWSVMClassifier::BOWSVMClassifier(cv::Ptr<cv::FeatureDetector> detector,
 		cv::Ptr<cv::DescriptorExtractor> extractor,
 		cv::Ptr<cv::DescriptorMatcher> matcher) {
 	this->detector = detector;
 	this->extractor = extractor;
 	this->matcher = matcher;
 	this->bowExtractor = new BOWImgDescriptorExtractor(extractor, matcher);
-	this->classifier = new CvANN_MLP(layers);
+	this->classifier = new CvSVM();
 }
 
-BOWNeuralClassifier::~BOWNeuralClassifier() {
+BOWSVMClassifier::~BOWSVMClassifier() {
 }
 
-bool BOWNeuralClassifier::train(const std::vector<std::string>& paths,
-		const cv::Mat& labels, CvANN_MLP_TrainParams params,
-		const cv::Mat& sampleWeights) {
+bool BOWSVMClassifier::train(const std::vector<std::string>& paths,
+		const cv::Mat& labels) {
 	// Construct the BoW trainer
 	BOWKMeansTrainer trainer(paths.size(), // Dictionary size
 			TermCriteria(CV_TERMCRIT_ITER, 10, 0.001), // Criteria
@@ -104,44 +102,11 @@ bool BOWNeuralClassifier::train(const std::vector<std::string>& paths,
 		trainingData.push_back(bowDescriptor);
 	}
 
-	// Convert labels
-	cout << "Converting labels..." << endl;
-
-	// Find the different classes to determine the amount of columns
-	originalLabels.create(0, 1, CV_32FC1);
-	MatConstIterator_<float> it = labels.begin<float>(), it_end = labels.end<
-			float>();
-	for (; it != it_end; it++) {
-		MatIterator_<float> elem = find(originalLabels.begin<float>(),
-				originalLabels.end<float>(), *it);
-		if (elem == originalLabels.end<float>())
-			originalLabels.push_back(*it);
-	}
-
-	Mat neuralLabels = Mat::zeros(trainingData.rows, originalLabels.rows,
-			CV_32FC1);
-	it = labels.begin<float>(), it_end = labels.end<float>();
-	for (; it != it_end; it++) {
-		MatIterator_<float> elem = find(originalLabels.begin<float>(),
-				originalLabels.end<float>(), *it);
-		int col = distance(originalLabels.begin<float>(), elem);
-		int row = distance(labels.begin<float>(), it);
-		neuralLabels.at<float>(row, col) = 1.0f;
-	}
-
-	cout << "Training classifier with topology: "
-			<< Mat(static_cast<CvANN_MLP*>(classifier)->get_layer_sizes())
-			<< endl;
-	return static_cast<CvANN_MLP*>(classifier)->train(trainingData,
-			neuralLabels, sampleWeights, Mat(), params);
+	cout << "Training classifier..." << endl;
+	return static_cast<CvSVM*>(classifier)->train(trainingData, labels);
 }
 
-bool BOWNeuralClassifier::train(const std::vector<std::string>& paths,
-		const cv::Mat& labels) {
-	return train(paths, labels, CvANN_MLP_TrainParams(), Mat());
-}
-
-bool BOWNeuralClassifier::classify(const cv::Mat& image, float& result) {
+bool BOWSVMClassifier::classify(const cv::Mat& image, float& result) {
 	// Vector of keypoints
 	vector<KeyPoint> keypoints;
 	// Detect the SURF features
@@ -156,16 +121,12 @@ bool BOWNeuralClassifier::classify(const cv::Mat& image, float& result) {
 	bowExtractor->compute(image, keypoints, descriptors);
 
 	// Run the classifier
-	Mat output;
-	static_cast<CvANN_MLP*>(classifier)->predict(descriptors, output);
-	int idx;
-	minMaxIdx(output, NULL, NULL, NULL, &idx);
-	result = originalLabels.at<float>(idx);
+	result = static_cast<CvSVM*>(classifier)->predict(descriptors);
 
 	return true;
 }
 
-bool BOWNeuralClassifier::classify(const std::vector<std::string>& paths,
+bool BOWSVMClassifier::classify(const std::vector<std::string>& paths,
 		cv::Mat& results) {
 	Mat descriptors(0, paths.size(), CV_32FC1);
 	for (vector<string>::const_iterator iter = paths.begin();
@@ -198,15 +159,7 @@ bool BOWNeuralClassifier::classify(const std::vector<std::string>& paths,
 	}
 
 	// Run the classifier
-	Mat output;
-	static_cast<CvANN_MLP*>(classifier)->predict(descriptors, output);
-
-	results.create(output.rows, 1, CV_32FC1);
-	for (int i = 0; i < output.rows; i++) {
-		int idx;
-		minMaxIdx(output.row(i), NULL, NULL, NULL, &idx);
-		results.at<float>(i) = originalLabels.at<float>(idx);
-	}
+	static_cast<CvSVM*>(classifier)->predict(descriptors, &results);
 
 	return true;
 }
