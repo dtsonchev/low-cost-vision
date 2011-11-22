@@ -1,5 +1,3 @@
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdarg.h>
 #include <iostream>
 #include <report/Cell.hpp>
@@ -15,90 +13,65 @@ report::ReportList::ReportList() {
 	percFullRow = -1;
 }
 
-report::ReportList::ReportList(std::vector<Type> col) {
+report::ReportList::ReportList(const char* name, std::vector<Type> col) :
+		ReportField(name) {
 	hasSumRow = false;
 	hasAverageRow = false;
 	hasPercentRow = false;
 	percPartRow = -1;
 	percFullRow = -1;
-	using std::vector;
+
 	columns = col;
 	numberOfColumns = columns.size();
 	for (unsigned int i = 0; i < col.size(); i++) {
-		vector<Cell *> row;
+		std::vector<Cell *> row;
 		data.push_back(row);
 	}
 }
 
-void report::ReportList::appendRow(const int cell1, ...) {
-	using std::string;
-	using std::vector;
-	data.at(0).push_back(report::newCell(cell1));
+report::ReportList::ReportList(const char* name, int numCols, ...) :
+		ReportField(name) {
+	hasSumRow = false;
+	hasAverageRow = false;
+	hasPercentRow = false;
+	percPartRow = -1;
+	percFullRow = -1;
+
 	va_list ap;
-	va_start(ap, cell1);
-	unsigned int cellCounter = 1;
-	while(!(cellCounter >= columns.size())) {
-		switch(columns.at(cellCounter)) {
-			case INT:
-			appendCell(cellCounter,va_arg(ap,int));
-			break;
-			case DOUBLE:
-			appendCell(cellCounter,va_arg(ap,double));
-			break;
-			case STRING:
-			appendCell(cellCounter,va_arg(ap,char *));
-			break;
-		}
-		cellCounter++;
+	va_start(ap, numCols);
+	for(int i = 0; i < numCols; ++i){
+		columns.push_back((Type)va_arg(ap, int));
 	}
-	va_end(ap);
+	numberOfColumns = columns.size();
+
+	for (unsigned int i = 0; i < numberOfColumns; i++) {
+		std::vector<Cell *> row;
+		data.push_back(row);
+	}
 }
 
-void report::ReportList::appendRow(const double cell1, ...) {
+void report::ReportList::vsetColumnNames(const char* first, va_list ap){
 	using std::string;
 	using std::vector;
-	data.at(0).push_back(report::newCell(cell1));
-	va_list ap;
-	va_start(ap, cell1);
-	unsigned int cellCounter = 1;
-	while(!(cellCounter >= columns.size())) {
-		switch(columns.at(cellCounter)) {
-			case INT:
-			appendCell(cellCounter,va_arg(ap,int));
-			break;
-			case DOUBLE:
-			appendCell(cellCounter,va_arg(ap,double));
-			break;
-			case STRING:
-			appendCell(cellCounter,va_arg(ap,char *));
-			break;
+
+	if(ReportField::columnNames.empty()){
+		ReportField::columnNames.push_back(first);
+		for(unsigned int i = 1; i < columns.size(); ++i){
+			const char* temp = va_arg(ap, const char*);
+			ReportField::columnNames.push_back(temp);
 		}
-		cellCounter++;
+	} else {
+		ReportField::columnNames.at(0) = first;
+		for(unsigned int i = 1; i < columns.size(); ++i){
+			ReportField::columnNames.at(i) = va_arg(ap, const char*);
+		}
 	}
-	va_end(ap);
 }
 
-void report::ReportList::appendRow(const char * cell1, ...) {
-	using std::string;
-	using std::vector;
-	data.at(0).push_back(report::newCell(cell1));
+void report::ReportList::setColumnNames(const char* first, ...){
 	va_list ap;
-	va_start(ap, cell1);
-	unsigned int cellCounter = 1;
-	while(!(cellCounter >= columns.size())) {
-		switch(columns.at(cellCounter)) {
-			case INT:
-			appendCell(cellCounter,va_arg(ap,int));
-			break;
-			case DOUBLE:
-			appendCell(cellCounter,va_arg(ap,double));
-			break;
-			case STRING:
-			appendCell(cellCounter,va_arg(ap,char *));
-			break;
-		}
-		cellCounter++;
-	}
+	va_start(ap, first);
+	vsetColumnNames(first, ap);
 	va_end(ap);
 }
 
@@ -233,9 +206,10 @@ void report::ReportList::appendPercentRowToSs(std::stringstream& ss) {
 std::string report::ReportList::toString() {
 	std::stringstream ss;
 	for (unsigned int row = 0; row < data.at(0).size(); row++) {
-		for (unsigned int col = 0; col < data.size(); col++) {
-			ss << data.at(col).at(row)->toString() << "\t";
+		for (unsigned int col = 0; col < data.size() - 1; col++) {
+			ss << data.at(col).at(row)->toString() << ";";
 		}
+		ss << data.at(data.size() - 1).at(row)->toString();
 
 		ss << std::endl;
 
@@ -255,7 +229,6 @@ std::string report::ReportList::toString() {
 void report::ReportList::appendCell(const int column, const int value) {
 	data.at(column).push_back(report::newCell(value));
 }
-
 void report::ReportList::appendCell(const int column, const double value) {
 	data.at(column).push_back(report::newCell(value));
 }
