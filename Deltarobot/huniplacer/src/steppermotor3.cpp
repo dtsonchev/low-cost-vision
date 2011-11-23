@@ -74,6 +74,22 @@ namespace huniplacer
                     motionf& mf = owner->motion_queue.front();
                     motioni mi;
                     motion_float_to_int(mi, mf);
+                    /*printf("%d, %d, %d\n, %d %d, %d\n %d, %d %d\n %d, %d, %d\n",
+                    		mi.acceleration[0], mi.acceleration[1], mi.acceleration[2],
+                    		mi.deceleration[0], mi.deceleration[1], mi.deceleration[2],
+                    		mi.angles[0], mi.angles[1], mi.angles[2],
+                    		mi.speed[0], mi.speed[1], mi.speed[2]
+                    );*/
+                    if(mi.speed[0] == 0)
+                    	mi.speed[0] = 1;
+
+                    if(mi.speed[1] == 0)
+                    	mi.speed[1] = 1;
+
+                    if(mi.speed[2] == 0)
+                    	mi.speed[2] = 1;
+
+
                     owner->motion_queue.pop();
                     
                     owner->queue_mutex.unlock();
