@@ -4,13 +4,14 @@
 #include <report/Cell.hpp>
 
 namespace report {
+
 /**
- * Integer representation of the base class Cell
+ * Integer implementation of the base class Cell
  */
 class IntegerCell : public Cell {
 public:
 	IntegerCell(int val) : Cell(INT), value(val) {}
-	int getValue() { return value;}
+	int getValue() { return value; }
 	std::string toString() {
 		std::stringstream ss;
 		ss << value;
@@ -21,7 +22,7 @@ private:
 };
 
 /**
- * Double representation of the base class Cell
+ * Double implementation of the base class Cell
  */
 class DoubleCell : public Cell {
 public:
@@ -34,7 +35,7 @@ private:
 };
 
 /**
- * String representation of the base class Cell
+ * String implementation of the base class Cell
  */
 class StringCell : public Cell {
 public:

@@ -200,7 +200,7 @@ private:
 //========================================================================
 
 /**
- *  This contains a single category with a specific sub category
+ * This contains a single category with a specific sub category
  * first : the name of the category
  * second: the name of the sub category
  */
@@ -212,7 +212,7 @@ typedef std::pair<std::string, std::string> Category;
 typedef std::map<std::string, AnyType> Properties;
 
 /**
- *  This contains a single sub category with results
+ * This contains a single sub category with results
  * first : the name of the sub category
  * second: a pair of integers, which contains:
  * 	first : the amount of correct images in this sub category

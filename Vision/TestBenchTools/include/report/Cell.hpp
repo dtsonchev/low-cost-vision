@@ -8,7 +8,7 @@ enum Type { INT,DOUBLE,STRING};
 //////////////////////////////////////////////////////
 
 /**
- * Base Class of IntCell, DoubleCell and StringCell
+ * Base Class of IntegerCell, DoubleCell and StringCell
  */
 class Cell {
 public:

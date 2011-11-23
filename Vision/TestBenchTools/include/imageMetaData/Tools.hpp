@@ -31,9 +31,18 @@ AnyType AnyTypeFromString(std::string str);
  * @param k the key to be checked
  * @return true if it contains the key, false otherwise
  */
-template<class K, class V>
+template <class K, class V>
 bool ContainsKey(const std::map<K, V>& m, const K& k){
 	return m.find(k) != m.end();
+}
+
+template <class K, class V>
+std::vector<V> getAllValues(std::map<K, V>& m){
+	std::vector<V> values;
+	for(typename std::map<K, V>::iterator it = m.begin(); it != m.end(); ++it) {
+		values.push_back(it->second);
+	}
+	return values;
 }
 
 }

@@ -6,13 +6,13 @@
 
 namespace report {
 /**
- * Creates an overview of a CategoryResults.
+ * This class is a ReportField that represents the results of a certain category
  */
 class CategoryOverview : public ReportList{
 public:
 	/**
-	 * Creates an overview of a CategoryResults.
-	 * @param cr the CategoryResults on which the overview is created
+	 * Creates an overview from a CategoryResults object.
+	 * @param cr the CategoryResults from the overview is created
 	 */
 	CategoryOverview(const imageMetaData::CategoryResults& cr);
 };
