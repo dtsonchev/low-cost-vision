@@ -73,12 +73,12 @@ namespace huniplacer_gui
 
     void huniplacer_frame_impl::popup_warn(const wxString& msg)
     {
-        wxMessageBox(msg, wxT("warning"), wxOK | wxCENTRE, frame);
+        wxMessageBox(msg, wxT("warning"));
     }
 
     void huniplacer_frame_impl::popup_err(const wxString& msg)
     {
-        wxMessageBox(msg, wxT("error"), wxOK | wxCENTRE, frame);
+        wxMessageBox(msg, wxT("error"));
     }
 
     void huniplacer_frame_impl::motionthread_exhandler(std::runtime_error& err)
