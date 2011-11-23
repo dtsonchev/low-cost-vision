@@ -7,35 +7,44 @@
 #include <report/CellActions.hpp>
 
 namespace report {
+
 /**
- * Class which can contain a list.
+ * This class is the most basic ReportField containing a matrix of values.
  */
 class ReportList: public ReportField {
 public:
-	ReportList();
 	/**
-	 * Create an reportlist which contains columns with the types that are given in the vector<Type> col.
+	 * Create a reportlist that contains columns with the types that are given in the vector<Type> col.
 	 * Available types are INT, DOUBLE and STRING.
+	 * @param name the name of the field
+	 * @param col
 	 */
 	ReportList(const char* name, std::vector<Type> col);
+	/**
+	 * Create a reportlist that contains columns with the types that are given.
+	 * Available types are INT, DOUBLE and STRING.
+	 * @param name the name of the field
+	 * @param numCols the number of columns you want
+	 */
 	ReportList(const char* name, int numCols, ...);
 
 	/**
 	 * Append a new row to the reportlist
+	 * @param cell1 the first value in the row
 	 */
 	template <class T>
 	void appendRow(T  cell1, ...);
 
 	/**
-	 * Enable an extra row with sum per column
+	 * Enable or disable an extra row with sum per column
 	 * @param sum bool to enable/disable this row
 	 */
-	void enableSumRow(bool sum);
+	void enableSumRow(bool sum = true);
 	/**
-	 * Enable an extra row with the average per column
+	 * Enable or disable an extra row with the average per column
 	 * @param avg bool to enable/disable this row
 	 */
-	void enableAverageRow(bool avg);
+	void enableAverageRow(bool avg = true);
 	/**
 	 * Enable an extra row with the percent of partrow in fullRow
 	 * @param perc bool to enable/disable this row
@@ -45,14 +54,27 @@ public:
 	void enablePercentRow(bool perc, unsigned int partRow, unsigned int fullRow);
 
 	/**
-	 * Returns a std::string representation of the reportlist
-	 * @return
+	 * Returns a string representation of the reportlist,
+	 * with the columns seperated by ';' and each row on a new line
+	 * @return the formatted string
 	 */
 	virtual std::string toString();
 
+	/**
+	 * Set the names of the columns
+	 * @param first the name of the first column
+	 */
 	virtual void setColumnNames(const char* first, ...);
+	/**
+	 * Set the names of the columns (with va_list)
+	 * @param first the name of the first column
+	 * @param ap list of parameters containing the names of the rest of the columns
+	 */
 	void vsetColumnNames(const char* first, va_list ap);
 
+	/**
+	 * Destructor
+	 */
 	virtual ~ReportList(){}
 
 protected:

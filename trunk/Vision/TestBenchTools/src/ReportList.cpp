@@ -5,14 +5,6 @@
 #include <report/ReportField.hpp>
 #include <report/ReportList.hpp>
 
-report::ReportList::ReportList() {
-	hasSumRow = false;
-	hasAverageRow = false;
-	hasPercentRow = false;
-	percPartRow = -1;
-	percFullRow = -1;
-}
-
 report::ReportList::ReportList(const char* name, std::vector<Type> col) :
 		ReportField(name) {
 	hasSumRow = false;

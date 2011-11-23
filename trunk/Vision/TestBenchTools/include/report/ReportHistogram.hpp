@@ -6,19 +6,33 @@
 
 namespace report {
 /**
- * Class which can make a histogram of a given vector<int> vector<double>
+ * This class is a ReportField containing a histogram representation
+ * of a list of int's or doubles
  */
 class ReportHistogram : public ReportField {
 public:
 	/**
 	 * Creates a histogram from vector<T> vec, with bns bins and a range from 0 to rnge
 	 */
+	/**
+	 * Creates a histogram from a list of values
+	 * @param name the name of the field
+	 * @param vec a list of int's ot doubles
+	 * @param bns the number of ranges
+	 * @param rnge the maximum value
+	 */
 	template<class T>
 	ReportHistogram(const char* name, const std::vector<T>& vec, double bns, double rnge);
 
+	/**
+	 * Set the names of the columns
+	 * @param first first the name of the first column
+	 */
 	virtual void setColumnNames(const char* first, ...);
 	/**
-	 * returns a std::string representation of the histogram
+	 * Returns a string representation of the histogram,
+	 * with the columns seperated by ';' and each row on a new line
+	 * @return the formatted string
 	 */
 	virtual std::string toString();
 

@@ -4,25 +4,23 @@
 
 namespace report {
 /**
- * Class which contains a full report
+ * This class contains a full report
  */
 class Report{
 public:
-	/***
-	 * save the report to a html-file
+	/**
+	 * Save the report to a file with html formatting
+	 * @param path the full path of the file to save to
 	 */
 	void saveHTML(const std::string& path);
-	/***
-	 * Add a reportfield to the report
+	/**
+	 * Add a ReportField to the report
+	 * @param field the field to add
 	 */
 	void addField(ReportField* field);
 	
 private:
-	/**
-	 * List of reportfields in the report
-	 */
 	std::vector<ReportField*> fields;
-	//TODO: doxygen
 	std::vector<std::vector<std::string> > splitText(const std::string& text, std::string anyOf);
 	};
 
