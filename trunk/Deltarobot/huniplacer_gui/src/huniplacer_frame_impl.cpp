@@ -83,7 +83,11 @@ namespace huniplacer_gui
 
     void huniplacer_frame_impl::motionthread_exhandler(std::runtime_error& err)
     {
-        popup_err(wxT("an error occured in the steppermotor motion thread"));
+        //popup_err(wxT("an error occured in the steppermotor motion thread"));
+        fprintf(stderr,
+            "an error of type %s occured in the motion thread\n"
+            "what(): %s\n",
+            typeid(err).name(), err.what());
     }
 
     void huniplacer_frame_impl::update_pos_txtfields(void)
@@ -174,6 +178,7 @@ namespace huniplacer_gui
         if(try_move(x, y, cur_z))
         {
             update_pos_txtfields();
+            pos_panel->Refresh();
         }
     }
 
