@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.0
+# version: v0.5.1
 #######################################################################
 
 #######################################################################
@@ -8,13 +8,13 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := library
+BUILDTYPE           := binary
 
 # name of target binary or library
-TARGET              := huniplacer
+TARGET              := huniplacer_gui
 
 # virtual path
-VPATH               := 
+VPATH               :=
 
 # c++ compiler
 CXX                 := g++
@@ -23,10 +23,10 @@ CXX                 := g++
 CXXFLAGS            := -Wall -g3
 
 # preprocessor flags
-CPPFLAGS            := 
+CPPFLAGS            := $(shell wx-config --cxxflags)
 
 # linker flags
-LFLAGS              := 
+LFLAGS              := $(shell wx-config --libs)
 
 # arguments passed to 'ar' when archiving '.a' files
 ARFLAGS             := 
@@ -45,7 +45,7 @@ LINKERPATHS         :=
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
-DEP_PROJ            := 
+DEP_PROJ            := huniplacer
 
 #######################################################################
 # constants
@@ -56,8 +56,6 @@ DEP_PROJ            :=
 SHELL                = /bin/sh
 PRINTF               = /usr/bin/printf
 DEPGEN               = $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
-TRUE                 := true
-FALSE                :=
 
 # directories
 BINDIR              := bin
@@ -81,6 +79,11 @@ endif
 # append to PROJ_DIRS
 PROJ_PATHS := $(strip $(subst :, , $(LCV_PROJECT_PATH)))
 DEP_PROJ   := $(strip $(DEP_PROJ))
+ifeq ($(PROJ_PATHS), )
+ifneq ($(DEP_PROJ), )
+$(error dependency projects were specified but LCV_PROJECT_PATH is empty)
+endif
+endif
 PROJ_DIRS  := \
 	$(foreach DEP,$(DEP_PROJ), \
         $(eval DEP_FOUND := ) \
@@ -91,7 +94,7 @@ PROJ_DIRS  := \
 					$(DIR) \
 				) \
 			) \
-			$(if $(DEP_FOUND),, $(error can not find project $(DEP))) \
+			$(if $(DEP_FOUND),,$(error can not find project $(DEP))) \
 		) \
 	)
 PROJ_DIRS := $(strip $(PROJ_DIRS))
@@ -235,10 +238,10 @@ all: $(TARGET)
 # recursively make al dependency projects
 .PHONY: dep
 dep:
-	#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
-	#	$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
-	#	rm $(BUILDDIR)/expose.sh; \
-	#fi
+#	@if [ -e $(BUILDDIR)/expose.sh ] ; then \
+#		$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
+#		rm $(BUILDDIR)/expose.sh; \
+#	fi
 	@ERR=0; \
 	for DEP in $(PROJ_DIRS); do \
 		$(MAKE) -C "$$DEP" dep; \
