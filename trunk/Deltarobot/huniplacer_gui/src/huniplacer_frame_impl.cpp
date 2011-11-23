@@ -12,7 +12,7 @@ namespace huniplacer_gui
         huniplacer_frame(NULL),
         motors(NULL),
         robot(NULL),
-        cur_x(0), cur_y(0), cur_z(0)
+        cur_x(0), cur_y(0), cur_z(-120)
     {
         ik_model = new huniplacer::inverse_kinematics_impl(
             huniplacer::measures::BASE,
@@ -22,6 +22,9 @@ namespace huniplacer_gui
             huniplacer::measures::HIP_ANKLE_ANGLE_MAX);
         init_deltarobot();
         button_off->Enable(false);
+        update_pos_txtfields();
+        update_z_slider();
+        pos_panel->Refresh();
     }
 
     huniplacer_frame_impl::~huniplacer_frame_impl(void)
@@ -95,8 +98,26 @@ namespace huniplacer_gui
         txtbox_z->SetValue(sz);
     }
 
+    void huniplacer_frame_impl::update_z_slider(void)
+    {
+        double z = utils::convert_scale(
+            0,
+            slider_z_pos->GetMax(),
+            huniplacer::measures::MIN_Z,
+            huniplacer::measures::MAX_Z,
+            cur_z);
+        slider_z_pos->SetValue(z);
+    }
+
     void huniplacer_frame_impl::try_move(double x, double y, double z)
     {
+        printf(
+            "try_move called with:\n"
+            "  x: %lf\n"
+            "  y: %lf\n"
+            "  z: %lf\n",
+            x, y, z);
+
         try
         {
             double speed;
@@ -182,8 +203,11 @@ namespace huniplacer_gui
 
     void huniplacer_frame_impl::button_moveOnButtonClick(wxCommandEvent& event)
     {
-        //TODO implement
-        puts("move button click");
+        double x, y, z;
+        txtbox_x->GetValue().ToDouble(&x);
+        txtbox_y->GetValue().ToDouble(&y);
+        txtbox_z->GetValue().ToDouble(&z);
+        try_move(x, y, z);
     }
 
     void huniplacer_frame_impl::button_circleOnButtonClick(wxCommandEvent& event)
