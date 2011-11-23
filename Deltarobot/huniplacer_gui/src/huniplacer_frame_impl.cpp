@@ -128,7 +128,7 @@ namespace huniplacer_gui
     void huniplacer_frame_impl::pos_panelOnLeftDown(wxMouseEvent& event)
     {
         int w, h;
-        int px, py
+        int px, py;
         pos_panel->GetSize(&w, &h);
         event.GetPosition(&px, &py);
 
