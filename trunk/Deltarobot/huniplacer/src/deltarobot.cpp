@@ -24,13 +24,6 @@ namespace huniplacer
     deltarobot::~deltarobot(void)
     {
         stop();
-        motors.moveto(
-            motionf(
-                0, 0, 0,
-                utils::rad(90), utils::rad(90), utils::rad(90),
-                utils::rad(360), utils::rad(360), utils::rad(360),
-                utils::rad(360), utils::rad(360), utils::rad(360)),
-            false);
     }
     
     bool deltarobot::is_valid_angle(double angle)

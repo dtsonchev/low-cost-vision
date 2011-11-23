@@ -12,7 +12,7 @@ namespace huniplacer_gui
         huniplacer_frame(NULL),
         motors(NULL),
         robot(NULL),
-        cur_x(0), cur_y(0), cur_z(-120)
+        cur_x(0), cur_y(0), cur_z(-150)
     {
         ik_model = new huniplacer::inverse_kinematics_impl(
             huniplacer::measures::BASE,
@@ -109,7 +109,7 @@ namespace huniplacer_gui
         slider_z_pos->SetValue(z);
     }
 
-    void huniplacer_frame_impl::try_move(double x, double y, double z)
+    bool huniplacer_frame_impl::try_move(double x, double y, double z)
     {
         printf(
             "try_move called with:\n"
@@ -130,10 +130,12 @@ namespace huniplacer_gui
             }
 
             printf("speed = %lf\n", speed);
-            robot->moveto(huniplacer::point3(x, y, z), /*speed*/360);
+            robot->moveto(huniplacer::point3(x, y, z), speed);
             cur_x = x;
             cur_y = y;
             cur_z = z;
+
+            return true;
         }
         catch(std::runtime_error& err)
         {
@@ -144,6 +146,8 @@ namespace huniplacer_gui
               << wxString("what(): ", wxConvLocal) << wxString(err.what(), wxConvLocal);
             popup_err(s);
         }
+
+        return false;
     }
 
     //events
@@ -167,13 +171,18 @@ namespace huniplacer_gui
                 h,
                 py);
 
-        try_move(x, y, cur_z);
+        if(try_move(x, y, cur_z))
+        {
+            update_pos_txtfields();
+        }
     }
 
     void huniplacer_frame_impl::pos_panelOnPaint(wxPaintEvent& event)
     {
         //clear
         wxPaintDC dc(pos_panel);
+        dc.SetPen(wxPen(pos_panel->GetForegroundColour()));
+        dc.SetBrush(wxBrush(pos_panel->GetBackgroundColour()));
         dc.Clear();
 
         int w, h;
@@ -183,10 +192,16 @@ namespace huniplacer_gui
         //TODO draw range ;)
 
         //draw lines
-        wxPoint eff_pos(
-            utils::convert_scale(0, w, huniplacer::measures::MIN_X, huniplacer::measures::MAX_X, cur_x),
-            utils::convert_scale(0, h, huniplacer::measures::MIN_Y, huniplacer::measures::MAX_Y, cur_y));
-        dc.DrawLine(wxPoint(0, eff_pos.y), wxPoint(eff_pos.x, 0));
+        double x = utils::convert_scale(
+            0, w,
+            huniplacer::measures::MIN_X, huniplacer::measures::MAX_X,
+            cur_x);
+        double y = utils::convert_scale(
+            0, h,
+            huniplacer::measures::MIN_Y, huniplacer::measures::MAX_Y,
+            cur_y);
+        dc.DrawLine(wxPoint(0, y), wxPoint(w-1, y));
+        dc.DrawLine(wxPoint(x, 0), wxPoint(x, h-1));
     }
 
     void huniplacer_frame_impl::slider_z_posOnLeftUp(wxMouseEvent& event)
@@ -197,7 +212,11 @@ namespace huniplacer_gui
             0,
             slider_z_pos->GetMax(),
             slider_z_pos->GetValue());
-        try_move(cur_x, cur_y, z);
+
+        if(try_move(cur_x, cur_y, z))
+        {
+            update_pos_txtfields();
+        }
 
         event.Skip();
     }
@@ -208,7 +227,11 @@ namespace huniplacer_gui
         txtbox_x->GetValue().ToDouble(&x);
         txtbox_y->GetValue().ToDouble(&y);
         txtbox_z->GetValue().ToDouble(&z);
-        try_move(x, y, z);
+        if(try_move(x, y, z))
+        {
+            update_z_slider();
+            pos_panel->Refresh();
+        }
     }
 
     void huniplacer_frame_impl::button_circleOnButtonClick(wxCommandEvent& event)
