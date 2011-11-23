@@ -129,7 +129,8 @@ namespace huniplacer_gui
                 txtbox_speed->SetValue(s);
             }
 
-            robot->moveto(huniplacer::point3(x, y, z), speed);
+            printf("speed = %lf\n", speed);
+            robot->moveto(huniplacer::point3(x, y, z), /*speed*/360);
             cur_x = x;
             cur_y = y;
             cur_z = z;
