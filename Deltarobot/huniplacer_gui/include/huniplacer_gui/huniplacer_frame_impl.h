@@ -30,7 +30,7 @@ namespace huniplacer_gui
             static void motionthread_exhandler(std::runtime_error& err);
             void update_pos_txtfields(void);
             void update_z_slider(void);
-            void try_move(double x, double y, double z);
+            bool try_move(double x, double y, double z);
 
         public:
             huniplacer_frame_impl(void);
