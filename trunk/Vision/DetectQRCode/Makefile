@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.0
+# version: v0.5.1
 #######################################################################
 
 #######################################################################
@@ -97,7 +97,7 @@ PROJ_DIRS  := \
 	)
 PROJ_DIRS := $(strip $(PROJ_DIRS))
 
-# TODO implement project dependecy crap generation
+# TODO implement project dependecy generation
 # generate and execute project expose script
 #VOID := $(shell \
 #    if [ ! -e $(BUILDDIR)/expose.sh ] ; then \
@@ -122,8 +122,8 @@ $(foreach PKG, $(PKGCONF_LIBRARIES), \
 	) \
 )
 ifneq ($(words $(PKGCONF_LIBRARIES)), 0)
-CXXFLAGS := $(shell pkg-config --cflags $(PKGCONF_LIBRARIES))
-LFLAGS   := $(shell pkg-config --libs $(PKGCONF_LIBRARIES))
+CXXFLAGS += $(shell pkg-config --cflags $(PKGCONF_LIBRARIES))
+LFLAGS   += $(shell pkg-config --libs $(PKGCONF_LIBRARIES))
 endif
 
 # add paths of required projects
