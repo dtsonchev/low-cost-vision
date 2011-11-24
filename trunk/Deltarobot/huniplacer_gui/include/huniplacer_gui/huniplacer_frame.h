@@ -23,9 +23,11 @@
 #include <wx/frame.h>
 
 ///////////////////////////////////////////////////////////////////////////
-
 namespace huniplacer_gui
 {
+///////////////////////////////////////////////////////////////////////////////
+/// Class huniplacer_frame
+///////////////////////////////////////////////////////////////////////////////
     class huniplacer_frame: public wxFrame
     {
         private:
@@ -45,7 +47,8 @@ namespace huniplacer_gui
             wxStaticText* lab_radius;
             wxTextCtrl* txtbox_circle;
             wxButton* button_circle;
-            wxButton* button_reset;
+            wxButton* button_connect;
+            wxButton* button_disconnect;
             wxButton* button_on;
             wxButton* button_off;
 
@@ -70,7 +73,11 @@ namespace huniplacer_gui
             {
                 event.Skip();
             }
-            virtual void button_resetOnButtonClick(wxCommandEvent& event)
+            virtual void button_connectOnButtonClick(wxCommandEvent& event)
+            {
+                event.Skip();
+            }
+            virtual void button_disconnectOnButtonClick(wxCommandEvent& event)
             {
                 event.Skip();
             }
@@ -88,10 +95,11 @@ namespace huniplacer_gui
             huniplacer_frame(wxWindow* parent, wxWindowID id = wxID_ANY,
                     const wxString& title = wxT("huniplacer diagnostic tool"),
                     const wxPoint& pos = wxDefaultPosition, const wxSize& size =
-                            wxSize(540, 665),
+                            wxSize(540, 710),
                     long style = wxDEFAULT_FRAME_STYLE | wxTAB_TRAVERSAL);
             ~huniplacer_frame();
 
     };
 }
+
 #endif //__huniplacer_frame__

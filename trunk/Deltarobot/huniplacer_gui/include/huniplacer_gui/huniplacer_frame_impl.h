@@ -21,7 +21,7 @@ namespace huniplacer_gui
             double cur_z;
             std::vector<wxCoord> bounds;
 
-            void init_deltarobot(void);
+            void init_deltarobot(const char* device);
             void destroy_deltarobot(void);
 
             static void popup_warn(const wxString& msg);
@@ -42,7 +42,8 @@ namespace huniplacer_gui
             void slider_z_posOnLeftUp(wxMouseEvent& event);
             void button_moveOnButtonClick(wxCommandEvent& event);
             void button_circleOnButtonClick(wxCommandEvent& event);
-            void button_resetOnButtonClick(wxCommandEvent& event);
+            void button_connectOnButtonClick(wxCommandEvent& event);
+            void button_disconnectOnButtonClick(wxCommandEvent& event);
             void button_onOnButtonClick(wxCommandEvent& event);
             void button_offOnButtonClick(wxCommandEvent& event);
     };
