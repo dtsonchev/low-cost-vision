@@ -16,7 +16,7 @@ namespace huniplacer_gui
             long style) :
             wxFrame(parent, id, title, pos, size, style)
     {
-        this->SetSizeHints(wxSize(500, 640), wxDefaultSize);
+        this->SetSizeHints(wxSize(500, 710), wxDefaultSize);
 
         wxBoxSizer* root_sizer_1;
         root_sizer_1 = new wxBoxSizer(wxVERTICAL);
@@ -165,9 +165,13 @@ namespace huniplacer_gui
         wxBoxSizer* misc_sizer;
         misc_sizer = new wxBoxSizer(wxVERTICAL);
 
-        button_reset = new wxButton(this, wxID_ANY, wxT("reset"),
+        button_connect = new wxButton(this, wxID_ANY, wxT("connect"),
                 wxDefaultPosition, wxDefaultSize, 0);
-        misc_sizer->Add(button_reset, 0, wxALL, 5);
+        misc_sizer->Add(button_connect, 0, wxALL, 5);
+
+        button_disconnect = new wxButton(this, wxID_ANY, wxT("disconnect"),
+                wxDefaultPosition, wxDefaultSize, 0);
+        misc_sizer->Add(button_disconnect, 0, wxALL, 5);
 
         button_on = new wxButton(this, wxID_ANY, wxT("on"), wxDefaultPosition,
                 wxDefaultSize, 0);
@@ -192,68 +196,82 @@ namespace huniplacer_gui
 
         // Connect Events
         pos_panel->Connect(wxEVT_LEFT_DOWN,
-                wxMouseEventHandler( huniplacer_frame::pos_panelOnLeftDown ),
+                wxMouseEventHandler(huniplacer_frame::pos_panelOnLeftDown),
                 NULL, this);
         pos_panel->Connect(wxEVT_PAINT,
-                wxPaintEventHandler( huniplacer_frame::pos_panelOnPaint ), NULL,
+                wxPaintEventHandler(huniplacer_frame::pos_panelOnPaint), NULL,
                 this);
         slider_z_pos->Connect(wxEVT_LEFT_UP,
-                wxMouseEventHandler( huniplacer_frame::slider_z_posOnLeftUp ),
+                wxMouseEventHandler(huniplacer_frame::slider_z_posOnLeftUp),
                 NULL, this);
         button_move->Connect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_moveOnButtonClick ),
-                NULL, this);
+                wxCommandEventHandler(
+                        huniplacer_frame::button_moveOnButtonClick), NULL,
+                this);
         button_circle->Connect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_circleOnButtonClick ),
-                NULL, this);
-        button_reset->Connect(
+                wxCommandEventHandler(
+                        huniplacer_frame::button_circleOnButtonClick), NULL,
+                this);
+        button_connect->Connect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_resetOnButtonClick ),
-                NULL, this);
-        button_on->Connect(
+                wxCommandEventHandler(
+                        huniplacer_frame::button_connectOnButtonClick), NULL,
+                this);
+        button_disconnect->Connect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_onOnButtonClick ),
+                wxCommandEventHandler(
+                        huniplacer_frame::button_disconnectOnButtonClick), NULL,
+                this);
+        button_on->Connect(wxEVT_COMMAND_BUTTON_CLICKED,
+                wxCommandEventHandler(huniplacer_frame::button_onOnButtonClick),
                 NULL, this);
         button_off->Connect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_offOnButtonClick ),
-                NULL, this);
+                wxCommandEventHandler(
+                        huniplacer_frame::button_offOnButtonClick), NULL, this);
     }
 
     huniplacer_frame::~huniplacer_frame()
     {
         // Disconnect Events
         pos_panel->Disconnect(wxEVT_LEFT_DOWN,
-                wxMouseEventHandler( huniplacer_frame::pos_panelOnLeftDown ),
+                wxMouseEventHandler(huniplacer_frame::pos_panelOnLeftDown),
                 NULL, this);
         pos_panel->Disconnect(wxEVT_PAINT,
-                wxPaintEventHandler( huniplacer_frame::pos_panelOnPaint ), NULL,
+                wxPaintEventHandler(huniplacer_frame::pos_panelOnPaint), NULL,
                 this);
         slider_z_pos->Disconnect(wxEVT_LEFT_UP,
-                wxMouseEventHandler( huniplacer_frame::slider_z_posOnLeftUp ),
+                wxMouseEventHandler(huniplacer_frame::slider_z_posOnLeftUp),
                 NULL, this);
         button_move->Disconnect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_moveOnButtonClick ),
-                NULL, this);
+                wxCommandEventHandler(
+                        huniplacer_frame::button_moveOnButtonClick), NULL,
+                this);
         button_circle->Disconnect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_circleOnButtonClick ),
-                NULL, this);
-        button_reset->Disconnect(
+                wxCommandEventHandler(
+                        huniplacer_frame::button_circleOnButtonClick), NULL,
+                this);
+        button_connect->Disconnect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_resetOnButtonClick ),
-                NULL, this);
-        button_on->Disconnect(
+                wxCommandEventHandler(
+                        huniplacer_frame::button_connectOnButtonClick), NULL,
+                this);
+        button_disconnect->Disconnect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_onOnButtonClick ),
+                wxCommandEventHandler(
+                        huniplacer_frame::button_disconnectOnButtonClick), NULL,
+                this);
+        button_on->Disconnect(wxEVT_COMMAND_BUTTON_CLICKED,
+                wxCommandEventHandler(huniplacer_frame::button_onOnButtonClick),
                 NULL, this);
         button_off->Disconnect(
                 wxEVT_COMMAND_BUTTON_CLICKED,
-                wxCommandEventHandler( huniplacer_frame::button_offOnButtonClick ),
-                NULL, this);
+                wxCommandEventHandler(
+                        huniplacer_frame::button_offOnButtonClick), NULL, this);
 
     }
 }

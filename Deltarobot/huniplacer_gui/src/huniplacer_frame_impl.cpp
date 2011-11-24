@@ -3,6 +3,8 @@
 #include <huniplacer_gui/utils.h>
 #include <cstdio>
 #include <typeinfo>
+#include <iostream>
+#include <sstream>
 
 extern huniplacer_gui::huniplacer_frame_impl* frame;
 
@@ -20,8 +22,9 @@ namespace huniplacer_gui
             huniplacer::measures::EFFECTOR,
             huniplacer::measures::ANKLE,
             huniplacer::measures::HIP_ANKLE_ANGLE_MAX);
-        init_deltarobot();
+        init_deltarobot("/dev/ttyS0");
         button_off->Enable(false);
+        button_on->Enable(false);
         update_pos_txtfields();
         update_z_slider();
         pos_panel->Refresh();
@@ -33,12 +36,12 @@ namespace huniplacer_gui
         delete ik_model;
     }
 
-    void huniplacer_frame_impl::init_deltarobot(void)
+    void huniplacer_frame_impl::init_deltarobot(const char* device)
     {
         if(motors == NULL && robot == NULL)
         {
             modbus_t* rtu = modbus_new_rtu(
-                "/dev/ttyS0",
+                device,
                 crd514_kd::rtu_config::BAUDRATE,
                 crd514_kd::rtu_config::PARITY,
                 crd514_kd::rtu_config::DATA_BITS,
@@ -245,10 +248,23 @@ namespace huniplacer_gui
         puts("circle button click");
     }
 
-    void huniplacer_frame_impl::button_resetOnButtonClick(wxCommandEvent& event)
+    void huniplacer_frame_impl::button_connectOnButtonClick(wxCommandEvent& event)
     {
-        //TODO implement
-        puts("reset button click");
+        wxFileDialog browser(this);
+        if(browser.ShowModal() == wxID_OK)
+        {
+            //TODO construct deltarobot
+            printf("[unicode] browser.GetPath = %ls\n", browser.GetPath().c_str());
+            printf("[ASCII]   browser.GetPath = %s\n", browser.GetPath().c_str());
+            std::stringstream ss;
+            ss << browser.GetPath().c_str();
+            printf("[ASCII] ss.str = %s\n", ss.str().c_str());
+        }
+    }
+
+    void huniplacer_frame_impl::button_disconnectOnButtonClick(wxCommandEvent& event)
+    {
+        destroy_deltarobot();
     }
 
     void huniplacer_frame_impl::button_onOnButtonClick(wxCommandEvent& event)
