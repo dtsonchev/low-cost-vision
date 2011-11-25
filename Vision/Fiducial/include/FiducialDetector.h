@@ -21,6 +21,8 @@ class FiducialDetector {
 private:
 	void polarLine(cv::Mat& image, float rho, float theta, cv::Scalar color,
 			int thickness);
+	bool detectMedianCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
+	bool detectMeanCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
 public:
 	//! Turn on console debug messages
 	bool verbose;
@@ -32,12 +34,14 @@ public:
 	int distance;
 	//! Vote threshold for circles
 	int circleVotes;
-	//! Vote threshold for lines, thinner lines get less votes.
+	//! Minimum vote threshold for lines, thinner lines get less votes.
 	int lineVotes;
+	//! Maximum amount of lines that need to be found.
+	unsigned int maxLines;
 	//! Minimum distance between lines to use for the center line.
-	int minDist;
+	float minDist;
 	//! Maximum distance between lines to use for the center line.
-	int maxDist;
+	float maxDist;
 	//! First canny threshold
 	int lowThreshold;
 	//! Second canny threshold
@@ -50,8 +54,8 @@ public:
 	 *  the public fields after construction.
 	 */
 	FiducialDetector(int minRad = 20, int maxRad = 40, int distance = 70,
-			int circleVotes = 100, int minDist = 1, int maxDist = 5,
-			int lineVotes = 20, int lowThreshold = 125,
+			int circleVotes = 100, float minDist = 1.5f, float maxDist = 5.0f,
+			int lineVotes = 10, unsigned int maxLines = 10, int lowThreshold = 125,
 			int highThreshold = 300);
 	virtual ~FiducialDetector();
 
