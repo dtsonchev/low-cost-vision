@@ -24,6 +24,8 @@ void process(cv::Mat& image, cv::Mat& debug) {
 
 	if(showContours) {
 		cv::Mat canny;
+		cv::Canny(image, canny, fidDetector.lowThreshold, fidDetector.highThreshold);
+		cv::imshow("Canny", canny);
 		cv::Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
 		std::vector<std::vector<cv::Point> > contoursCanny;
 		cv::findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
@@ -56,7 +58,7 @@ void process(cv::Mat& image, cv::Mat& debug) {
 	if(showValues) {
 		cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 90), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
 		std::stringstream ss;
-		ss << "Votes: " << fidDetector.lineVotes << " | " << fidDetector.circleVotes;
+		ss << "Votes: " << fidDetector.lineVotes << "/" << fidDetector.maxLines << " | " << fidDetector.circleVotes;
 		cv::putText(debug, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 		ss.str("");
 		ss << "Circle radius: " << fidDetector.minRad << "/" << fidDetector.maxRad;
@@ -77,6 +79,8 @@ void callback(char key, cv::Mat* image = NULL) {
 		case 's': fidDetector.lineVotes--; break;
 		case 'a': fidDetector.circleVotes--; break;
 		case 'd': fidDetector.circleVotes++; break;
+		case ']': fidDetector.maxLines++; break;
+		case '[': fidDetector.maxLines--; break;
 		case 'u': fidDetector.minRad++; break;
 		case 'j': fidDetector.minRad--; break;
 		case 'h': fidDetector.maxRad--; break;
