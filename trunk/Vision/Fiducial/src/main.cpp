@@ -56,7 +56,7 @@ void process(cv::Mat& image, cv::Mat& debug) {
 	}
 
 	if(showValues) {
-		cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 90), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
+		cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 110), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
 		std::stringstream ss;
 		ss << "Votes: " << fidDetector.lineVotes << "/" << fidDetector.maxLines << " | " << fidDetector.circleVotes;
 		cv::putText(debug, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
@@ -64,11 +64,14 @@ void process(cv::Mat& image, cv::Mat& debug) {
 		ss << "Circle radius: " << fidDetector.minRad << "/" << fidDetector.maxRad;
 		cv::putText(debug, ss.str(), cv::Point(20, 40), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 		ss.str("");
-		ss << "Line distance:  " << fidDetector.minDist << "/" << fidDetector.maxDist;
+		ss << "Line distance: " << fidDetector.minDist << "/" << fidDetector.maxDist;
 		cv::putText(debug, ss.str(), cv::Point(20, 60), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 		ss.str("");
-		ss << "Threshold:  " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
+		ss << "Threshold: " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
 		cv::putText(debug, ss.str(), cv::Point(20, 80), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		ss.str("");
+		ss << "Method: " << ((fidDetector.centerMethod==FiducialDetector::MEAN)?"Mean":(fidDetector.centerMethod==FiducialDetector::MEDOID_RHO)?"MedoidRho":"MedoidTheta");
+		cv::putText(debug, ss.str(), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 	}
 }
 
@@ -85,10 +88,10 @@ void callback(char key, cv::Mat* image = NULL) {
 		case 'j': fidDetector.minRad--; break;
 		case 'h': fidDetector.maxRad--; break;
 		case 'k': fidDetector.maxRad++; break;
-		case 'r': fidDetector.minDist++; break;
-		case 'f': fidDetector.minDist--; break;
-		case 't': fidDetector.maxDist++; break;
-		case 'g': fidDetector.maxDist--; break;
+		case 'r': fidDetector.minDist+=.1; break;
+		case 'f': fidDetector.minDist-=.1; break;
+		case 't': fidDetector.maxDist+=.1; break;
+		case 'g': fidDetector.maxDist-=.1; break;
 		case 'x': fidDetector.lowThreshold+=10; break;
 		case 'z': fidDetector.lowThreshold-=10; break;
 		case 'v': fidDetector.highThreshold+=10; break;
@@ -101,6 +104,7 @@ void callback(char key, cv::Mat* image = NULL) {
 		case '/': showContours=!showContours; break;
 		case 'p': showDebug=!showDebug; break;
 		case 'y': imwrite("screenshot.png", *image); break;
+		case '\\': fidDetector.centerMethod++; fidDetector.centerMethod%=3; break;
 	}
 }
 
