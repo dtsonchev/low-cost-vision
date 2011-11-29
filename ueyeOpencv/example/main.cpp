@@ -4,17 +4,15 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-
+#include <stdio.h>
 #include <UEyeOpenCV.hpp>
+#include <UEyeOpenCVException.hpp>
 using namespace std;
 int main(int argc, char** argv) {
-
-	UeyeOpencvCam cam1 = UeyeOpencvCam(0);
-//	cam1.initCam();
-	UeyeOpencvCam cam2 = UeyeOpencvCam(1);
-//	cam2.initCam();
+try{
+	UeyeOpencvCam cam1 = UeyeOpencvCam();
+	UeyeOpencvCam cam2 = UeyeOpencvCam();
 	while (true) {
-		cv::namedWindow("cam1", CV_WINDOW_AUTOSIZE);
 		cv::imshow("cam1", cam1.getFrame());
 
 		cv::namedWindow("cam2", CV_WINDOW_AUTOSIZE);
@@ -23,8 +21,10 @@ int main(int argc, char** argv) {
 			break;
 		}
 	}
-	cam1.stopCam();
-	cam2.stopCam();
-////	cout << "is_SaveImage\t" << is_SaveImage(hCam, "/home/wouter/ueye.bmp") << endl;
+}
+catch(UeyeOpenCVException& e){
+	cout << e.what();
+}
+
 	return 0;
 }
