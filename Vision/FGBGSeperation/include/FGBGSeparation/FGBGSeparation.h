@@ -4,7 +4,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/ml/ml.hpp>
 #include <sstream>
-#include "TrainingData.h"
+#include <FGBGSeparation/TrainingData.h>
 
 /**
  * @brief the class were an decision tree is trained for fore- and background separation
@@ -28,14 +28,14 @@ public:
 	 * @param image the total image
 	 * @param binaryImage a binarie image of the normal image where white means forground and black means background
 	 */
-	void addImageToTrainingsSet(Mat &image, Mat &binaryImage);
+	void addImageToTrainingsSet(cv::Mat &image, cv::Mat &binaryImage);
 
 	/**
-	 * @brief trains a decision tree for background foreground seperation whit out parameters
+	 * @brief trains a decision tree for background foreground separation whit out parameters
 	 */
 	void train();
 	/**
-	* @brief trains a decision tree for background foreground seperation
+	* @brief trains a decision tree for background foreground separation
 	* @param maxDepth The maximum possible depth of the tree. That is the training algorithms attempts to split a node while its depth is less than max_depth. The actual depth may be smaller if the other termination criteria are met (see the outline of the training procedure in the beginning of the section), and/or if the tree is pruned.
 	* @param minSampleCount If the number of samples in a node is less than this parameter then the node will not be splitted.
 	* @param regressionAccuracy Termination criteria for regression trees. If all absolute differences between an estimated value in a node and values of train samples in this node are less than this parameter then the node will not be splitted.
@@ -53,7 +53,7 @@ public:
 	 * @param image the image on which is checked if its fore or background
 	 * @param result an matrix in which the result is placed white means forground back means background
 	 */
-	void seperateFB(const Mat &image, Mat &result);
+	void separateFB(const cv::Mat &image, cv::Mat &result);
 
 	/**
 	 * @brief save the tree
@@ -83,9 +83,9 @@ private:
 	///@brief constructor from dataTrainer
 	Trainer DataTrainer;
 	///@brief matrix whit the training data
-	Mat trainData;
+	cv::Mat trainData;
 	///@brief matrix whit the labels of the training data
-	Mat labels;
+	cv::Mat labels;
 
 };
 

@@ -8,7 +8,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
+BUILDTYPE           := library
 
 # name of target binary or library
 TARGET              := FGBGSeperation
@@ -235,10 +235,10 @@ all: $(TARGET)
 # recursively make al dependency projects
 .PHONY: dep
 dep:
-	#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
-	#       $(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
-	#       rm $(BUILDDIR)/expose.sh; \
-	#fi
+#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
+#       $(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
+#       rm $(BUILDDIR)/expose.sh; \
+#fi
 	@ERR=0; \
 	for DEP in $(PROJ_DIRS); do \
 		$(MAKE) -C "$$DEP" dep; \

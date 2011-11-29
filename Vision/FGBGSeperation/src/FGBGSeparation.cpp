@@ -4,8 +4,8 @@
 #include <opencv2/core/core.hpp>
 #include <dirent.h>
 #include <sstream>
-#include <FGBGSeperation/FGBGSeparation.h>
-#include <FGBGSeperation/variableException.h>
+#include <FGBGSeparation/FGBGSeparation.h>
+#include <FGBGSeparation/variableException.h>
 
 using namespace cv;
 using namespace std;
@@ -66,7 +66,7 @@ void FGBGSeparator::train(int maxDepth, int minSampleCount,int maxCategories, fl
 void FGBGSeparator::saveTraining(const char* pathName, const char* treeName){	tree.save(pathName, treeName);	}
 void FGBGSeparator::loadTraining(const char* pathName, const char* treeName){	tree.load(pathName, treeName);	}
 
-void FGBGSeparator::seperateFB(const Mat &image, Mat &result){
+void FGBGSeparator::separateFB(const Mat &image, Mat &result){
 	Mat temp = image.clone();
 	if(RGBorHSV == 2){
 		cvtColor(image, temp, CV_RGB2HSV);

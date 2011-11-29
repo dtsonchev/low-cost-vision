@@ -9,8 +9,6 @@ typedef enum RGBorHSVenum{
 	HSV
 } RGBorHSVenum;
 
-using namespace cv;
-
 /**
  * @brief An class were histograms are created for machine learning
  * @author Zep
@@ -32,7 +30,7 @@ public:
 	 * @param RGBorHSV 1 for RGB and 2 for HSV
 	 * @note an label is fore- or background
 	 */
-	void CreateTrainDataFromImage(Mat &image, Mat &binary, Mat &trainData, Mat &labels, int bins, int maskSize, int RGBorHSV);
+	void CreateTrainDataFromImage(cv::Mat &image, cv::Mat &binary, cv::Mat &trainData, cv::Mat &labels, int bins, int maskSize, int RGBorHSV);
     
 	/**
 	 * @brief creates an histogram with the size of maskSize at the pixel were it points to
@@ -43,7 +41,7 @@ public:
 	 * @param maskSize the size of the mask at which the histograms are made
 	 * @return the created histogram
 	 */
-	Mat CreateHistogramFromPixel(MatConstIterator_<Vec3b> it, int bins, int imageWidth, int imageHeight, int maskSize);
+	cv::Mat CreateHistogramFromPixel(cv::MatConstIterator_<cv::Vec3b> it, int bins, int imageWidth, int imageHeight, int maskSize);
 };
 
 #endif /*TRAINER_H_*/
