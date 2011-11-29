@@ -14,7 +14,7 @@
 
 FiducialDetector::FiducialDetector(int minRad, int maxRad, int distance,
 		int circleVotes, float minDist, float maxDist, int lineVotes,
-		unsigned int maxLines, int lowThreshold, int highThreshold) {
+		unsigned int maxLines, int lowThreshold, int highThreshold, int centerMethod) {
 	this->verbose = false;
 	this->minRad = minRad;
 	this->maxRad = maxRad;
@@ -27,6 +27,7 @@ FiducialDetector::FiducialDetector(int minRad, int maxRad, int distance,
 	this->lowThreshold = lowThreshold;
 	this->highThreshold = highThreshold;
 	this->lineVotes = lineVotes;
+	this->centerMethod = centerMethod;
 }
 
 FiducialDetector::~FiducialDetector() {
@@ -108,12 +109,14 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points,
 }
 
 bool rhoComp(cv::Vec2f i,cv::Vec2f j) { return (i[0]<j[0]); }
-inline cv::Vec2f medianRho(std::vector<cv::Vec2f>::iterator first, std::vector<cv::Vec2f>::iterator n, std::vector<cv::Vec2f>::iterator last) {
+inline cv::Vec2f medoidRho(std::vector<cv::Vec2f>::iterator first, std::vector<cv::Vec2f>::iterator last) {
+	std::vector<cv::Vec2f>::iterator n = first+std::distance(first,last)/2;
 	nth_element(first, n, last, rhoComp);
 	return *n;
 }
 bool thetaComp(cv::Vec2f i,cv::Vec2f j) { return (i[1]<j[1]); }
-inline cv::Vec2f medianTheta(std::vector<cv::Vec2f>::iterator first, std::vector<cv::Vec2f>::iterator n, std::vector<cv::Vec2f>::iterator last) {
+inline cv::Vec2f medoidTheta(std::vector<cv::Vec2f>::iterator first, std::vector<cv::Vec2f>::iterator last) {
+	std::vector<cv::Vec2f>::iterator n = first+std::distance(first,last)/2;
 	nth_element(first, n, last, thetaComp);
 	return *n;
 }
@@ -175,9 +178,19 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center,
 	// Find two lines through the cross center
 	cv::Vec2f center1;
 	cv::Vec2f center2;
-	bool found1 = detectMeanCenterLine(center1, lines1, debugImage);
+
+	bool found1;
+	bool found2;
+	if(centerMethod == MEAN) {
+		found1 = detectMeanCenterLine(center1, lines1, debugImage);
+		found2 = detectMeanCenterLine(center2, lines2, debugImage);
+	} else {
+		found1 = detectMedoidCenterLine(center1, lines1, debugImage);
+		found2 = detectMedoidCenterLine(center2, lines2, debugImage);
+	}
+
+
 	if(verbose && !found1) std::cout << "Primary center line not found" << std::endl;
-	bool found2 = detectMeanCenterLine(center2, lines2, debugImage);
 	if(verbose && !found2) std::cout << "Secondary center line not found" << std::endl;
 
 	// If both have lines on opposing sides we can intersect them and find the center
@@ -230,118 +243,120 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center,
 	return false;
 }
 
-bool FiducialDetector::detectMedianCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage) {
+bool FiducialDetector::detectMedoidCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage) {
 	if(lines.size() < 2) {
-		if(verbose) std::cout << "Not enough lines!" << std::endl;
+		if(verbose) std::cout << "Not enough lines" << std::endl;
 		return false;
 	}
 
-	/*// Divide the lines in two collections around a gap between the lines and the median
-	std::vector<cv::Vec2f> lines1;
-	std::vector<cv::Vec2f> lines2;
-	float medianDist = medianRho(lines.begin(), lines.begin()+lines.size()/4, lines.end())[0];
+	// Select the first medoid line
+	cv::Vec2f line1;
+	if(centerMethod == MEDOID_RHO) line1 = medoidRho(lines.begin(), lines.end());
+	else line1 = medoidTheta(lines.begin(), lines.end());
+
+	// Ignore all lines too close or too far from the first line
+	std::vector<cv::Vec2f>::iterator first = lines.begin();
+	std::vector<cv::Vec2f>::iterator last = lines.begin();
 	for(std::vector<cv::Vec2f>::iterator it=lines.begin(); it!=lines.end(); ++it) {
-		float dist = abs(medianDist - (*it)[0]);
-		if(dist >= minDist && dist <= maxDist) {
-			lines2.push_back(*it);
-		}
-		else if(dist <= maxDist) {
-			lines1.push_back(*it);
-		}
-	}*/
+		float dist = abs(line1[0] - (*it)[0]);
+		if(minDist <= dist && dist <= maxDist) *last++ = *it;
+	}
 
-	// Two lines representing the sides of the cross
-	cv::Vec2f line1 = medianRho(lines.begin(), lines.begin()+lines.size()/4, lines.end());
-	cv::Vec2f line2 = medianRho(lines.begin(), lines.begin()+3*lines.size()/4, lines.end());
-
-	if(abs(line1[0] - line2[0]) <= maxDist) {
-		float rho = (line1[0] + line2[0]) / 2.0;
-		float theta = (line1[1] + line2[1]) / 2.0;
-		centerLine = cv::Vec2f(rho, theta);
-
-		// Draw a red line
-		if (debugImage != NULL)
-			polarLine(*debugImage, rho, theta, cv::Scalar(0, 0, 255),
-					1);
-		return true;
-	} else {
-		if(verbose) std::cout << "Lines exceed max distance" << std::endl;
+	if(lines.empty()) {
+		if(verbose) std::cout << "Second line not found" << std::endl;
 		return false;
 	}
+
+	// Select the second medoid line
+	cv::Vec2f line2;
+	if(centerMethod == MEDOID_RHO) line2 = medoidRho(first, last);
+	else line2 = medoidTheta(first, last);
+
+	// Determine the line between the two selected lines
+	float rho = (line1[0] + line2[0]) / 2.0;
+	float theta = (line1[1] + line2[1]) / 2.0;
+	centerLine = cv::Vec2f(rho, theta);
+
+	// Draw a red line on the debug image
+	if (debugImage != NULL) polarLine(*debugImage, rho, theta, cv::Scalar(0, 0, 255), 1);
+
+	return true;
 }
 
 bool FiducialDetector::detectMeanCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage) {
 	bool found1 = false;
 	bool found2 = false;
 
-    // If the are more than two lines we can detect the line through the center
-    if (lines.size() >= 2) {
-            // Two lines representing the sides of the cross
-            cv::Vec2f line1;
-            cv::Vec2f line2;
+	// If the are more than two lines we can detect the line through the center
+	if(lines.size() < 2) {
+		if(verbose) std::cout << "Not enough lines" << std::endl;
+		return false;
+	}
 
-            // Calculate average angle
-            float meanTheta = 0;
-            for (std::vector<cv::Vec2f>::iterator it = lines.begin();
-                            it != lines.end(); it++)
-                    meanTheta += (*it)[1];
-            meanTheta = meanTheta / lines.size();
+	// Select two lines representing the sides of the cross
+	cv::Vec2f line1;
+	cv::Vec2f line2;
 
-            // Select the first line
-            float lastTheta = M_PI;
-            for (std::vector<cv::Vec2f>::iterator it = lines.begin();
-                            it != lines.end(); it++) {
-                    // Check if this line has a better orientation than the last
-                    float thetaDist = abs(meanTheta - (*it)[1]);
-                    if (thetaDist < lastTheta) {
-                            // Set the first line
-                            line1 = *it;
-                            lastTheta = thetaDist;
-                            found1 = true;
-                    }
-            }
+	// Calculate the average angle
+	float meanTheta = 0;
+	for (std::vector<cv::Vec2f>::iterator it = lines.begin();
+					it != lines.end(); it++)
+			meanTheta += (*it)[1];
+	meanTheta = meanTheta / lines.size();
 
-            if (found1) {
-                    // Make sure the second line is on the opposite side
-                    lastTheta = M_PI;
-                    for (std::vector<cv::Vec2f>::iterator it = lines.begin();
-                                    it != lines.end(); it++) {
-                            // Check if this line has a better orientation than the last
-                            float thetaDist = abs(line1[1] - (*it)[1]);
-                            if (thetaDist < lastTheta) {
-                                    // Check if the line is on the opposite side
-                                    float rhoDist = abs(line1[0] - (*it)[0]);
-                                    if (minDist <= rhoDist && rhoDist <= maxDist) {
-                                            // Set the second line to the opposite line
-                                            line2 = *it;
-                                            lastTheta = thetaDist;
-                                            found2 = true;
-                                    }
-                            }
-                    }
+	// Select the first line with an angle closest to the average
+	float lastTheta = M_PI;
+	for (std::vector<cv::Vec2f>::iterator it = lines.begin();
+					it != lines.end(); it++) {
+			// Check if this line has a better angle than the last
+			float thetaDist = abs(meanTheta - (*it)[1]);
+			if (thetaDist < lastTheta) {
+					// Set the first line
+					line1 = *it;
+					lastTheta = thetaDist;
+					found1 = true;
+			}
+	}
 
-                    if (found2) {
-                            float rho = (line1[0] + line2[0]) / 2.0;
-                            float theta = (line1[1] + line2[1]) / 2.0;
-                            centerLine = cv::Vec2f(rho, theta);
+	if (!found1) {
+		if(verbose) std::cout << "First line not found" << std::endl;
+		return false;
+	}
 
-                            // Draw a red line
-                            if (debugImage != NULL)
-                                    polarLine(*debugImage, rho, theta, cv::Scalar(0, 0, 255),
-                                                    1);
-                            return true;
-                    } else if (verbose) {
-                            std::cout << "Second line not found!" << std::endl;
-                            return false;
-                    }
-            } else if (verbose) {
-                    std::cout << "First line not found!" << std::endl;
-                    return false;
-            }
-    } else if (verbose) {
-            std::cout << "Not enough lines!" << std::endl;
-            return false;
-    }
+	// Ignore all lines too close or too far from the first line
+	std::vector<cv::Vec2f>::iterator first = lines.begin();
+	std::vector<cv::Vec2f>::iterator last = lines.begin();
+	for(std::vector<cv::Vec2f>::iterator it=lines.begin(); it!=lines.end(); ++it) {
+		float dist = abs(line1[0] - (*it)[0]);
+		if(minDist <= dist && dist <= maxDist) *last++ = *it;
+	}
 
-    return false;
+	// Select the second line with an angle closest to the first line
+	lastTheta = M_PI;
+	for (std::vector<cv::Vec2f>::iterator it = first;
+					it != last; it++) {
+			// Check if this line has a better angle than the last
+			float thetaDist = abs(line1[1] - (*it)[1]);
+			if (thetaDist < lastTheta) {
+				// Set the second line
+				line2 = *it;
+				lastTheta = thetaDist;
+				found2 = true;
+			}
+	}
+
+	if (!found2) {
+		if(verbose) std::cout << "Second line not found" << std::endl;
+		return false;
+	}
+
+	// Determine the line between the two selected lines
+	float rho = (line1[0] + line2[0]) / 2.0;
+	float theta = (line1[1] + line2[1]) / 2.0;
+	centerLine = cv::Vec2f(rho, theta);
+
+	// Draw a red line on the debug image
+	if (debugImage != NULL) polarLine(*debugImage, rho, theta, cv::Scalar(0, 0, 255), 1);
+
+	return true;
 }

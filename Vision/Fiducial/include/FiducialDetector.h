@@ -19,11 +19,21 @@
  */
 class FiducialDetector {
 private:
+	//! Draw a polar coordinate line
 	void polarLine(cv::Mat& image, float rho, float theta, cv::Scalar color,
 			int thickness);
-	bool detectMedianCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
+	//! Determine the center line using the median angle, new method
+	bool detectMedoidCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
+	//! Determine the center line using the mean angle, old method
 	bool detectMeanCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
 public:
+	//! Center line detection methods
+	enum {
+		MEAN=0,
+		MEDOID_THETA=1,
+		MEDOID_RHO=2
+	};
+
 	//! Turn on console debug messages
 	bool verbose;
 	//! Minimum circle radius
@@ -46,6 +56,8 @@ public:
 	int lowThreshold;
 	//! Second canny threshold
 	int highThreshold;
+	//! Center line detection method
+	int centerMethod;
 
 	/*! \brief The FiducialDetector constructor
 	 *
@@ -56,7 +68,7 @@ public:
 	FiducialDetector(int minRad = 20, int maxRad = 40, int distance = 70,
 			int circleVotes = 100, float minDist = 1.5f, float maxDist = 5.0f,
 			int lineVotes = 10, unsigned int maxLines = 10, int lowThreshold = 125,
-			int highThreshold = 300);
+			int highThreshold = 300, int centerMethod=MEAN);
 	virtual ~FiducialDetector();
 
 	/*! \brief Detects all fiducials in an image
