@@ -1,0 +1,8 @@
+<trainingsset>
+	<image path="data/training/Original/smurf.jpg">
+		<property name="FB" value="data/training/FB_images/smurf.png" />
+	</image>
+	<image path="data/training/Original/smurf-taart.jpg">
+		<property name="FB" value="data/training/FB_images/smurf-taart.png" />
+	</image>
+</trainingsset>
