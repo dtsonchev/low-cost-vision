@@ -9,7 +9,7 @@
 #include <vector>
 #include <cstdio>
 #include <limits>
-#include <FGBGSeperation/TrainingData.h>
+#include <FGBGSeparation/TrainingData.h>
 
 using namespace cv;
 using namespace std;

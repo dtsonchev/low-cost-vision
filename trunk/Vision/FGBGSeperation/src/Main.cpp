@@ -7,50 +7,43 @@
 #include <vector>
 #include <cstdio>
 #include <limits>
-#include <FGBGSeperation/FGBGSeparation.h>
+#include <FGBGSeparation/FGBGSeparation.h>
 
 using namespace cv;
 using namespace std;
 
 int main(int argc, char* argv[]){
-
-	if(argc < 2 || (strcmp(argv[1], "-t") && strcmp(argv[1], "-d") && strcmp(argv[1], "-td"))){
-		cout << "Wether to train (-t), decided (-d) or both (-td)" << endl;
-		return 0;
-	}else if(argc < 6){
-		if(!strcmp(argv[1], "-t")){
-			cout << "Wether to train (-t) or decided (-d),"
+	if(argc < 2 || !( (string(argv[1]) == "-t") || (string(argv[1]) == "-d") || (string(argv[1]) == "-td") )){
+		cout << "Whether to train (-t), decided (-d) or both (-td)" << endl;
+		return 1;
+	} else if(argc < 6) {
+		if(string(argv[1]) == "-t"){
+			cout << "Whether to train (-t) or decided (-d),"
 					"\nNeed amount of bins,"
 					"\nMask size for histograms,"
 					"\nRGB '1' or HSV '2'" << endl;
-			return 0;
-		}else if(!strcmp(argv[1], "-d")){
-			cout << "Wether to train (-t) or decided (-d),"
+			return 1;
+		} else if(string(argv[1]) == "-d") {
+			cout << "Whether to train (-t) or decided (-d),"
 					"\nNeed amount of bins,"
 					"\nMask size for histograms,"
 					"\nRGB '1' or HSV '2',"
 					"\nImage to decide upon" << endl;
-			return 0;
-		}else if(!strcmp(argv[1], "-td")){
-			cout << "Wether to train (-t) or decided (-d),"
+			return 1;
+		} else if(string(argv[1]) == "-td") {
+			cout << "Whether to train (-t) or decided (-d),"
 					"\nNeed amount of bins,"
 					"\nMask size for histograms,"
 					"\nRGB '1' or HSV '2',"
 					"\nImage to decide upon," << endl;
-			return 0;
+			return 1;
 		}
-	}else if(argc < 6 && !strcmp(argv[1], "-td")){
-		cout << "Wether to train (-t) or decided (-d),"
-				"\nNeed amount of bins,"
-				"\nMask size for histograms,"
-				"\nRGB '1' or HSV '2',"
-				"\nImage to decide upon," << endl;
-		return 0;
 	}
+
 	try{
 		FGBGSeparator tree(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
-		if(!strcmp(argv[1], "-t") || !strcmp(argv[1], "-td")){
+		if(string(argv[1]) == "-t" || string(argv[1]) == "-td"){
 			cout << "Start training ";
 			cout.flush();
 
@@ -71,17 +64,17 @@ int main(int argc, char* argv[]){
 			tree.saveTraining("tree.xml","tree");
 		}
 
-		if(!strcmp(argv[1], "-d") || !strcmp(argv[1], "-td")){
+		if(string(argv[1]) == "-d"|| string(argv[1]) == "-td"){
 			cout << "Start deciding ";
 			cout.flush();
 			Mat image = imread(argv[5]);
 			Mat result = image.clone();
 
-			if(!strcmp(argv[1], "-d")){
+			if(string(argv[1]) == "-d"){
 					tree.loadTraining("tree.xml","tree");
 			}
 
-			tree.seperateFB(image, result);
+			tree.separateFB(image, result);
 
 			imshow("Result", result);
 			int key = -1;
