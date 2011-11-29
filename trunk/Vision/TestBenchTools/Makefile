@@ -8,8 +8,8 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
-#BUILDTYPE           := library
+#BUILDTYPE           := binary
+BUILDTYPE           := library
 
 TARGET              := TestBenchTools
 
@@ -35,7 +35,7 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   :=
 
 # libraries that are linked against with '-l'
-LIBRARIES           := 
+LIBRARIES           := boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 
@@ -235,10 +235,10 @@ all: $(TARGET)
 # recursively make al dependency projects
 .PHONY: dep
 dep:
-	#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
-	#	$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
-	#	rm $(BUILDDIR)/expose.sh; \
-	#fi
+#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
+#	$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
+#	rm $(BUILDDIR)/expose.sh; \
+#fi
 	@ERR=0; \
 	for DEP in $(PROJ_DIRS); do \
 		$(MAKE) -C "$$DEP" dep; \

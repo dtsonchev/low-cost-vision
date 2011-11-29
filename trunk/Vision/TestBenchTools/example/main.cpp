@@ -70,7 +70,8 @@ int main(int argc, char** argv){
 //========================================================================
 // Create the report
 //========================================================================
-	Report r;
+	Report r("Test report");
+
 
 	// Put the result of each image in a ReportList
 	ReportList* allResults = new ReportList("All results", 2, STRING, DOUBLE);

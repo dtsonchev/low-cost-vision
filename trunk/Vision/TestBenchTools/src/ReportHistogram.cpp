@@ -25,7 +25,7 @@ std::string report::ReportHistogram::toString() {
 
 	for (unsigned int i = 0; i < binList.size(); i++) {
 		ss << "From " << (i * (range / bins)) << " - "
-				<< ((i + 1) * (range / bins)) << ":";
+				<< ((i + 1) * (range / bins));
 		ss << ";";
 		ss << binList.at(i) << std::endl;
 	}
