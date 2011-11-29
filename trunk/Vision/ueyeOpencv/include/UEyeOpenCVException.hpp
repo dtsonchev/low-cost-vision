@@ -1,10 +1,15 @@
 #pragma once
+#include <ueye.h>
 #include <sstream>
 #include <exception>
 #include <iostream>
-class UeyeOpenCVException:  public std::exception {
+//TODO zorg dat what() de bijbehorende string van de errorcode print
+class UeyeOpenCVException : public std::exception {
+private:
+	HIDS cam;
+	int exceptionId;
 public:
-	UeyeOpenCVException(unsigned int cam, int err) {
+	UeyeOpenCVException(HIDS cam, int err) {
 		exceptionId = err;
 	}
 	const char * what() const throw () {
@@ -13,7 +18,12 @@ public:
 
 		return ss.str().c_str();
 	}
-private:
-	unsigned int cam;
-	int exceptionId;
+	HIDS getCam()
+	{
+		return cam;
+	}
+	int getExceptionId()
+	{
+		return exceptionId;
+	}
 };
