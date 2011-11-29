@@ -154,19 +154,16 @@ bool FiducialDetector::detectCrosshair(cv::Mat& image, cv::Point2f& center,
 	// Segment perpendicular lines along the mean angle for center detection
 	std::vector<cv::Vec2f> lines1;
 	std::vector<cv::Vec2f> lines2;
-	float meanAngle = 0;
-	for(std::vector<cv::Vec2f>::iterator it = lines.begin(); it != lines.end();
-			it++) meanAngle += (*it)[1];
-	meanAngle /= lines.size();
+	float refAngle = medoidTheta(lines.begin(), lines.end())[1];
 
 	// Segment the lines
 	for (std::vector<cv::Vec2f>::iterator it = lines.begin(); it != lines.end();
 			it++) {
 		float angle = (*it)[1];
-		float dist = meanAngle - angle;
-		if ((0 < dist && dist < M_PI / 2.0) || dist < -M_PI /2.0)
+		float dist = abs(refAngle - angle);
+		if (dist < M_PI/8.0)
 			lines1.push_back(*it);
-		else // if ((0 > dist && dist < -M_PI / 2.0) || dist > M_PI /2.0)
+		else
 			lines2.push_back(*it);
 
 		// Draw a blue line
