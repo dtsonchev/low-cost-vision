@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <report/Report.hpp>
 #include <report/Html.hpp>
@@ -40,11 +41,23 @@ std::vector<std::vector<std::string> > report::Report::splitText(const std::stri
 	return lines;
 }
 
-void report::Report::saveHTML(const std::string& path){
+bool report::Report::saveHTML(const std::string& pt){
 	using namespace std;
+	using namespace boost::filesystem;
 
-	ofstream out(path.c_str());
+	path p(pt);
+	if(!exists(p.parent_path())){
+		create_directory(p.parent_path());
+	}
+
+	ofstream out(pt.c_str());
+	if(!out.is_open()){
+		return false;
+	}
 	out << HTML_START;
+
+	out << HTML_H1_START << title << HTML_H1_END;
+	out << HTML_P_START << description << HTML_P_END;
 
 	foreach(ReportField* field, fields){
 		out << HTML_TABLE_START;
@@ -72,5 +85,10 @@ void report::Report::saveHTML(const std::string& path){
 	out << HTML_END;
 	out.flush();
 	out.close();
+
+	if(out.fail()){
+		return false;
+	}
+	return true;
 }
 
