@@ -65,16 +65,24 @@ cv::Mat UeyeOpencvCam::getFrame() {
 	return mattie;
 }
 
+void UeyeOpencvCam::getFrame(cv::Mat& mat)
+{
+	VOID* pMem;
+	int retInt = is_GetImageMem(hCam, &pMem);
+	if (retInt != IS_SUCCESS) {
+		throw UeyeOpenCVException(hCam, retInt);
+	}
+	//TODO check if mat has right size and bit-depth
+	memcpy(mat.ptr(), pMem, 640 * 480 * 3);
+}
+
 HIDS UeyeOpencvCam::getHIDS() {
 	return hCam;
 }
 
 void UeyeOpencvCam::setAutoWhiteBalance(bool set) {
 	double empty;
-	double on = 1;
-	if (!set) {
-		on = 0;
-	}
+	double on = set ? 1 : 0;
 	int retInt = is_SetAutoParameter(hCam, IS_SET_ENABLE_AUTO_WHITEBALANCE, &on, &empty);
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
