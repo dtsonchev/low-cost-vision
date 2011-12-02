@@ -1,10 +1,12 @@
 #include <huniplacer_gui/huniplacer_frame_impl.h>
 #include <wx/wx.h>
 #include <huniplacer_gui/utils.h>
+#include <huniplacer/huniplacer.h>
 #include <cstdio>
 #include <typeinfo>
 #include <iostream>
 #include <sstream>
+#include <bitset>
 
 extern huniplacer_gui::huniplacer_frame_impl* frame;
 
@@ -22,6 +24,7 @@ namespace huniplacer_gui
             huniplacer::measures::EFFECTOR,
             huniplacer::measures::ANKLE,
             huniplacer::measures::HIP_ANKLE_ANGLE_MAX);
+        boundaries = effector_boundaries::generate_effector_boundaries(ik_model, 1);
         init_deltarobot("/dev/ttyS0");
         button_off->Enable(false);
         button_on->Enable(false);
@@ -198,6 +201,24 @@ namespace huniplacer_gui
 
         //draw range
         //TODO draw range ;)
+        std::bitset &boundaries_plane = boundaries.get_bitmap();
+        int width = boundaries.get_width();
+        int depth = boundaries.get_depth();
+        int height = boundaries.get_height();
+        double voxel_size = boundaries.get_voxel_size();
+        for(int x = 0; x < w; x++)
+        {
+        	for(int y = 0; y < h; y++)
+			{
+        		double boundary_x = (double)x * (double)(width / w);
+        		double boundary_y = (double)y * (double)(depth / h);
+        		double boundary_z = (cur_z - measures::MIN_Z) / voxel_size;
+        		if(boundaries_plane[boundary_x + boundary_y * width + boundary_z * depth * width])
+        		{
+        			dc.DrawPoint(x, y);
+        		}
+			}
+        }
 
         //draw lines
         double x = utils::convert_scale(

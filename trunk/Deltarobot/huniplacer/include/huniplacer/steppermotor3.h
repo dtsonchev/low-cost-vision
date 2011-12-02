@@ -90,7 +90,7 @@ namespace huniplacer
 
             bool is_powerd_on(void);
 
-            inline double get_min_angle(void) { return min_angle; }
-            inline double get_max_angle(void) { return max_angle; }
+            inline double get_min_angle(void) const { return min_angle; }
+            inline double get_max_angle(void) const { return max_angle; }
     };
 }

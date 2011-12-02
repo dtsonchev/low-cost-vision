@@ -2,6 +2,7 @@
 #include <huniplacer_gui/huniplacer_frame.h>
 #include <vector>
 #include <huniplacer/huniplacer.h>
+#include <huniplacer/effector_boundaries.h>
 extern "C"
 {
 #include <modbus/modbus.h>
@@ -15,6 +16,7 @@ namespace huniplacer_gui
             huniplacer::inverse_kinematics_model* ik_model;
             huniplacer::imotor3* motors;
             huniplacer::deltarobot* robot;
+            huniplacer::effector_boundaries boundaries;
 
             double cur_x;
             double cur_y;

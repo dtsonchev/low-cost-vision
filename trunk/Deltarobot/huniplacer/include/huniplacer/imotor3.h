@@ -36,13 +36,13 @@ namespace huniplacer
              * @brief get the minimal angle the motors can move to
              * @return angle in radians
              **/
-            virtual double get_min_angle(void) = 0;
+            virtual double get_min_angle(void) const = 0;
 
             /**
              * @brief get the maximum angle the motors can move to
              * @return angle in radians
              **/
-            virtual double get_max_angle(void) = 0;
+            virtual double get_max_angle(void) const = 0;
 
             /**
              * @brief stop the motors

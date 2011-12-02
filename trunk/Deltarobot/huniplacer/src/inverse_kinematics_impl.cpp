@@ -62,7 +62,7 @@ namespace huniplacer
     }
 	#undef SQR
     
-    void inverse_kinematics_impl::point_to_motion(const point3& p, motionf& mf)
+    void inverse_kinematics_impl::point_to_motion(const point3& p, motionf& mf) const
     {
         point3 goal = p;
 

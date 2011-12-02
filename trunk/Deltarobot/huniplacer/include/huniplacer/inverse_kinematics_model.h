@@ -53,6 +53,6 @@ namespace huniplacer
              * @param p point that shall be converted
              * @param mf output parameter, the results of the conversion will be stored here
              **/
-            virtual void point_to_motion(const point3& p, motionf& mf) = 0;
+            virtual void point_to_motion(const point3& p, motionf& mf) const = 0;
     };
 }
