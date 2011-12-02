@@ -8,8 +8,8 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
-#BUILDTYPE           := library
+#BUILDTYPE           := binary
+BUILDTYPE           := library
 
 TARGET              := ueyeOpenCV
 

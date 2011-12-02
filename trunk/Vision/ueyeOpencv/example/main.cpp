@@ -10,8 +10,10 @@
 using namespace std;
 int main(int argc, char** argv) {
 try{
-	UeyeOpencvCam cam1 = UeyeOpencvCam();
-	UeyeOpencvCam cam2 = UeyeOpencvCam();
+	UeyeOpencvCam cam1 = UeyeOpencvCam(640,480);
+	UeyeOpencvCam cam2 = UeyeOpencvCam(640,480);
+
+
 	while (true) {
 		cv::imshow("cam1", cam1.getFrame());
 

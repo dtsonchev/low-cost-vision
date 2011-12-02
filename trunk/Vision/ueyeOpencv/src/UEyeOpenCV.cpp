@@ -2,10 +2,12 @@
 #include <iostream>
 #include <ueye.h>
 
-UeyeOpencvCam::UeyeOpencvCam() {
+UeyeOpencvCam::UeyeOpencvCam(int wdth, int heigh) {
+	width = wdth;
+	height = heigh;
 	using std::cout;
 	using std::endl;
-	mattie = cv::Mat(480, 640, CV_8UC3);
+	mattie = cv::Mat(height, width, CV_8UC3);
 	hCam = 0;
 	char* ppcImgMem;
 	int pid;
@@ -25,7 +27,7 @@ UeyeOpencvCam::UeyeOpencvCam() {
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
 	}
-	retInt = is_AllocImageMem(hCam, 640, 480, 24, &ppcImgMem, &pid);
+	retInt = is_AllocImageMem(hCam, width, height, 24, &ppcImgMem, &pid);
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
 	}
@@ -56,24 +58,21 @@ UeyeOpencvCam::~UeyeOpencvCam() {
 }
 
 cv::Mat UeyeOpencvCam::getFrame() {
-	VOID * pMem;
-	int retInt = is_GetImageMem(hCam, &pMem);
-	if (retInt != IS_SUCCESS) {
-		throw UeyeOpenCVException(hCam, retInt);
-	}
-	memcpy(mattie.ptr(), pMem, (640 * 480 * 3));
+	getFrame(mattie);
 	return mattie;
 }
 
-void UeyeOpencvCam::getFrame(cv::Mat& mat)
-{
+void UeyeOpencvCam::getFrame(cv::Mat& mat) {
 	VOID* pMem;
 	int retInt = is_GetImageMem(hCam, &pMem);
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
 	}
-	//TODO check if mat has right size and bit-depth
-	memcpy(mat.ptr(), pMem, 640 * 480 * 3);
+	if (mat.cols == width && mat.rows == height && mat.depth() == 3) {
+		memcpy(mat.ptr(), pMem, width * height * 3);
+	} else {
+		throw UeyeOpenCVException(hCam, -1337);
+	}
 }
 
 HIDS UeyeOpencvCam::getHIDS() {
@@ -84,6 +83,15 @@ void UeyeOpencvCam::setAutoWhiteBalance(bool set) {
 	double empty;
 	double on = set ? 1 : 0;
 	int retInt = is_SetAutoParameter(hCam, IS_SET_ENABLE_AUTO_WHITEBALANCE, &on, &empty);
+	if (retInt != IS_SUCCESS) {
+		throw UeyeOpenCVException(hCam, retInt);
+	}
+}
+
+void UeyeOpencvCam::setAutoGain(bool set) {
+	double empty;
+	double on = set ? 1 : 0;
+	int retInt = is_SetAutoParameter(hCam, IS_SET_ENABLE_AUTO_GAIN, &on, &empty);
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
 	}
