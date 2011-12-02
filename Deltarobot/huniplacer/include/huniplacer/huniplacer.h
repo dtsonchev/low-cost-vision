@@ -15,4 +15,4 @@
 #include <huniplacer/point3.h>
 #include <huniplacer/steppermotor3.h>
 #include <huniplacer/motor3_exception.h>
-
+#include <huniplacer/effector_boundaries.h>

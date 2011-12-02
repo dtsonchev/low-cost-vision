@@ -33,6 +33,6 @@ namespace huniplacer
              * @param mf output parameter, the resulting motion is stored here
              * @return true on success, false otherwise
              **/
-            void point_to_motion(const point3& p, motionf& mf);
+            void point_to_motion(const point3& p, motionf& mf) const;
     };
 }
