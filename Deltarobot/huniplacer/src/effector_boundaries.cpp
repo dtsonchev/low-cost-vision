@@ -44,7 +44,7 @@ namespace huniplacer
         for(double y = p.y - voxel_size;y <= p.y + voxel_size;y += voxel_size){
             for(double x = p.x - voxel_size;x <= p.x + voxel_size;x += voxel_size){
                 for(double z = p.z - voxel_size;z <= p.z + voxel_size;z += voxel_size){
-                    if(x != p.x && y != p.y && z != p.z && !is_valid(point3(x, y, p.z))){
+                    if(x != p.x && y != p.y && z != p.z && !is_valid(point3(x, y, z))){
                         return true;
                     }
                 }
