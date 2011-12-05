@@ -11,7 +11,7 @@
 BUILDTYPE           := binary
 
 # name of target binary or library
-TARGET              := FGBGSeperation_test
+TARGET              := test
 
 # virtual path
 VPATH               :=
