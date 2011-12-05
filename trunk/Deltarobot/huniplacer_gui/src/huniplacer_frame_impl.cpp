@@ -6,7 +6,8 @@
 #include <typeinfo>
 #include <iostream>
 #include <sstream>
-#include <bitset>
+#include <vector>
+#include <string.h>
 
 extern huniplacer_gui::huniplacer_frame_impl* frame;
 
@@ -24,8 +25,7 @@ namespace huniplacer_gui
             huniplacer::measures::EFFECTOR,
             huniplacer::measures::ANKLE,
             huniplacer::measures::HIP_ANKLE_ANGLE_MAX);
-        boundaries = effector_boundaries::generate_effector_boundaries(ik_model, 1);
-        init_deltarobot("/dev/ttyS0");
+        //init_deltarobot("/dev/ttyS0");
         button_off->Enable(false);
         button_on->Enable(false);
         update_pos_txtfields();
@@ -54,7 +54,9 @@ namespace huniplacer_gui
                 huniplacer::measures::MOTOR_ROT_MIN,
                 huniplacer::measures::MOTOR_ROT_MAX,
                 huniplacer_frame_impl::motionthread_exhandler);
+            //boundaries = huniplacer::effector_boundaries::generate_effector_boundaries(*ik_model, *motors, 1);
             robot = new huniplacer::deltarobot(*ik_model, *motors);
+            robot->generate_boundaries(3);
         }
         else
         {
@@ -131,7 +133,7 @@ namespace huniplacer_gui
         try
         {
             double speed;
-            if(txtbox_speed->GetValue().ToDouble(&speed))
+            if(!txtbox_speed->GetValue().ToDouble(&speed) || speed < 360)
             {
                 speed = 360;
                 wxString s;
@@ -188,6 +190,51 @@ namespace huniplacer_gui
         }
     }
 
+    void huniplacer_frame_impl::draw_boundaries()
+    {
+        wxPaintDC dc(pos_panel);
+        dc.SetPen(wxPen(pos_panel->GetForegroundColour()));
+        dc.SetBrush(wxBrush(pos_panel->GetBackgroundColour()));
+
+        int w, h;
+        pos_panel->GetSize(&w, &h);
+
+        if(robot != NULL && robot->has_boundaries())
+        {
+            huniplacer::effector_boundaries* boundaries = robot->get_boundaries();
+			const std::vector<bool> &boundaries_plane = boundaries->get_bitmap();
+			int width = boundaries->get_width();
+			int depth = boundaries->get_depth();
+			int height = boundaries->get_height();
+			double voxel_size = boundaries->get_voxel_size();
+
+			for(int x = 0; x < w; x++)
+			{
+				for(int y = 0; y < h; y++)
+				{
+					int boundary_x = (double)x * ((double)width / (double)w);
+					int boundary_y = (double)y * ((double)depth / (double)h);
+					int boundary_z = (cur_z - huniplacer::measures::MIN_Z) / voxel_size;
+					if(boundary_z < height)
+					{
+						int index = boundary_x + boundary_y * width + boundary_z * depth * width;
+
+						if(boundaries_plane[index])
+						{
+							dc.DrawPoint(x, y);
+						}
+					}
+					else
+					{
+						//stop both for loops
+						y = h;
+						x = w;
+					}
+				}
+			}
+        }
+    }
+
     void huniplacer_frame_impl::pos_panelOnPaint(wxPaintEvent& event)
     {
         //clear
@@ -199,26 +246,7 @@ namespace huniplacer_gui
         int w, h;
         pos_panel->GetSize(&w, &h);
 
-        //draw range
-        //TODO draw range ;)
-        std::bitset &boundaries_plane = boundaries.get_bitmap();
-        int width = boundaries.get_width();
-        int depth = boundaries.get_depth();
-        int height = boundaries.get_height();
-        double voxel_size = boundaries.get_voxel_size();
-        for(int x = 0; x < w; x++)
-        {
-        	for(int y = 0; y < h; y++)
-			{
-        		double boundary_x = (double)x * (double)(width / w);
-        		double boundary_y = (double)y * (double)(depth / h);
-        		double boundary_z = (cur_z - measures::MIN_Z) / voxel_size;
-        		if(boundaries_plane[boundary_x + boundary_y * width + boundary_z * depth * width])
-        		{
-        			dc.DrawPoint(x, y);
-        		}
-			}
-        }
+        draw_boundaries();
 
         //draw lines
         double x = utils::convert_scale(
@@ -246,6 +274,8 @@ namespace huniplacer_gui
         {
             update_pos_txtfields();
         }
+
+        pos_panel->Refresh();
 
         event.Skip();
     }
@@ -275,11 +305,16 @@ namespace huniplacer_gui
         if(browser.ShowModal() == wxID_OK)
         {
             //TODO construct deltarobot
-            printf("[unicode] browser.GetPath = %ls\n", browser.GetPath().c_str());
-            printf("[ASCII]   browser.GetPath = %s\n", browser.GetPath().c_str());
+            //printf("[unicode] browser.GetPath = %ls\n", browser.GetPath().c_str());
+            //printf("[ASCII]   browser.GetPath = %s\n", browser.GetPath().c_str());
+
             std::stringstream ss;
-            ss << browser.GetPath().c_str();
+            ss << browser.GetPath().ToAscii();
             printf("[ASCII] ss.str = %s\n", ss.str().c_str());
+
+            init_deltarobot(ss.str().c_str());
+            button_on->Enable(true);
+            button_connect->Enable(false);
         }
     }
 

@@ -16,7 +16,6 @@ namespace huniplacer_gui
             huniplacer::inverse_kinematics_model* ik_model;
             huniplacer::imotor3* motors;
             huniplacer::deltarobot* robot;
-            huniplacer::effector_boundaries boundaries;
 
             double cur_x;
             double cur_y;
@@ -33,6 +32,8 @@ namespace huniplacer_gui
             void update_pos_txtfields(void);
             void update_z_slider(void);
             bool try_move(double x, double y, double z);
+
+            void draw_boundaries();
 
         public:
             huniplacer_frame_impl(void);

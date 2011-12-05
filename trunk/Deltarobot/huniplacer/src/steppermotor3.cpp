@@ -25,7 +25,6 @@ namespace huniplacer
         exhandler(exhandler),
         powered_on(false)
     {
-    	current_angles[0] = current_angles[1] = current_angles[2] = 0;
         //start motion thread
         motion_thread = new boost::thread(motion_thread_func, this);
     }
@@ -340,6 +339,8 @@ namespace huniplacer
             //clear counter
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 1);
             modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CLEAR_COUNTER, 0);
+
+            current_angles[0] = current_angles[1] = current_angles[2] = 0;
 
             powered_on = true;
         }

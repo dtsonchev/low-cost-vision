@@ -18,7 +18,7 @@ namespace huniplacer
              * @param angle angle of the motor relative to motor 0 (in radians)
              * @return angle the motor should move to
              **/
-            double moveto(const point3& p, double angle);
+            double moveto(const point3& p, double angle) const;
             
         public:
             inverse_kinematics_impl(

@@ -1,31 +1,39 @@
-#include <huniplacer/deltarobot.h>
-
 #include <sstream>
 #include <string>
 #include <cstdio>
 #include <stdexcept>
 #include <cmath>
 
-#include <huniplacer/motion.h>
-#include <huniplacer/inverse_kinematics_model.h>
-#include <huniplacer/inverse_kinematics_exception.h>
-#include <huniplacer/utils.h>
+#include <huniplacer/point3.h>
+#include <huniplacer/imotor3.h>
 #include <huniplacer/motor3_exception.h>
+#include <huniplacer/effector_boundaries.h>
+#include <huniplacer/inverse_kinematics_exception.h>
+#include <huniplacer/deltarobot.h>
 
 namespace huniplacer
 {
     deltarobot::deltarobot(inverse_kinematics_model& kinematics, imotor3& motors) :
         kinematics(kinematics),
         motors(motors),
-        effector_location(point3(0, 0, -205))
+        effector_location(point3(0, 0, -205)),
+        boundaries_generated(false)
     {
     }
 
     deltarobot::~deltarobot(void)
     {
-        stop();
+    	if(motors.is_powerd_on())
+    	{
+    		motors.stop();
+    	}
     }
     
+    void deltarobot::generate_boundaries(double voxel_size){
+    	boundaries = effector_boundaries::generate_effector_boundaries(kinematics, motors, voxel_size);
+    	boundaries_generated = true;
+    }
+
     bool deltarobot::is_valid_angle(double angle)
     {
         return angle > motors.get_min_angle() && angle < motors.get_max_angle();
@@ -106,4 +114,3 @@ namespace huniplacer
         }
     }
 }
-
