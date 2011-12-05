@@ -29,12 +29,15 @@ using namespace report;
 // Function that counts the number of pixels that are the same in two images
 int compare(Mat& img1, Mat& img2);
 
-int main(int argc, char* argv[]){
+int main(int argc, char* argv[]) {
 //========================================================================
 // Extract and check the input parameters
 //========================================================================
-	if(argc < 7){
-		cout << "Usage: todo" << endl;
+	if (argc < 7) {
+		cout
+				<< "Usage: test <result directory> <training (ton || toff)> <bins> "
+				<< "<masksize> <RGBorHSV (1 || 2)> <xml with testing data> "
+				<< "[xml with training data]" << endl;
 		return -1;
 	}
 
@@ -57,8 +60,11 @@ int main(int argc, char* argv[]){
 	ss.clear();
 	assert(training == "ton" || training == "toff");
 
-	if(training == "ton" && argc < 8){
-		cout << "Usage: todo" << endl;
+	if (training == "ton" && argc < 8) {
+		cout
+				<< "Usage: test <result directory> <training (ton || toff)> <bins> "
+				<< "<masksize> <RGBorHSV (1 || 2)> <xml with testing data> "
+				<< "[xml with training data]" << endl;
 		return -1;
 	}
 
@@ -81,7 +87,7 @@ int main(int argc, char* argv[]){
 	ss >> testXmlPath;
 	ss.clear();
 
-	if(training == "ton"){
+	if (training == "ton") {
 		ss << argv[7];
 		ss >> trainXmlPath;
 		ss.clear();
@@ -99,7 +105,8 @@ int main(int argc, char* argv[]){
 	// Create a container for storing the categories and their results
 	CategoriesResults catsResults;
 	// Create a container for the timing results
-	ReportList* timeResults = new ReportList("Timing information", 2, STRING, DOUBLE);
+	ReportList* timeResults = new ReportList("Timing information", 2, STRING,
+			DOUBLE);
 
 //========================================================================
 // Training phase (Optional)
@@ -108,17 +115,18 @@ int main(int argc, char* argv[]){
 		// Start the stopwatch for the training phase
 		stopwatch.restart();
 
-		// Extract the iamges from XML
-		vector<ImageMD> trainingImages = getMetaData(trainXmlPath, "trainingsset");
+		// Extract the images from XML
+		vector<ImageMD> trainingImages = getMetaData(trainXmlPath,
+				"trainingsset");
 		foreach(ImageMD img, trainingImages){
-			Mat srcImage = imread(img.path);
-			Mat binImage = imread(img.properties["FB"]);
-			tree.addImageToTrainingsSet(srcImage, binImage);
-		}
+		Mat srcImage = imread(img.path);
+		Mat binImage = imread(img.properties["FB"]);
+		tree.addImageToTrainingsSet(srcImage, binImage);
+	}
 
-		//train the algorithm
+	//train the algorithm
 		tree.train();
-		tree.saveTraining("data/tree.xml","tree");
+		tree.saveTraining("data/tree.xml", "tree");
 
 		// Store the time taken for the training phase
 		timeResults->appendRow("Training", stopwatch.elapsed());
@@ -130,8 +138,8 @@ int main(int argc, char* argv[]){
 	// Start the stopwatch for the testing phase
 	stopwatch.restart();
 
-	if(training == "toff"){
-		tree.loadTraining("data/tree.xml","tree");
+	if (training == "toff") {
+		tree.loadTraining("data/tree.xml", "tree");
 	}
 
 	// Load the metadata of the images from an XML file
@@ -139,33 +147,34 @@ int main(int argc, char* argv[]){
 
 	// Loop through all the testing images
 	foreach(ImageMD& img, images){
-		Mat image = imread(img.path);
-		Mat result = image.clone();
-		tree.separateFB(image, result);
+	Mat image = imread(img.path);
+	Mat result = image.clone();
+	tree.separateFB(image, result);
 
-		int equalPixels = compare(image, result);
-		double percCorrect = equalPixels / (double)(image.rows * image.cols) * 100;
-		imgResults[img.path] = percCorrect;
+	int equalPixels = compare(image, result);
+	double percCorrect = equalPixels / (double)(image.rows * image.cols) * 100;
+	imgResults[img.path] = percCorrect;
 
-		// Store the results in the categories container
-		foreach(Category c, img.categories){
-			if(percCorrect > 75){
-				// Increment number of correct images in category
-				catsResults[c.first][c.second].first++;
-			}
-			// Increment total number images in category
-			catsResults[c.first][c.second].second++;
+	// Store the results in the categories container
+	foreach(Category c, img.categories) {
+		if(percCorrect > 75) {
+			// Increment number of correct images in category
+			catsResults[c.first][c.second].first++;
 		}
+		// Increment total number images in category
+		catsResults[c.first][c.second].second++;
 	}
+}
 
-	// Store the time taken for the training phase
+// Store the time taken for the training phase
 	timeResults->appendRow("Testing", stopwatch.elapsed());
 
 //========================================================================
 // Create the report
 //========================================================================
 	Report r("Foreground / background separation");
-	r.setDescription("This algorithm attempts to separate the foreground and background of an image.");
+	r.setDescription(
+			"This algorithm attempts to separate the foreground and background of an image.");
 
 	// Put the parameters used to run the algorithm in the report
 	ReportList* params = new ReportList("Parameters", 2, STRING, INT);
@@ -182,25 +191,26 @@ int main(int argc, char* argv[]){
 	ReportList* allResults = new ReportList("All results", 2, STRING, DOUBLE);
 	typedef pair<string, double> imgResult;
 	foreach(imgResult imres, imgResults){
-		allResults->appendRow(imres.first, imres.second);
-	}
+	allResults->appendRow(imres.first, imres.second);
+}
 	allResults->setColumnNames("Image path", "Pixels correct (%)");
 	r.addField(allResults);
 
 	// Create a histogram of the results
-	ReportHistogram* his = new ReportHistogram("Histogram", getAllValues(imgResults), 10, 100);
+	ReportHistogram* his = new ReportHistogram("Histogram",
+			getAllValues(imgResults), 10, 100);
 	his->setColumnNames("Range", "Images >75% correct");
 	r.addField(his);
 
 	// Add all categories and their results to the main report
 	foreach(CategoryResults cr, catsResults){
-		CategoryOverview* cat = new CategoryOverview(cr);
-		cat->setColumnNames("Category", "Correct images", "Percentage correct");
-		r.addField(cat);
-	}
+	CategoryOverview* cat = new CategoryOverview(cr);
+	cat->setColumnNames("Category", "Correct images", "Percentage correct");
+	r.addField(cat);
+}
 
-	// Save the report as an HTML file
-	if(r.saveHTML(resultDir + "/results.html")){
+// Save the report as an HTML file
+	if (r.saveHTML(resultDir + "/results.html")) {
 		cout << "Report saved successfully!" << endl;
 	} else {
 		cerr << "Saving report failed!" << endl;
@@ -209,18 +219,17 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
-int compare(Mat& img1, Mat& img2){
+int compare(Mat& img1, Mat& img2) {
 	assert(img1.cols == img2.cols && img1.rows == img2.rows);
 	int equalPixels = 0;
 	MatConstIterator_<Vec3b> it1 = img1.begin<Vec3b>();
 	MatConstIterator_<Vec3b> it2 = img2.begin<Vec3b>();
 	const MatConstIterator_<Vec3b> img1End = img1.end<Vec3b>();
 	//for every pixel
-	for (; it1 != img1End; ++it1, ++it2)
-	{
+	for (; it1 != img1End; ++it1, ++it2) {
 		Vec3b p1 = *it1;
 		Vec3b p2 = *it2;
-		if(abs(p1[0] - p2[0]) < 127){
+		if (abs(p1[0] - p2[0]) < 127) {
 			++equalPixels;
 		}
 	}
