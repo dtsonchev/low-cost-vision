@@ -10,7 +10,7 @@
 namespace huniplacer
 {
     inverse_kinematics_impl::inverse_kinematics_impl(const double base, const double hip, const double effector, const double ankle, const double hip_ankle_angle_max) :
-        inverse_kinematics_model(base, hip, effector, ankle, utils::rad(hip_ankle_angle_max))
+        inverse_kinematics_model(base, hip, effector, ankle, hip_ankle_angle_max)
     {
     }
 
@@ -19,7 +19,7 @@ namespace huniplacer
     }
 
 	#define SQR(x) ((x)*(x))
-    double inverse_kinematics_impl::moveto(const point3& p, double motor_angle)
+    double inverse_kinematics_impl::moveto(const point3& p, double motor_angle) const
     {
     	//ideas from Viacheslav Slavinsky are used
     	//conventions:
@@ -51,8 +51,8 @@ namespace huniplacer
     	double beta = atan2(p_fixed.z, p_fixed.y);
     	double rho = beta - alpha;
 
-    	double knee_z = sin(rho) * hip;
-    	double hip_ankle_angle = abs(atan(p_fixed.x / (p_fixed.z - knee_z)));
+    	double hip_ankle_angle = asin(abs(p_fixed.x)/ankle);
+
     	if(hip_ankle_angle > hip_ankle_angle_max)
     	{
     		throw inverse_kinematics_exception("angle between hip and ankle is out of range", p);

@@ -1,9 +1,8 @@
 #pragma once
 
-#include <vector>
-
 #include <huniplacer/point3.h>
 #include <huniplacer/imotor3.h>
+#include <huniplacer/effector_boundaries.h>
 
 //TODO: implement forward kinematics and use that to calculate the current effector position
 
@@ -22,8 +21,10 @@ namespace huniplacer
         private:
             inverse_kinematics_model& kinematics;
             imotor3& motors;
+            effector_boundaries* boundaries;
 
             point3 effector_location;
+            bool boundaries_generated;
 
             bool is_valid_angle(double angle);
         
@@ -37,6 +38,10 @@ namespace huniplacer
 
             ~deltarobot(void);
             
+            inline effector_boundaries* get_boundaries();
+            inline bool has_boundaries();
+            void generate_boundaries(double voxel_size);
+
             /**
              * @brief makes the deltarobot move to a point
              * @param p 3-dimensional point to move to
@@ -75,4 +80,7 @@ namespace huniplacer
              */
             void power_on(void);
     };
+
+    effector_boundaries* deltarobot::get_boundaries(){return boundaries;}
+    bool deltarobot::has_boundaries(){return boundaries_generated;}
 }

@@ -1,29 +1,27 @@
 build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_kinematics_impl.cpp \
  include/huniplacer/inverse_kinematics_impl.h include/huniplacer/point3.h \
- /usr/include/c++/4.5/cmath \
- /usr/include/c++/4.5/i686-linux-gnu/bits/c++config.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/os_defines.h \
+ /usr/include/c++/4.4/cmath \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/c++config.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/os_defines.h \
  /usr/include/features.h /usr/include/bits/predefs.h \
  /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
  /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/cpu_defines.h \
- /usr/include/c++/4.5/bits/cpp_type_traits.h \
- /usr/include/c++/4.5/ext/type_traits.h /usr/include/math.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/cpu_defines.h \
+ /usr/include/c++/4.4/bits/cpp_type_traits.h \
+ /usr/include/c++/4.4/ext/type_traits.h /usr/include/math.h \
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/c++/4.5/bits/cmath.tcc \
- include/huniplacer/motion.h \
- /usr/lib/i386-linux-gnu/gcc/i686-linux-gnu/4.5.2/include/stdint.h \
- /usr/include/stdint.h /usr/include/bits/wchar.h \
- /usr/include/c++/4.5/cstring /usr/include/c++/4.5/cstddef \
- /usr/lib/i386-linux-gnu/gcc/i686-linux-gnu/4.5.2/include/stddef.h \
- /usr/include/string.h /usr/include/xlocale.h \
- include/huniplacer/inverse_kinematics_model.h \
- /usr/include/c++/4.5/cstdio /usr/include/stdio.h \
+ /usr/include/bits/mathcalls.h /usr/include/c++/4.4/bits/cmath.tcc \
+ include/huniplacer/motion.h /usr/include/stdint.h \
+ /usr/include/bits/wchar.h /usr/include/c++/4.4/cstring \
+ /usr/include/c++/4.4/cstddef \
+ /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stddef.h /usr/include/string.h \
+ /usr/include/xlocale.h include/huniplacer/inverse_kinematics_model.h \
+ /usr/include/c++/4.4/cstdio /usr/include/stdio.h \
  /usr/include/bits/types.h /usr/include/bits/typesizes.h \
  /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
- /usr/lib/i386-linux-gnu/gcc/i686-linux-gnu/4.5.2/include/stdarg.h \
+ /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdarg.h \
  /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
  /usr/include/boost/math/special_functions/fpclassify.hpp \
  /usr/include/boost/config/no_tr1/cmath.hpp /usr/include/boost/limits.hpp \
@@ -32,13 +30,13 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/config/compiler/gcc.hpp \
  /usr/include/boost/config/select_stdlib_config.hpp \
  /usr/include/boost/config/no_tr1/utility.hpp \
- /usr/include/c++/4.5/utility /usr/include/c++/4.5/bits/stl_relops.h \
- /usr/include/c++/4.5/bits/stl_pair.h /usr/include/c++/4.5/bits/move.h \
- /usr/include/c++/4.5/bits/concept_check.h \
+ /usr/include/c++/4.4/utility /usr/include/c++/4.4/bits/stl_relops.h \
+ /usr/include/c++/4.4/bits/stl_pair.h /usr/include/c++/4.4/bits/move.h \
+ /usr/include/c++/4.4/bits/concept_check.h \
  /usr/include/boost/config/stdlib/libstdcpp3.hpp \
  /usr/include/boost/config/select_platform_config.hpp \
  /usr/include/boost/config/platform/linux.hpp \
- /usr/include/c++/4.5/cstdlib /usr/include/stdlib.h \
+ /usr/include/c++/4.4/cstdlib /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
  /usr/include/endian.h /usr/include/bits/endian.h \
  /usr/include/bits/byteswap.h /usr/include/sys/types.h \
@@ -49,7 +47,7 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/unistd.h /usr/include/bits/posix_opt.h \
  /usr/include/bits/environments.h /usr/include/bits/confname.h \
  /usr/include/getopt.h /usr/include/boost/config/suffix.hpp \
- /usr/include/c++/4.5/limits /usr/include/boost/math/tools/real_cast.hpp \
+ /usr/include/c++/4.4/limits /usr/include/boost/math/tools/real_cast.hpp \
  /usr/include/boost/type_traits/is_floating_point.hpp \
  /usr/include/boost/type_traits/detail/bool_trait_def.hpp \
  /usr/include/boost/type_traits/detail/template_arity_spec.hpp \
@@ -100,28 +98,28 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/math/special_functions/detail/round_fwd.hpp \
  /usr/include/boost/math/tools/promotion.hpp \
  /usr/include/boost/math/tools/config.hpp /usr/include/boost/cstdint.hpp \
- /usr/lib/i386-linux-gnu/gcc/i686-linux-gnu/4.5.2/include-fixed/limits.h \
- /usr/lib/i386-linux-gnu/gcc/i686-linux-gnu/4.5.2/include-fixed/syslimits.h \
+ /usr/lib/gcc/i686-linux-gnu/4.4.5/include-fixed/limits.h \
+ /usr/lib/gcc/i686-linux-gnu/4.4.5/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
  /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
  /usr/include/bits/posix2_lim.h /usr/include/bits/xopen_lim.h \
- /usr/include/c++/4.5/algorithm /usr/include/c++/4.5/bits/stl_algobase.h \
- /usr/include/c++/4.5/bits/functexcept.h \
- /usr/include/c++/4.5/exception_defines.h \
- /usr/include/c++/4.5/ext/numeric_traits.h \
- /usr/include/c++/4.5/bits/stl_iterator_base_types.h \
- /usr/include/c++/4.5/bits/stl_iterator_base_funcs.h \
- /usr/include/c++/4.5/bits/stl_iterator.h \
- /usr/include/c++/4.5/debug/debug.h /usr/include/c++/4.5/bits/stl_algo.h \
- /usr/include/c++/4.5/bits/algorithmfwd.h \
- /usr/include/c++/4.5/initializer_list \
- /usr/include/c++/4.5/bits/stl_heap.h \
- /usr/include/c++/4.5/bits/stl_tempbuf.h \
- /usr/include/c++/4.5/bits/stl_construct.h /usr/include/c++/4.5/new \
- /usr/include/c++/4.5/exception \
- /usr/include/c++/4.5/bits/stl_uninitialized.h \
- /usr/include/c++/4.5/climits /usr/include/boost/math/tools/user.hpp \
- /usr/include/c++/4.5/fenv.h /usr/include/fenv.h /usr/include/bits/fenv.h \
+ /usr/include/c++/4.4/algorithm /usr/include/c++/4.4/bits/stl_algobase.h \
+ /usr/include/c++/4.4/bits/functexcept.h \
+ /usr/include/c++/4.4/exception_defines.h \
+ /usr/include/c++/4.4/ext/numeric_traits.h \
+ /usr/include/c++/4.4/bits/stl_iterator_base_types.h \
+ /usr/include/c++/4.4/bits/stl_iterator_base_funcs.h \
+ /usr/include/c++/4.4/bits/stl_iterator.h \
+ /usr/include/c++/4.4/debug/debug.h /usr/include/c++/4.4/bits/stl_algo.h \
+ /usr/include/c++/4.4/bits/algorithmfwd.h \
+ /usr/include/c++/4.4/initializer_list \
+ /usr/include/c++/4.4/bits/stl_heap.h \
+ /usr/include/c++/4.4/bits/stl_tempbuf.h \
+ /usr/include/c++/4.4/bits/stl_construct.h /usr/include/c++/4.4/new \
+ /usr/include/c++/4.4/exception \
+ /usr/include/c++/4.4/bits/stl_uninitialized.h \
+ /usr/include/c++/4.4/climits /usr/include/boost/math/tools/user.hpp \
+ /usr/include/c++/4.4/fenv.h /usr/include/fenv.h /usr/include/bits/fenv.h \
  /usr/include/boost/type_traits/is_integral.hpp \
  /usr/include/boost/type_traits/is_convertible.hpp \
  /usr/include/boost/type_traits/intrinsics.hpp \
@@ -375,49 +373,49 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/mpl/aux_/preprocessed/gcc/greater_equal.hpp \
  /usr/include/boost/static_assert.hpp /usr/include/boost/assert.hpp \
  /usr/include/assert.h /usr/include/boost/config/no_tr1/complex.hpp \
- /usr/include/c++/4.5/complex /usr/include/c++/4.5/sstream \
- /usr/include/c++/4.5/istream /usr/include/c++/4.5/ios \
- /usr/include/c++/4.5/iosfwd /usr/include/c++/4.5/bits/stringfwd.h \
- /usr/include/c++/4.5/bits/postypes.h /usr/include/c++/4.5/cwchar \
- /usr/include/c++/4.5/bits/char_traits.h \
- /usr/include/c++/4.5/bits/localefwd.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/c++locale.h \
- /usr/include/c++/4.5/clocale /usr/include/locale.h \
- /usr/include/bits/locale.h /usr/include/c++/4.5/cctype \
- /usr/include/ctype.h /usr/include/c++/4.5/bits/ios_base.h \
- /usr/include/c++/4.5/ext/atomicity.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/gthr.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/gthr-default.h \
+ /usr/include/c++/4.4/complex /usr/include/c++/4.4/sstream \
+ /usr/include/c++/4.4/istream /usr/include/c++/4.4/ios \
+ /usr/include/c++/4.4/iosfwd /usr/include/c++/4.4/bits/stringfwd.h \
+ /usr/include/c++/4.4/bits/postypes.h /usr/include/c++/4.4/cwchar \
+ /usr/include/c++/4.4/bits/char_traits.h \
+ /usr/include/c++/4.4/bits/localefwd.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/c++locale.h \
+ /usr/include/c++/4.4/clocale /usr/include/locale.h \
+ /usr/include/bits/locale.h /usr/include/c++/4.4/cctype \
+ /usr/include/ctype.h /usr/include/c++/4.4/bits/ios_base.h \
+ /usr/include/c++/4.4/ext/atomicity.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/gthr.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/gthr-default.h \
  /usr/include/pthread.h /usr/include/sched.h /usr/include/bits/sched.h \
  /usr/include/bits/setjmp.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/atomic_word.h \
- /usr/include/c++/4.5/bits/locale_classes.h /usr/include/c++/4.5/string \
- /usr/include/c++/4.5/bits/allocator.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/c++allocator.h \
- /usr/include/c++/4.5/ext/new_allocator.h \
- /usr/include/c++/4.5/bits/ostream_insert.h \
- /usr/include/c++/4.5/cxxabi-forced.h \
- /usr/include/c++/4.5/bits/stl_function.h \
- /usr/include/c++/4.5/backward/binders.h \
- /usr/include/c++/4.5/bits/basic_string.h \
- /usr/include/c++/4.5/bits/basic_string.tcc \
- /usr/include/c++/4.5/bits/locale_classes.tcc \
- /usr/include/c++/4.5/streambuf /usr/include/c++/4.5/bits/streambuf.tcc \
- /usr/include/c++/4.5/bits/basic_ios.h \
- /usr/include/c++/4.5/bits/locale_facets.h /usr/include/c++/4.5/cwctype \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/atomic_word.h \
+ /usr/include/c++/4.4/bits/locale_classes.h /usr/include/c++/4.4/string \
+ /usr/include/c++/4.4/bits/allocator.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/c++allocator.h \
+ /usr/include/c++/4.4/ext/new_allocator.h \
+ /usr/include/c++/4.4/bits/ostream_insert.h \
+ /usr/include/c++/4.4/cxxabi-forced.h \
+ /usr/include/c++/4.4/bits/stl_function.h \
+ /usr/include/c++/4.4/backward/binders.h \
+ /usr/include/c++/4.4/bits/basic_string.h \
+ /usr/include/c++/4.4/bits/basic_string.tcc \
+ /usr/include/c++/4.4/bits/locale_classes.tcc \
+ /usr/include/c++/4.4/streambuf /usr/include/c++/4.4/bits/streambuf.tcc \
+ /usr/include/c++/4.4/bits/basic_ios.h \
+ /usr/include/c++/4.4/bits/locale_facets.h /usr/include/c++/4.4/cwctype \
  /usr/include/wctype.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/ctype_base.h \
- /usr/include/c++/4.5/bits/streambuf_iterator.h \
- /usr/include/c++/4.5/i686-linux-gnu/bits/ctype_inline.h \
- /usr/include/c++/4.5/bits/locale_facets.tcc \
- /usr/include/c++/4.5/bits/basic_ios.tcc /usr/include/c++/4.5/ostream \
- /usr/include/c++/4.5/bits/ostream.tcc \
- /usr/include/c++/4.5/bits/istream.tcc \
- /usr/include/c++/4.5/bits/sstream.tcc \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/ctype_base.h \
+ /usr/include/c++/4.4/bits/streambuf_iterator.h \
+ /usr/include/c++/4.4/i686-linux-gnu/bits/ctype_inline.h \
+ /usr/include/c++/4.4/bits/locale_facets.tcc \
+ /usr/include/c++/4.4/bits/basic_ios.tcc /usr/include/c++/4.4/ostream \
+ /usr/include/c++/4.4/bits/ostream.tcc \
+ /usr/include/c++/4.4/bits/istream.tcc \
+ /usr/include/c++/4.4/bits/sstream.tcc \
  /usr/include/boost/math/special_functions/detail/fp_traits.hpp \
  /usr/include/boost/detail/endian.hpp \
  include/huniplacer/inverse_kinematics_exception.h \
- /usr/include/c++/4.5/stdexcept include/huniplacer/utils.h \
+ /usr/include/c++/4.4/stdexcept include/huniplacer/utils.h \
  /usr/include/boost/thread.hpp /usr/include/boost/thread/thread.hpp \
  /usr/include/boost/thread/detail/platform.hpp \
  /usr/include/boost/config/requires_threads.hpp \
@@ -430,9 +428,9 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/config/abi_suffix.hpp \
  /usr/include/boost/shared_ptr.hpp \
  /usr/include/boost/smart_ptr/shared_ptr.hpp \
- /usr/include/boost/config/no_tr1/memory.hpp /usr/include/c++/4.5/memory \
- /usr/include/c++/4.5/bits/stl_raw_storage_iter.h \
- /usr/include/c++/4.5/backward/auto_ptr.h \
+ /usr/include/boost/config/no_tr1/memory.hpp /usr/include/c++/4.4/memory \
+ /usr/include/c++/4.4/bits/stl_raw_storage_iter.h \
+ /usr/include/c++/4.4/backward/auto_ptr.h \
  /usr/include/boost/checked_delete.hpp \
  /usr/include/boost/throw_exception.hpp \
  /usr/include/boost/exception/detail/attribute_noreturn.hpp \
@@ -443,9 +441,9 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/smart_ptr/detail/sp_counted_base.hpp \
  /usr/include/boost/smart_ptr/detail/sp_has_sync.hpp \
  /usr/include/boost/smart_ptr/detail/sp_counted_base_gcc_x86.hpp \
- /usr/include/boost/detail/sp_typeinfo.hpp /usr/include/c++/4.5/typeinfo \
+ /usr/include/boost/detail/sp_typeinfo.hpp /usr/include/c++/4.4/typeinfo \
  /usr/include/boost/smart_ptr/detail/sp_counted_impl.hpp \
- /usr/include/c++/4.5/functional \
+ /usr/include/c++/4.4/functional \
  /usr/include/boost/smart_ptr/detail/sp_convertible.hpp \
  /usr/include/boost/smart_ptr/detail/spinlock_pool.hpp \
  /usr/include/boost/smart_ptr/detail/spinlock.hpp \
@@ -477,15 +475,15 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/preprocessor/comparison/less_equal.hpp \
  /usr/include/boost/preprocessor/logical/not.hpp \
  /usr/include/boost/utility/enable_if.hpp \
- /usr/include/boost/next_prior.hpp /usr/include/c++/4.5/iterator \
- /usr/include/c++/4.5/bits/stream_iterator.h \
+ /usr/include/boost/next_prior.hpp /usr/include/c++/4.4/iterator \
+ /usr/include/c++/4.4/bits/stream_iterator.h \
  /usr/include/boost/noncopyable.hpp /usr/include/boost/thread/locks.hpp \
  /usr/include/boost/thread/detail/move.hpp \
  /usr/include/boost/thread/thread_time.hpp \
  /usr/include/boost/date_time/microsec_time_clock.hpp \
  /usr/include/boost/date_time/compiler_config.hpp \
  /usr/include/boost/date_time/locale_config.hpp \
- /usr/include/boost/date_time/c_time.hpp /usr/include/c++/4.5/ctime \
+ /usr/include/boost/date_time/c_time.hpp /usr/include/c++/4.4/ctime \
  /usr/include/sys/time.h /usr/include/boost/date_time/time_clock.hpp \
  /usr/include/boost/date_time/filetime_functions.hpp \
  /usr/include/boost/date_time/posix_time/posix_time_types.hpp \
@@ -516,9 +514,9 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/date_time/gregorian/greg_day.hpp \
  /usr/include/boost/date_time/gregorian/greg_year.hpp \
  /usr/include/boost/date_time/gregorian/greg_month.hpp \
- /usr/include/c++/4.5/map /usr/include/c++/4.5/bits/stl_tree.h \
- /usr/include/c++/4.5/bits/stl_map.h \
- /usr/include/c++/4.5/bits/stl_multimap.h \
+ /usr/include/c++/4.4/map /usr/include/c++/4.4/bits/stl_tree.h \
+ /usr/include/c++/4.4/bits/stl_map.h \
+ /usr/include/c++/4.4/bits/stl_multimap.h \
  /usr/include/boost/date_time/gregorian/greg_duration.hpp \
  /usr/include/boost/date_time/date_duration.hpp \
  /usr/include/boost/date_time/date_duration_types.hpp \
@@ -541,7 +539,7 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/date_time/posix_time/conversion.hpp \
  /usr/include/boost/date_time/gregorian/conversion.hpp \
  /usr/include/errno.h /usr/include/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/i386-linux-gnu/asm/errno.h \
+ /usr/include/linux/errno.h /usr/include/asm/errno.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/boost/thread/pthread/timespec.hpp \
  /usr/include/boost/thread/pthread/pthread_mutex_scoped_lock.hpp \
@@ -576,8 +574,8 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/thread/detail/thread.hpp \
  /usr/include/boost/thread/detail/thread_heap_alloc.hpp \
  /usr/include/boost/thread/pthread/thread_heap_alloc.hpp \
- /usr/include/c++/4.5/list /usr/include/c++/4.5/bits/stl_list.h \
- /usr/include/c++/4.5/bits/list.tcc /usr/include/boost/ref.hpp \
+ /usr/include/c++/4.4/list /usr/include/c++/4.4/bits/stl_list.h \
+ /usr/include/c++/4.4/bits/list.tcc /usr/include/boost/ref.hpp \
  /usr/include/boost/bind.hpp /usr/include/boost/bind/bind.hpp \
  /usr/include/boost/mem_fn.hpp /usr/include/boost/bind/mem_fn.hpp \
  /usr/include/boost/get_pointer.hpp \
@@ -612,7 +610,7 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/exception/detail/is_output_streamable.hpp \
  /usr/include/boost/exception/detail/object_hex_dump.hpp \
  /usr/include/boost/exception/detail/type_info.hpp \
- /usr/include/c++/4.5/iomanip \
+ /usr/include/c++/4.4/iomanip \
  /usr/include/boost/exception/detail/error_info_impl.hpp \
  /usr/include/boost/exception/diagnostic_information.hpp \
  /usr/include/boost/exception/get_error_info.hpp \
@@ -629,7 +627,7 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/preprocessor/slot/slot.hpp \
  /usr/include/boost/preprocessor/slot/detail/def.hpp \
  /usr/include/boost/function/detail/prologue.hpp \
- /usr/include/c++/4.5/cassert \
+ /usr/include/c++/4.4/cassert \
  /usr/include/boost/config/no_tr1/functional.hpp \
  /usr/include/boost/function/function_base.hpp \
  /usr/include/boost/integer.hpp /usr/include/boost/integer_fwd.hpp \
@@ -653,6 +651,6 @@ build/inverse_kinematics_impl.o build/inverse_kinematics_impl.d : src/inverse_ki
  /usr/include/boost/detail/no_exceptions_support.hpp \
  /usr/include/boost/scoped_array.hpp \
  /usr/include/boost/smart_ptr/scoped_array.hpp \
- /usr/include/c++/4.5/vector /usr/include/c++/4.5/bits/stl_vector.h \
- /usr/include/c++/4.5/bits/stl_bvector.h \
- /usr/include/c++/4.5/bits/vector.tcc
+ /usr/include/c++/4.4/vector /usr/include/c++/4.4/bits/stl_vector.h \
+ /usr/include/c++/4.4/bits/stl_bvector.h \
+ /usr/include/c++/4.4/bits/vector.tcc
