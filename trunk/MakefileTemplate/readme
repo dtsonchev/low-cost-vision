@@ -175,4 +175,10 @@ VI.   Notes and pitfalls
 VII.  Literature
 ######################################################################
 
-TODO: o'reilly book and GNU Make website
+# Managing Projects with GNU Make, 3rd Edition
+  by Robert Mecklenburg
+  ISBN: 978-0-596-00610-5
+
+# GNU Make Manual
+  URL: http://www.gnu.org/s/make/manual/make.html
+
