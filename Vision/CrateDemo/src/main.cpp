@@ -28,6 +28,8 @@ void process(cv::Mat& image, cv::Mat& debug) {
 
 	if(showContours) {
 		cv::Mat canny;
+		cv::Canny(image, canny, fidDetector.lowThreshold, fidDetector.highThreshold);
+		cv::imshow("Canny", canny);
 		cv::Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
 		std::vector<std::vector<cv::Point> > contoursCanny;
 		cv::findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
@@ -99,10 +101,10 @@ void callback(char key, cv::Mat* image = NULL) {
 		case 'j': fidDetector.minRad--; break;
 		case 'h': fidDetector.maxRad--; break;
 		case 'k': fidDetector.maxRad++; break;
-		case 'r': fidDetector.minDist++; break;
-		case 'f': fidDetector.minDist--; break;
-		case 't': fidDetector.maxDist++; break;
-		case 'g': fidDetector.maxDist--; break;
+		case 'r': fidDetector.minDist+=.1f; break;
+		case 'f': fidDetector.minDist-=.1f; break;
+		case 't': fidDetector.maxDist+=.1f; break;
+		case 'g': fidDetector.maxDist-=.1f; break;
 		case 'x': fidDetector.lowThreshold+=10; break;
 		case 'z': fidDetector.lowThreshold-=10; break;
 		case 'v': fidDetector.highThreshold+=10; break;
@@ -145,6 +147,8 @@ int main(int argc, char* argv[]) {
 			return 1;
 		}
 
+		imshow("Original", image);
+
 		RectifyImage rectify;
 		if(argc > 3) {
 			rectify.initRectify(argv[3], cv::Size(image.cols, image.rows));
@@ -160,7 +164,7 @@ int main(int argc, char* argv[]) {
 			cv::Mat debug = image.clone();
 			process(gray, debug);
 
-			cv::imshow("Image", debug);
+			cv::imshow("Result", debug);
 			key = cv::waitKey();
 			callback(key, &image);
 		}
@@ -189,6 +193,8 @@ int main(int argc, char* argv[]) {
 		while (key != 'q') {
 			cam.read(frame);
 
+			imshow("Original", frame);
+
 			if(argc > 4) rectify.rectify(frame.clone(), frame);
 
 			cv::Mat gray;
@@ -196,7 +202,7 @@ int main(int argc, char* argv[]) {
 
 			process(gray, frame);
 
-			cv::imshow("Frame", frame);
+			imshow("Result", frame);
 			key = cv::waitKey(10);
 			callback(key, &frame);
 		}
@@ -225,6 +231,8 @@ int main(int argc, char* argv[]) {
 		while (key != 'q') {
 			cam.get_frame(&frame);
 
+			imshow("Original", frame);
+
 			if(argc > 4) rectify.rectify(frame.clone(), frame);
 
 			cv::Mat gray;
@@ -232,7 +240,7 @@ int main(int argc, char* argv[]) {
 
 			process(gray, frame);
 
-			imshow("Frame", frame);
+			imshow("Result", frame);
 			key = cv::waitKey(10);
 			callback(key, &frame);
 		}
