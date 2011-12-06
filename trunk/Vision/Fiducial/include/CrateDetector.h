@@ -32,6 +32,8 @@ public:
 	 *  the public fields after construction.
 	 */
 	CrateDetector(int lowThreshold = 50, int highThreshold = 150);
+
+	//! The CrateDetector deconstructor
 	virtual ~CrateDetector();
 
 
