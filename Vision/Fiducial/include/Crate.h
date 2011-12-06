@@ -38,14 +38,14 @@ public:
 	 *  given crate, fiducial points are deep-copied.
 	 */
 	Crate(const Crate& crate);
+
+	//! THe Crate deconstructor
 	virtual ~Crate();
 
 	/*! \brief Generate a rotated bounding rectangle
 	 *
-	 *  Generates a RotatedRect that contains the three
-	 *  fiducial points and a fourth point that is
-	 *  generated from the angle that makes sure the
-	 *  correct size is kept during a rotation.
+	 *  Generates a RotatedRect that represents the
+	 *  crate.
 	 */
 	cv::RotatedRect rect();
 

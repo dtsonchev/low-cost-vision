@@ -69,6 +69,8 @@ public:
 			int circleVotes = 100, float minDist = 1.5f, float maxDist = 5.0f,
 			int lineVotes = 10, unsigned int maxLines = 10, int lowThreshold = 125,
 			int highThreshold = 300, int centerMethod=MEAN);
+
+	//! The FiducialDetector deconstructor
 	virtual ~FiducialDetector();
 
 	/*! \brief Detects all fiducials in an image
