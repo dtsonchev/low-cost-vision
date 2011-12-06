@@ -171,6 +171,11 @@ VI.   Notes and pitfalls
   the compiler won't get confused. Also, .../include/ is added to
   the include paths so that sourcefiles in .../src/ can include them.
 
+# If projects you use have a dependency, you must also specify that
+  dependency in your own project.
+  e.g.: PROJ_A depends on opencv2, PROJ_B depends on PROJ_A. PROJ_B
+  should now also depend on opencv2.
+
 ######################################################################
 VII.  Literature
 ######################################################################
