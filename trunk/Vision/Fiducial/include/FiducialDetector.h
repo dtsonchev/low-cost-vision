@@ -22,9 +22,9 @@ private:
 	//! Draw a polar coordinate line
 	void polarLine(cv::Mat& image, float rho, float theta, cv::Scalar color,
 			int thickness);
-	//! Determine the center line using the median angle, new method
+	//! Determine the center line using the mediod angle
 	bool detectMedoidCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
-	//! Determine the center line using the mean angle, old method
+	//! Determine the center line using the mean angle
 	bool detectMeanCenterLine(cv::Vec2f& centerLine, std::vector<cv::Vec2f> lines, cv::Mat* debugImage=NULL);
 public:
 	//! Center line detection methods
