@@ -119,7 +119,7 @@ void ChoiceFrame::LoadImagePaths(const path &itPath, const path &xmlPath) {
 
 		} else {
 			//If its a image (JPG)
-			string extension = p.extension();
+			string extension = p.extension().string();
 			boost::algorithm::to_lower(extension);
 			if (extension == ".jpg") {
 				bool match = false;
