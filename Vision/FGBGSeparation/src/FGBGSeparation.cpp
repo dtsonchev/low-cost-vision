@@ -22,6 +22,7 @@ FGBGSeparator::FGBGSeparator(int bins, int maskSize, int RGBorHSV){
 	if(!(RGBorHSV == RGB || RGBorHSV == HSV)){
 		throw variableException("RGBorHSV need to be 1 or 2");
 	}
+	cout<<"RGB or HSV value: "<< RGBorHSV<<endl;
 	this->bins = bins;
 	this->maskSize = maskSize;
 	this->RGBorHSV = RGBorHSV;

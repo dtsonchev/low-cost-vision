@@ -9,6 +9,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <FGBGSeparation/FGBGSeparation.h>
+#include <FGBGSeparation/TrainingData.h>
 #include <imageMetaData/Tools.hpp>
 #include <report/Report.hpp>
 #include <report/ReportList.hpp>
@@ -36,7 +37,7 @@ int main(int argc, char* argv[]) {
 	if (argc < 7) {
 		cout
 				<< "Usage: test <result directory> <training (ton || toff)> <bins> "
-				<< "<masksize> <RGBorHSV (1 || 2)> <xml with testing data> "
+				<< "<masksize> <use RGB or HSV colorspace (RGB || HSV)> <xml with testing data> "
 				<< "[xml with training data]" << endl;
 		return -1;
 	}
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]) {
 	string training;
 	int bins;
 	int maskSize;
-	int RGBorHSV;
+	string RGBorHSV;
 	string testXmlPath;
 	string trainXmlPath;
 	stringstream ss;
@@ -63,7 +64,7 @@ int main(int argc, char* argv[]) {
 	if (training == "ton" && argc < 8) {
 		cout
 				<< "Usage: test <result directory> <training (ton || toff)> <bins> "
-				<< "<masksize> <RGBorHSV (1 || 2)> <xml with testing data> "
+				<< "<masksize> <use RGB or HSV colorspace (RGB || HSV)> <xml with testing data> "
 				<< "[xml with training data]" << endl;
 		return -1;
 	}
@@ -81,7 +82,7 @@ int main(int argc, char* argv[]) {
 	ss << argv[5];
 	ss >> RGBorHSV;
 	ss.clear();
-	assert(RGBorHSV > 0 && RGBorHSV < 3);
+	assert(RGBorHSV == "RGB" || RGBorHSV == "HSV");
 
 	ss << argv[6];
 	ss >> testXmlPath;
@@ -97,7 +98,7 @@ int main(int argc, char* argv[]) {
 // Create some helper objects
 //========================================================================
 	// Create the object that will do the work
-	FGBGSeparator tree(bins, maskSize, RGBorHSV);
+	FGBGSeparator tree(bins, maskSize, RGBorHSV == "RGB" ? RGB : HSV);
 	// Create a stopwatch for timing how long things take
 	boost::timer stopwatch;
 	// Create a container for storing the result per image
@@ -120,7 +121,7 @@ int main(int argc, char* argv[]) {
 				"trainingsset");
 		foreach(ImageMD img, trainingImages){
 		Mat srcImage = imread(img.path);
-		Mat binImage = imread(img.properties["FB"]);
+		Mat binImage = imread(img.properties.at("FB"));
 		tree.addImageToTrainingsSet(srcImage, binImage);
 	}
 
@@ -153,7 +154,7 @@ int main(int argc, char* argv[]) {
 
 	int equalPixels = compare(image, result);
 	double percCorrect = equalPixels / (double)(image.rows * image.cols) * 100;
-	imgResults[img.path] = percCorrect;
+	imgResults[img.path]= percCorrect;
 
 	// Store the results in the categories container
 	foreach(Category c, img.categories) {
@@ -176,11 +177,16 @@ int main(int argc, char* argv[]) {
 	r.setDescription(
 			"This algorithm attempts to separate the foreground and background of an image.");
 
+	string temp;
 	// Put the parameters used to run the algorithm in the report
-	ReportList* params = new ReportList("Parameters", 2, STRING, INT);
-	params->appendRow("Bins", bins);
-	params->appendRow("Mask size", maskSize);
-	params->appendRow("RGBorHSV", RGBorHSV);
+	ReportList* params = new ReportList("Parameters", 2, STRING, STRING);
+	ss.str("");
+	ss << bins;
+	params->appendRow("Bins", ss.str().c_str());
+	ss.str("");
+	ss << maskSize;
+	params->appendRow("Mask size", ss.str().c_str());
+	params->appendRow("RGBorHSV", RGBorHSV.c_str());
 	r.addField(params);
 
 	// Add the time results to the report
