@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.1
+# version: v0.5.2
 #######################################################################
 
 #######################################################################
@@ -56,8 +56,6 @@ DEP_PROJ            :=
 SHELL                = /bin/sh
 PRINTF               = /usr/bin/printf
 DEPGEN               = $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
-TRUE                 := true
-FALSE                :=
 
 # directories
 BINDIR              := bin
@@ -81,6 +79,11 @@ endif
 # append to PROJ_DIRS
 PROJ_PATHS := $(strip $(subst :, , $(LCV_PROJECT_PATH)))
 DEP_PROJ   := $(strip $(DEP_PROJ))
+ifeq ($(PROJ_PATHS), )
+ifneq ($(DEP_PROJ), )
+$(error dependency projects were specified but LCV_PROJECT_PATH is empty)
+endif
+endif
 PROJ_DIRS  := \
 	$(foreach DEP,$(DEP_PROJ), \
         $(eval DEP_FOUND := ) \
@@ -235,10 +238,10 @@ all: $(TARGET)
 # recursively make al dependency projects
 .PHONY: dep
 dep:
-	#@if [ -e $(BUILDDIR)/expose.sh ] ; then \
-	#	$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
-	#	rm $(BUILDDIR)/expose.sh; \
-	#fi
+#	@if [ -e $(BUILDDIR)/expose.sh ] ; then \
+#		$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
+#		rm $(BUILDDIR)/expose.sh; \
+#	fi
 	@ERR=0; \
 	for DEP in $(PROJ_DIRS); do \
 		$(MAKE) -C "$$DEP" dep; \
