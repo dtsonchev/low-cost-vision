@@ -5,6 +5,7 @@
 #include <opencv2/ml/ml.hpp>
 #include <sstream>
 #include <FGBGSeparation/TrainingData.h>
+#include <string>
 
 /**
  * @brief the class were an decision tree is trained for fore- and background separation
@@ -28,7 +29,7 @@ public:
 	 * @param image the total image
 	 * @param binaryImage a binarie image of the normal image where white means forground and black means background
 	 */
-	void addImageToTrainingsSet(cv::Mat &image, cv::Mat &binaryImage);
+	void addImageToTrainingsSet(const cv::Mat &image, const cv::Mat &binaryImage);
 
 	/**
 	 * @brief trains a decision tree for background foreground separation whit out parameters
@@ -60,14 +61,14 @@ public:
 	 * @param pathName the path were it need to be saved to
 	 * @param treeName the name at which the tree is saved in the .xml
 	 */
-	void saveTraining(const char* pathName, const char* treeName);
+	void saveTraining(const std::string& pathName, const std::string& treeName);
 
 	/**
 	 * @brief loads the tree
 	 * @param pathName the path were its saved to
 	 * @param treeName the name at which the tree is loaded from the .xml
 	 */
-	void loadTraining(const char* pathName, const char* treeName);
+	void loadTraining(const std::string& pathName, const std::string& treeName);
 
 private:
 

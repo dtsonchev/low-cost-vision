@@ -12,17 +12,17 @@ using namespace std;
 
 FGBGSeparator::FGBGSeparator(int bins, int maskSize, int RGBorHSV){
 	if(maskSize%2 == 0|| maskSize <= 0){
-		throw variableException("maskSize need to be odd and greater than 0");
+		throw variableException("maskSize needs to be odd and greater than 0");
 	}
 
 	if(bins <= 0){
-		throw variableException("bins need to be greater than 0");
+		throw variableException("bins needs to be greater than 0");
 	}
 
 	if(!(RGBorHSV == RGB || RGBorHSV == HSV)){
-		throw variableException("RGBorHSV need to be 1 or 2");
+		throw variableException("RGBorHSV needs to be 1 or 2");
 	}
-	cout<<"RGB or HSV value: "<< RGBorHSV<<endl;
+
 	this->bins = bins;
 	this->maskSize = maskSize;
 	this->RGBorHSV = RGBorHSV;
@@ -31,7 +31,7 @@ FGBGSeparator::FGBGSeparator(int bins, int maskSize, int RGBorHSV){
 	labels = Mat(1, 0, CV_32FC1);
 }
 
-void FGBGSeparator::addImageToTrainingsSet(Mat &image, Mat &binaryImage){
+void FGBGSeparator::addImageToTrainingsSet(const Mat &image, const Mat &binaryImage){
 	DataTrainer.CreateTrainDataFromImage(image, binaryImage, trainData, labels, bins, maskSize, RGBorHSV);
 }
 
@@ -64,8 +64,8 @@ void FGBGSeparator::train(int maxDepth, int minSampleCount,int maxCategories, fl
 	tree.train(trainData, CV_ROW_SAMPLE, labels, Mat(), Mat(), Mat(), Mat(), treeParams);
 }
 
-void FGBGSeparator::saveTraining(const char* pathName, const char* treeName){	tree.save(pathName, treeName);	}
-void FGBGSeparator::loadTraining(const char* pathName, const char* treeName){	tree.load(pathName, treeName);	}
+void FGBGSeparator::saveTraining(const std::string& pathName, const std::string& treeName){	tree.save(pathName.c_str(), treeName.c_str());	}
+void FGBGSeparator::loadTraining(const std::string& pathName, const std::string& treeName){	tree.load(pathName.c_str(), treeName.c_str());	}
 
 void FGBGSeparator::separateFB(const Mat &image, Mat &result){
 	Mat temp = image.clone();
