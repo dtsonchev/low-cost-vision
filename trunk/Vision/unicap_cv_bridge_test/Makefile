@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.1
+# version: v0.5.2
 #######################################################################
 
 #######################################################################
@@ -11,7 +11,7 @@
 BUILDTYPE           := binary
 
 # name of target binary or library
-TARGET              := CrateDemo
+TARGET              := unicap_cv_bridge_test
 
 # virtual path
 VPATH               :=
@@ -32,20 +32,20 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := opencv libunicap zbar Magick++
+PKGCONF_LIBRARIES   := libunicap opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_filesystem boost_thread boost_system
+LIBRARIES           := boost_thread
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := 
+EXTINCLUDEPATHS     := /usr/include/unicap /usr/include/local/unicap
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
-DEP_PROJ            := Fiducial DetectQRCode unicap_cv_bridge lens_correction
+DEP_PROJ            := unicap_cv_bridge
 
 #######################################################################
 # constants
@@ -56,8 +56,6 @@ DEP_PROJ            := Fiducial DetectQRCode unicap_cv_bridge lens_correction
 SHELL                = /bin/sh
 PRINTF               = /usr/bin/printf
 DEPGEN               = $(CXX) -M $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH)
-TRUE                 := true
-FALSE                :=
 
 # directories
 BINDIR              := bin
@@ -81,6 +79,11 @@ endif
 # append to PROJ_DIRS
 PROJ_PATHS := $(strip $(subst :, , $(LCV_PROJECT_PATH)))
 DEP_PROJ   := $(strip $(DEP_PROJ))
+ifeq ($(PROJ_PATHS), )
+ifneq ($(DEP_PROJ), )
+$(error dependency projects were specified but LCV_PROJECT_PATH is empty)
+endif
+endif
 PROJ_DIRS  := \
 	$(foreach DEP,$(DEP_PROJ), \
         $(eval DEP_FOUND := ) \
@@ -236,8 +239,8 @@ all: $(TARGET)
 .PHONY: dep
 dep:
 #	@if [ -e $(BUILDDIR)/expose.sh ] ; then \
-#	$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
-#	rm $(BUILDDIR)/expose.sh; \
+#		$(PRINTF) '$(ANSI_RED)RM\t$(BUILDDIR)/expose.sh$(ANSI_RESET)\n'; \
+#		rm $(BUILDDIR)/expose.sh; \
 #	fi
 	@ERR=0; \
 	for DEP in $(PROJ_DIRS); do \
