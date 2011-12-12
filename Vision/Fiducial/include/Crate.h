@@ -16,10 +16,11 @@ class Crate {
 private:
 	//! Bounding rectangle saved after calling rect()
 	cv::RotatedRect bounds;
+	//! Fiducial points belonging to the crate returned from points()
+	std::vector<cv::Point2f> fidPoints;
+	//! Tracks if fidPoints is ordered
+	bool fidOrdered;
 public:
-	//! Fiducial points belonging to the crate, should contain no more than 3 points
-	std::vector<cv::Point2f> points;
-
 	/*! \brief The Crate constructor
 	 *
 	 *  Constructs a crate without any fiducial points
@@ -48,6 +49,13 @@ public:
 	 *  crate.
 	 */
 	cv::RotatedRect rect();
+
+	/*! \brief Return the fiducial points
+	 *
+	 *  Returns the fiducial points ordered clockwise.
+	 *  Will only order fiducial points on first call.
+	 */
+	std::vector<cv::Point2f> points();
 
 	/*! \brief Draw the rectangle in the image
 	 *
