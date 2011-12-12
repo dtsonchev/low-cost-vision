@@ -131,12 +131,14 @@ endif
 # add paths of required projects
 EXTINCLUDEPATHS     := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(INCLUDEDIR)) $(EXTINCLUDEPATHS)
 LINKERPATHS         := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(LIBDIR)) $(LINKERPATHS)
-LIBRARIES           := \
-	$(foreach PRJ, $(PROJ_DIRS), \
-		$(foreach LIB, $(wildcard $(PRJ)$(LIBDIR)/lib*.a), \
-			$(patsubst lib%.a,%,$(notdir $(LIB))) \
-        ) \
-	) $(LIBRARIES)
+STATIC_LIB_FILES    := 
+$(foreach PRJ, $(PROJ_DIRS), \
+	$(foreach LIB, $(wildcard $(PRJ)$(LIBDIR)/lib*.a), \
+		$(eval LIBRARIES += $(patsubst lib%.a,%,$(notdir $(LIB))) )\
+		$(eval STATIC_LIB_FILES += $(LIB) )\
+		 \
+	) \
+)
 
 # append headers and sourcefiles to virtual path
 VPATH               += $(foreach PTH, $(strip $(SRCDIR)) $(strip $(EXTINCLUDEPATHS)) $(strip $(INCLUDEDIR)),$(PTH):)
@@ -279,7 +281,7 @@ $(BUILDDIR)/%.d: $(SRCDIR)/%.cpp | $(BUILDDIR)
 
 # create different rules for binary and library projects
 ifeq ($(BUILDTYPE),binary)
-$(TARGET): $(OBJS) | $(BINDIR)
+$(TARGET): $(OBJS) $(STATIC_LIB_FILES) | $(BINDIR)
 	@$(PRINTF) '$(ANSI_GREEN)$(CXX) $(OBJS) -o $@ $(LFLAGS)$(ANSI_RESET)\n'
 	@$(CXX) $(OBJS) -o $@ $(LFLAGS)
 
