@@ -37,6 +37,11 @@ namespace huniplacer
     	//double c = sqrt(SQR(p_fixed.x) + SQR(p_fixed.y) + SQR(p_fixed.z));
     	double c = sqrt(SQR(p_fixed.y) + SQR(p_fixed.z));
 
+    	if(c == 0)
+    	{
+    		throw inverse_kinematics_exception("point out of range", p);
+    	}
+
     	double alpha_acos_input =
     			(-(SQR(ankle) - SQR(p_fixed.x)) + SQR(hip) + SQR(c))
     			/
@@ -66,28 +71,12 @@ namespace huniplacer
     {
         point3 goal = p;
 
-        try
-        {
-			mf.angles[0] = utils::rad(-90) - moveto(p, utils::rad(0 * 120));
-			mf.angles[1] = utils::rad(-90) - moveto(p, utils::rad(1 * 120));
-			mf.angles[2] = utils::rad(-90) - moveto(p, utils::rad(2 * 120));
-        }
-        catch(inverse_kinematics_exception& ex)
-        {
-        	throw ex;
-        }
+		mf.angles[0] = utils::rad(-90) - moveto(p, utils::rad(0 * 120));
+		mf.angles[1] = utils::rad(-90) - moveto(p, utils::rad(1 * 120));
+		mf.angles[2] = utils::rad(-90) - moveto(p, utils::rad(2 * 120));
 
-        //quickfix
         mf.acceleration[0] = mf.acceleration[1] = mf.acceleration[2] = utils::rad(3600);
         mf.deceleration[0] = mf.deceleration[1] = mf.deceleration[2] = utils::rad(3600);
-
-        if(
-            boost::math::isnan(mf.angles[0]) ||
-            boost::math::isnan(mf.angles[1]) ||
-            boost::math::isnan(mf.angles[2]))
-        {
-            throw inverse_kinematics_exception("angle=NaN", p);
-        }
     }
 }
 

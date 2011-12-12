@@ -30,7 +30,7 @@ namespace huniplacer_gui
 
             static void motionthread_exhandler(std::runtime_error& err);
             void update_pos_txtfields(void);
-            void update_z_slider(void);
+            //void update_z_slider(void);
             bool try_move(double x, double y, double z);
 
             void draw_boundaries();
@@ -42,9 +42,10 @@ namespace huniplacer_gui
             //events
             void pos_panelOnLeftDown(wxMouseEvent& event);
             void pos_panelOnPaint(wxPaintEvent& event);
-            void slider_z_posOnLeftUp(wxMouseEvent& event);
+            void pos_panel_sideOnLeftDown(wxMouseEvent& event);
+            void pos_panel_sideOnPaint(wxPaintEvent& event);
+            //void slider_z_posOnLeftUp(wxMouseEvent& event);
             void button_moveOnButtonClick(wxCommandEvent& event);
-            void button_circleOnButtonClick(wxCommandEvent& event);
             void button_connectOnButtonClick(wxCommandEvent& event);
             void button_disconnectOnButtonClick(wxCommandEvent& event);
             void button_onOnButtonClick(wxCommandEvent& event);

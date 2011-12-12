@@ -5,7 +5,7 @@
 #include <stack>
 #include <vector>
 #include <set>
-//#include <cstring>
+#include <cstring>
 
 namespace huniplacer
 {
@@ -18,7 +18,12 @@ namespace huniplacer
 		boundaries->width = (double)((MAX_X - MIN_X)) / voxel_size;
         boundaries->height = (double)((MAX_Z - MIN_Z)) / voxel_size;
         boundaries->depth = (double)((MAX_Y - MIN_Y)) / voxel_size;
-        boundaries->boundaries_bitmap = std::vector<bool>(boundaries->width * boundaries->height * boundaries->depth, false);
+        boundaries->boundaries_bitmap = new bool[boundaries->width * boundaries->height * boundaries->depth];
+
+        for(int i = 0; i < boundaries->width * boundaries->height * boundaries->depth; i++)
+        {
+        	boundaries->boundaries_bitmap[i] = false;
+        }
 
         boundaries->generate_boundaries_bitmap();
 
@@ -27,7 +32,33 @@ namespace huniplacer
 
     bool effector_boundaries::check_path(const point3 & from, const point3 & to) const
     {
-        return true; ///<Replace This value
+    	double x_length = to.x - from.x;
+    	double y_length = to.y - from.y;
+    	double z_length = to.z - from.z;
+    	int largest_length = (fabs(x_length) > fabs(y_length) ?
+    			(fabs(x_length) > fabs(z_length) ? fabs(x_length) : fabs(z_length)) :
+    			(fabs(y_length) > fabs(z_length) ? fabs(y_length) : fabs(z_length)));
+
+    	x_length = x_length / largest_length;
+    	y_length = y_length / largest_length;
+    	z_length = z_length / largest_length;
+
+		for(double i = 1; i < largest_length; i++)
+		{
+			int x = (from.x + x_length * i);
+			int y = (from.y + y_length * i);
+			int z = (from.z + z_length * i);
+			bitmap_coordinate temp = from_real_coordinate(point3(x, y, z));
+
+			int index = temp.x + temp.y * width + temp.z * width * depth;
+
+			if(!boundaries_bitmap[index])
+			{
+				return false;
+			}
+		}
+
+        return true;
     }
 
     effector_boundaries::effector_boundaries(const inverse_kinematics_model& model, const imotor3& motors, double voxel_size)
@@ -37,55 +68,80 @@ namespace huniplacer
 
     effector_boundaries::~effector_boundaries()
     {
+    	delete[] boundaries_bitmap;
     }
 
-    bool effector_boundaries::has_invalid_neighbours(const point3 & p) const
+    bool effector_boundaries::has_invalid_neighbours(const bitmap_coordinate & p) const
     {
-        for(double y = p.y - voxel_size;y <= p.y + voxel_size;y += voxel_size){
-            for(double x = p.x - voxel_size;x <= p.x + voxel_size;x += voxel_size){
-                for(double z = p.z - voxel_size;z <= p.z + voxel_size;z += voxel_size){
-                    if(x != p.x && y != p.y && z != p.z && !is_valid(point3(x, y, z))){
+        for(int y = p.y - 1; y <= p.y + 1; y++)
+        {
+            for(int x = p.x - 1; x <= p.x + 1; x++)
+            {
+                for(int z = p.z - 1; z <= p.z + 1; z++)
+                {
+                    if(x != p.x && y != p.y && z != p.z && !is_valid(bitmap_coordinate(x, y, z)))
+                    {
                         return true;
                     }
                 }
             }
         }
-
         return false;
     }
 
-    bool effector_boundaries::is_valid(const point3 & p) const
+    bool effector_boundaries::is_valid(const bitmap_coordinate & p) const
     {
-        motionf mf;
-        try
-        {
-            kinematics.point_to_motion(p, mf);
-        }
-        catch(huniplacer::inverse_kinematics_exception & ex)
-        {
-            return false;
-        }
-        for(int i = 0;i < 3;i++)
-        {
-            if(mf.angles[i] <= motors.get_min_angle() || mf.angles[i] >= motors.get_max_angle()){
-                return false;
-            }
-        }
+    	char* from_cache;
+    	char dummy = UNKNOWN;
+    	if(point_validity_cache == NULL)
+    	{
+    		from_cache = &dummy;
+    	}
+    	else
+    	{
+    		from_cache = &point_validity_cache[p.x + p.y * width + p.z * width * depth];
+    	}
 
-        return true;
+    	if(*from_cache == UNKNOWN)
+    	{
+			motionf mf;
+			try
+			{
+				kinematics.point_to_motion(from_bitmap_coordinate(p), mf);
+			}
+			catch(huniplacer::inverse_kinematics_exception & ex)
+			{
+				*from_cache = INVALID;
+				return false;
+			}
+			for(int i = 0;i < 3;i++)
+			{
+				if(mf.angles[i] <= motors.get_min_angle() || mf.angles[i] >= motors.get_max_angle()){
+					*from_cache = INVALID;
+					return false;
+				}
+			}
+
+			*from_cache = VALID;
+			return true;
+    	}
+    	else
+    	{
+    		return *from_cache == VALID;
+    	}
     }
 
     void effector_boundaries::generate_boundaries_bitmap()
     {
-    	//point_validity_cache = new char[width * depth * height];
-    	//memset(point_validity_cache, 0, width * depth * height * sizeof(char));
+    	point_validity_cache = new char[width * depth * height];
+    	memset(point_validity_cache, 0, width * depth * height * sizeof(char));
     	std::stack<bitmap_coordinate> cstack;
 
-    	point3 begin(0, 0, MIN_Z + (MAX_Z - MIN_Z) / 2);
-
+    	//search from the center to the right side to the first point out of reach
+    	point3 begin (0, 0, MIN_Z + (MAX_Z - MIN_Z) / 2);
 		for(; begin.x < MAX_X; begin.x += voxel_size)
 		{
-			if(!is_valid(begin))
+			if(!is_valid(from_real_coordinate(begin)))
 			{
 				begin.x -= voxel_size;
 				bitmap_coordinate coordinate = from_real_coordinate(begin);
@@ -95,6 +151,7 @@ namespace huniplacer
 			}
 		}
 
+		//starts with the found point and adds all the point on the boundaries
 		while(!cstack.empty())
 		{
 			bitmap_coordinate c = cstack.top();
@@ -106,7 +163,7 @@ namespace huniplacer
 				{
 					for(int z = c.z-1; z <= c.z+1; z++)
 					{
-						if(z >= height || z < 0 || x >= width || x < 0 || y >= depth || y < 0 )
+						if(z >= height-1 || z < 1 || x >= width-1 || x < 1 || y >= depth-1 || y < 1)
 						{
 							continue;
 						}
@@ -114,18 +171,10 @@ namespace huniplacer
 						int index = x + y * width + z * width * depth;
 						point3 real_coordinate = from_bitmap_coordinate(bitmap_coordinate(x, y, z));
 
-						bool valid = is_valid(real_coordinate);
-						bool within_bounds = real_coordinate.x < measures::MAX_X && real_coordinate.x >= measures::MIN_X && real_coordinate.y < measures::MAX_Y && real_coordinate.y >= measures::MIN_Y && real_coordinate.z < measures::MAX_Z && real_coordinate.z >= measures::MIN_Z;
-						bool already_checked = boundaries_bitmap[index];
-						bool invalid_neighbours = has_invalid_neighbours(real_coordinate);
-
-						/*
-						if(is_valid(real_coordinate)
-						&& !(real_coordinate.x < measures::MAX_X && real_coordinate.x >= measures::MIN_X && real_coordinate.y < measures::MAX_Y && real_coordinate.y >= measures::MIN_Y && real_coordinate.z < measures::MAX_Z && real_coordinate.z >= measures::MIN_Z)
-						&& !boundaries_bitmap[index]
-						&& has_invalid_neighbours(real_coordinate))
-						*/
-						if(valid && within_bounds && !already_checked && invalid_neighbours)
+						if(is_valid(bitmap_coordinate(x, y, z))
+								&& (real_coordinate.x < measures::MAX_X && real_coordinate.x >= measures::MIN_X && real_coordinate.y < measures::MAX_Y && real_coordinate.y >= measures::MIN_Y && real_coordinate.z < measures::MAX_Z && real_coordinate.z >= measures::MIN_Z)
+								&& !boundaries_bitmap[index]
+							    && has_invalid_neighbours(bitmap_coordinate(x, y, z)))
 						{
 							cstack.push(bitmap_coordinate(x, y, z));
 							boundaries_bitmap[index] = true;
@@ -135,9 +184,27 @@ namespace huniplacer
 			}
 		}
 
-		//delete[] point_validity_cache;
-		//point_validity_cache = NULL;
+		delete[] point_validity_cache;
+		point_validity_cache = NULL;
 
-		printf("READY\n");
+		//adds all the points within the boundaries
+		cstack.push(from_real_coordinate(point3(0, 0, MIN_Z + (MAX_Z - MIN_Z) / 2)));
+		while(!cstack.empty())
+		{
+			bitmap_coordinate c = cstack.top();
+			cstack.pop();
+
+			int index = c.x + c.y * width + c.z * width * depth;
+			int indices[6] = {index - 1, index + 1, index - width, index + width, index - width * depth, index + width * depth};
+
+			for(unsigned int i = 0; i < sizeof(indices) / sizeof(indices[0]); i++)
+			{
+				if(boundaries_bitmap[indices[i]] == false)
+				{
+					boundaries_bitmap[indices[i]] = true;
+					cstack.push(bitmap_coordinate(indices[i] % width, (indices[i] % (width * depth)) / width, indices[i] / (width * depth)));
+				}
+			}
+		}
 	}
 }

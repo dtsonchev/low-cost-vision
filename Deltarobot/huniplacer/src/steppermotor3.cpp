@@ -33,13 +33,22 @@ namespace huniplacer
     {
         thread_running = false;
         motion_thread->interrupt();
-        stop();
+
+        try
+        {
+        	stop();
+        }
+        catch(std::runtime_error& err)
+        {
+        }
+
         idle_cond.notify_all(); //its destructor will fail if threads are still waiting
         motion_thread->join();
         delete motion_thread;
-        wait_till_ready();
+
         if(powered_on)
         {
+        	wait_till_ready();
         	modbus.write_u16(crd514_kd::slaves::BROADCAST, crd514_kd::registers::CMD_1, 0);
         }
     }
