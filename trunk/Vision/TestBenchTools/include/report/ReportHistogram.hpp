@@ -54,7 +54,14 @@ ReportField(name)
 	for (unsigned int i = 0; i < bins; ++i) {
 		binList.push_back(0);
 	}
+
+	binList.push_back(0); // Add recycle bin for out of range values
+
 	for (unsigned int it = 0; it < vec.size(); it++) {
-		binList.at((vec.at(it) / (range/bins)))++ ;
+		T val = vec.at(it);
+		if(val > range) // If value is out of range
+			binList.at(binList.size() - 1)++;
+		else
+			binList.at((val / (range/bins)))++ ;
 	}
 }
