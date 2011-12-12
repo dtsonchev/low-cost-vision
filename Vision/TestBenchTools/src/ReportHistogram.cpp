@@ -23,11 +23,15 @@ void report::ReportHistogram::setColumnNames(const char* first, ...){
 std::string report::ReportHistogram::toString() {
 	std::stringstream ss;
 
-	for (unsigned int i = 0; i < binList.size(); i++) {
+	for (unsigned int i = 0; i < binList.size() - 1; i++) {
 		ss << "From " << (i * (range / bins)) << " - "
 				<< ((i + 1) * (range / bins));
 		ss << ";";
 		ss << binList.at(i) << std::endl;
 	}
+
+	ss << "From " << range << ";";
+	ss << binList.at(binList.size() - 1) << std::endl;
+
 	return ss.str();
 }
