@@ -14,27 +14,43 @@ Crate::Crate() {
 
 Crate::Crate(const std::vector<cv::Point2f>& points) {
 	if(points.size() == 3)
-		this->points.assign(points.begin(), points.begin()+3);
+		this->fidPoints.assign(points.begin(), points.begin()+3);
+	fidOrdered = false;
 }
 
-Crate::Crate(const Crate& crate) : bounds(crate.bounds), points(crate.points) {
+Crate::Crate(const Crate& crate) : bounds(crate.bounds), fidPoints(crate.fidPoints) {
+	fidOrdered = true;
 }
 
 Crate::~Crate() {
 }
 
 cv::RotatedRect Crate::rect() {
-	if(bounds.size.area() != 0.0f || points.size() != 3)
+	if(bounds.size.area() != 0.0f || fidPoints.size() != 3)
 		return bounds;
 
+	// Order the points, this also sets some of the bounding box properties
+	points();
+
+	float distance1 = sqrt(pow(fidPoints[0].x - fidPoints[1].x, 2) + pow(fidPoints[0].y - fidPoints[1].y, 2));
+	float distance2 = sqrt(pow(fidPoints[2].x - fidPoints[1].x, 2) + pow(fidPoints[2].y - fidPoints[1].y, 2));
+	bounds.size = cv::Size(distance1, distance2);
+
+	return bounds;
+}
+
+std::vector<cv::Point2f> Crate::points() {
+	if(fidOrdered) return fidPoints;
+
+	// Find the two diagonal opposite points
+	float distance = 0;
 	cv::Point2f start;
 	cv::Point2f end;
 	cv::Point2f extra;
-	float distance = 0;
 	std::vector<cv::Point2f>::iterator it;
 	std::vector<cv::Point2f>::iterator subIt;
-	for(it = points.begin(); it!=points.end(); it++) {
-		for(subIt = points.begin(); subIt!=points.end(); subIt++) {
+	for(it = fidPoints.begin(); it!=fidPoints.end(); it++) {
+		for(subIt = fidPoints.begin(); subIt!=fidPoints.end(); subIt++) {
 			float dist = sqrt(pow(it->x - subIt->x, 2) + pow(it->y - subIt->y, 2));
 			if(dist > distance) {
 				distance = dist;
@@ -49,32 +65,55 @@ cv::RotatedRect Crate::rect() {
 			}
 		}
 	}
-	for(it = points.begin(); it!=points.end(); it++) {
-		if(*it != start && *it != end)
+
+	for(it = fidPoints.begin(); it!=fidPoints.end(); it++) {
+		if(*it != start && *it != end) {
 			extra = *it;
+		}
 	}
 
-	// Detect angles
-	float angle = atan2(start.y - end.y, end.x - start.x);
-	bounds.center = cv::Point2f(start.x + (distance / 2.0) * cos(-angle),
-			start.y + (distance / 2.0) * sin(-angle));
-	float orientation = atan2(bounds.center.y - extra.y, extra.x - bounds.center.x);
+	fidPoints[0] = start;
+	fidPoints[1] = extra;
+	fidPoints[2] = end;
+
+	// If we have the two outer points the center can be detected regardless of the order
+	float alpha = atan2(fidPoints[0].y - fidPoints[2].y, fidPoints[2].x - fidPoints[0].x);
+	bounds.center = cv::Point2f(fidPoints[0].x + (distance / 2.0) * cos(-alpha),
+			fidPoints[0].y + (distance / 2.0) * sin(-alpha));
+
+	// Now the orientation of the crate can be detect and the first two points can be ordered
+	float orientation = atan2(bounds.center.y - fidPoints[1].y, fidPoints[1].x - bounds.center.x);
+	if(orientation > 0) {
+		if(start.x > end.x) {
+			fidPoints[2] = start;
+			fidPoints[0] = end;
+		}
+	}
+	else {
+		if(start.x < end.x) {
+			fidPoints[2] = start;
+			fidPoints[0] = end;
+		}
+	}
+
+	// Now that we know the orientation we can also set the bounding box angle
 	bounds.angle = orientation - 3.0*M_PI/4.0;
 	if(bounds.angle < -M_PI) bounds.angle += M_PI*2.0;
 
-	float startDistance = sqrt(pow(start.x - extra.x, 2) + pow(start.y - extra.y, 2));
-	float endDistance = sqrt(pow(end.x - extra.x, 2) + pow(end.y - extra.y, 2));
-	bounds.size = cv::Size(startDistance, endDistance);
+	// Finished ordering, ensures it will not be done twice
+	fidOrdered = true;
 
-	return bounds;
+	return fidPoints;
 }
 
 void Crate::draw(cv::Mat& image) {
-	// Draw the angle points with a line
-	for(std::vector<cv::Point2f>::iterator it=points.begin();it!=points.end();++it)
-		cv::circle(image, *it, 1, cv::Scalar(0, 0, 255), 2);
-
+	// Order the points and intialize the bounds
 	cv::RotatedRect rect = this->rect();
+
+	// Draw the fiducial points
+	cv::circle(image, fidPoints[0], 1, cv::Scalar(255, 0, 0), 2);
+	cv::circle(image, fidPoints[1], 1, cv::Scalar(0, 255, 0), 2);
+	cv::circle(image, fidPoints[2], 1, cv::Scalar(0, 0, 255), 2);
 
 	// Draw rect
 	{
