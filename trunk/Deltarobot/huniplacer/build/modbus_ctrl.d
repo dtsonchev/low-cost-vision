@@ -11,8 +11,9 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  /usr/include/bits/huge_val.h /usr/include/bits/huge_valf.h \
  /usr/include/bits/huge_vall.h /usr/include/bits/inf.h \
  /usr/include/bits/nan.h /usr/include/bits/mathdef.h \
- /usr/include/bits/mathcalls.h /usr/include/c++/4.4/bits/cmath.tcc \
- /usr/local/include/modbus/modbus.h /usr/include/sys/param.h \
+ /usr/include/bits/mathcalls.h /usr/include/bits/mathinline.h \
+ /usr/include/c++/4.4/bits/cmath.tcc /usr/local/include/modbus/modbus.h \
+ /usr/include/sys/param.h \
  /usr/lib/gcc/i686-linux-gnu/4.4.5/include-fixed/limits.h \
  /usr/lib/gcc/i686-linux-gnu/4.4.5/include-fixed/syslimits.h \
  /usr/include/limits.h /usr/include/bits/posix1_lim.h \
@@ -46,7 +47,8 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  /usr/include/c++/4.4/debug/debug.h /usr/include/c++/4.4/bits/postypes.h \
  /usr/include/c++/4.4/cwchar /usr/include/wchar.h /usr/include/stdio.h \
  /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdarg.h \
- /usr/include/xlocale.h /usr/include/c++/4.4/bits/allocator.h \
+ /usr/include/xlocale.h /usr/include/bits/wchar2.h \
+ /usr/include/c++/4.4/bits/allocator.h \
  /usr/include/c++/4.4/i686-linux-gnu/bits/c++allocator.h \
  /usr/include/c++/4.4/ext/new_allocator.h /usr/include/c++/4.4/new \
  /usr/include/c++/4.4/exception /usr/include/c++/4.4/bits/localefwd.h \
@@ -66,6 +68,7 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  /usr/include/bits/setjmp.h /usr/include/unistd.h \
  /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
  /usr/include/bits/confname.h /usr/include/getopt.h \
+ /usr/include/bits/unistd.h \
  /usr/include/c++/4.4/i686-linux-gnu/bits/atomic_word.h \
  /usr/include/c++/4.4/initializer_list \
  /usr/include/c++/4.4/bits/basic_string.tcc /usr/include/boost/thread.hpp \
@@ -82,7 +85,8 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  /usr/include/boost/config/platform/linux.hpp \
  /usr/include/c++/4.4/cstdlib /usr/include/stdlib.h \
  /usr/include/bits/waitflags.h /usr/include/bits/waitstatus.h \
- /usr/include/alloca.h /usr/include/boost/config/posix_features.hpp \
+ /usr/include/alloca.h /usr/include/bits/stdlib.h \
+ /usr/include/boost/config/posix_features.hpp \
  /usr/include/boost/config/suffix.hpp \
  /usr/include/boost/config/requires_threads.hpp \
  /usr/include/boost/thread/pthread/thread_data.hpp \
@@ -437,7 +441,7 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  /usr/include/boost/function_equal.hpp \
  /usr/include/boost/function/function_fwd.hpp \
  /usr/include/c++/4.4/cstring /usr/include/string.h \
- /usr/include/boost/preprocessor/enum.hpp \
+ /usr/include/bits/string3.h /usr/include/boost/preprocessor/enum.hpp \
  /usr/include/boost/preprocessor/repetition/enum.hpp \
  /usr/include/boost/preprocessor/enum_params.hpp \
  /usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp \
@@ -456,4 +460,5 @@ build/modbus_ctrl.o build/modbus_ctrl.d : src/modbus_ctrl.cpp include/huniplacer
  include/huniplacer/modbus_exception.h /usr/include/c++/4.4/cerrno \
  include/huniplacer/utils.h /usr/include/c++/4.4/cstdio \
  /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/bits/sys_errlist.h /usr/include/c++/4.4/iostream
+ /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
+ /usr/include/bits/stdio2.h /usr/include/c++/4.4/iostream

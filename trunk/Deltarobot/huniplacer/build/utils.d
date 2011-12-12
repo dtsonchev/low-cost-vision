@@ -29,10 +29,11 @@ build/utils.o build/utils.d : src/utils.cpp include/huniplacer/utils.h \
  /usr/include/sys/select.h /usr/include/bits/select.h \
  /usr/include/bits/sigset.h /usr/include/bits/time.h \
  /usr/include/sys/sysmacros.h /usr/include/bits/pthreadtypes.h \
- /usr/include/alloca.h /usr/include/boost/config/posix_features.hpp \
- /usr/include/unistd.h /usr/include/bits/posix_opt.h \
- /usr/include/bits/environments.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/boost/config/suffix.hpp \
+ /usr/include/alloca.h /usr/include/bits/stdlib.h \
+ /usr/include/boost/config/posix_features.hpp /usr/include/unistd.h \
+ /usr/include/bits/posix_opt.h /usr/include/bits/environments.h \
+ /usr/include/bits/confname.h /usr/include/getopt.h \
+ /usr/include/bits/unistd.h /usr/include/boost/config/suffix.hpp \
  /usr/include/boost/config/requires_threads.hpp \
  /usr/include/boost/thread/pthread/thread_data.hpp \
  /usr/include/boost/thread/detail/config.hpp \
@@ -54,7 +55,8 @@ build/utils.o build/utils.d : src/utils.cpp include/huniplacer/utils.h \
  /usr/include/c++/4.4/debug/debug.h /usr/include/c++/4.4/bits/postypes.h \
  /usr/include/c++/4.4/cwchar /usr/include/wchar.h /usr/include/stdio.h \
  /usr/lib/gcc/i686-linux-gnu/4.4.5/include/stdarg.h \
- /usr/include/bits/wchar.h /usr/include/c++/4.4/bits/allocator.h \
+ /usr/include/bits/wchar.h /usr/include/bits/wchar2.h \
+ /usr/include/c++/4.4/bits/allocator.h \
  /usr/include/c++/4.4/i686-linux-gnu/bits/c++allocator.h \
  /usr/include/c++/4.4/ext/new_allocator.h /usr/include/c++/4.4/new \
  /usr/include/c++/4.4/exception /usr/include/c++/4.4/bits/localefwd.h \
@@ -253,7 +255,7 @@ build/utils.o build/utils.d : src/utils.cpp include/huniplacer/utils.h \
  /usr/include/bits/huge_valf.h /usr/include/bits/huge_vall.h \
  /usr/include/bits/inf.h /usr/include/bits/nan.h \
  /usr/include/bits/mathdef.h /usr/include/bits/mathcalls.h \
- /usr/include/c++/4.4/bits/cmath.tcc \
+ /usr/include/bits/mathinline.h /usr/include/c++/4.4/bits/cmath.tcc \
  /usr/include/boost/date_time/time_duration.hpp \
  /usr/include/boost/operators.hpp /usr/include/boost/iterator.hpp \
  /usr/include/boost/date_time/time_defs.hpp \
@@ -432,7 +434,7 @@ build/utils.o build/utils.d : src/utils.cpp include/huniplacer/utils.h \
  /usr/include/boost/function_equal.hpp \
  /usr/include/boost/function/function_fwd.hpp \
  /usr/include/c++/4.4/cstring /usr/include/string.h \
- /usr/include/boost/preprocessor/enum.hpp \
+ /usr/include/bits/string3.h /usr/include/boost/preprocessor/enum.hpp \
  /usr/include/boost/preprocessor/repetition/enum.hpp \
  /usr/include/boost/preprocessor/enum_params.hpp \
  /usr/include/boost/preprocessor/iteration/detail/iter/forward1.hpp \
@@ -449,4 +451,5 @@ build/utils.o build/utils.d : src/utils.cpp include/huniplacer/utils.h \
  /usr/include/c++/4.4/bits/stl_bvector.h \
  /usr/include/c++/4.4/bits/vector.tcc /usr/include/c++/4.4/cstdio \
  /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/bits/sys_errlist.h
+ /usr/include/bits/sys_errlist.h /usr/include/bits/stdio.h \
+ /usr/include/bits/stdio2.h

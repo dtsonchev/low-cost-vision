@@ -64,6 +64,12 @@ namespace huniplacer
             throw inverse_kinematics_exception("motion angles outside of valid range", p);
         }
         
+
+    	if(!boundaries->check_path(effector_location, p))
+    	{
+    		throw inverse_kinematics_exception("invalid path", p);
+    	}
+
         double move_time = p.distance(effector_location) / speed;
 
         try
@@ -71,6 +77,7 @@ namespace huniplacer
         	motors.moveto_within(mf, move_time, async);
         }
         catch(std::out_of_range& ex) { throw ex; }
+
 
         effector_location = p;
     }
