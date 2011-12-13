@@ -46,7 +46,7 @@ bool report::Report::saveHTML(const std::string& pt){
 	using namespace boost::filesystem;
 
 	path p(pt);
-	if(!exists(p.parent_path())){
+	if(!p.parent_path().empty() && !exists(p.parent_path())){
 		create_directory(p.parent_path());
 	}
 
