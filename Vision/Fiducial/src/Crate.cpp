@@ -18,23 +18,96 @@ Crate::Crate(const std::vector<cv::Point2f>& points) {
 	fidOrdered = false;
 }
 
-Crate::Crate(const Crate& crate) : bounds(crate.bounds), fidPoints(crate.fidPoints) {
-	fidOrdered = true;
+Crate::Crate(const Crate& crate) : bounds(crate.bounds), fidPoints(crate.fidPoints), fidOrdered(crate.fidOrdered) {
 }
 
 Crate::~Crate() {
+}
+
+void Crate::order(std::vector<cv::Point2f>& points, cv::Point2f* center, float* orientation) {
+	// Find the two diagonal opposite points
+	float distance = 0;
+	cv::Point2f start;
+	cv::Point2f end;
+	cv::Point2f extra;
+	for(int i=0; i<3; i++) {
+		for(int j=0; j<3; j++) {
+			float dist = sqrt(pow(points[i].x - points[j].x, 2) + pow(points[i].y - points[j].y, 2));
+			if(dist > distance) {
+				distance = dist;
+				if(points[i].x < points[j].x) {
+					start = points[i];
+					end = points[j];
+				}
+				else {
+					start = points[j];
+					end = points[i];
+				}
+			}
+		}
+	}
+
+	for(int i=0; i<3; i++) {
+		if(points[i] != start && points[i] != end) {
+			extra = points[i];
+		}
+	}
+
+	// If we have the two outer points the center can be detected regardless of the order
+	float alpha = atan2(start.y - end.y, end.x - start.x);
+	cv::Point2f centerPoint(start.x + (distance / 2.0) * cos(-alpha),
+			start.y + (distance / 2.0) * sin(-alpha));
+
+	// Now the orientation of the crate can be detect and the first two points can be ordered
+	float angle = atan2(centerPoint.y - extra.y, extra.x - centerPoint.x);
+	if(angle > 0) {
+		if(start.x > end.x) {
+			points[0] = end;
+			points[1] = extra;
+			points[2] = start;
+		}
+		else {
+			points[0] = start;
+			points[1] = extra;
+			points[2] = end;
+		}
+	}
+	else {
+		if(start.x > end.x) {
+			points[0] = start;
+			points[1] = extra;
+			points[2] = end;
+		}
+		else {
+			points[0] = end;
+			points[1] = extra;
+			points[2] = start;
+		}
+	}
+
+	// Now that we know the angle we can also set the orientation
+	if(orientation != NULL) {
+		*orientation = angle - 3.0*M_PI/4.0;
+		if(*orientation < -M_PI) *orientation += M_PI*2.0;
+	}
+
+	// We have also determined the center
+	if(center != NULL) *center = centerPoint;
 }
 
 cv::RotatedRect Crate::rect() {
 	if(bounds.size.area() != 0.0f || fidPoints.size() != 3)
 		return bounds;
 
-	// Order the points, this also sets some of the bounding box properties
+	// Order the fiducial points and initialize some of the bounding properties
 	points();
 
+	// Measure the distance between the fiducial points
 	float distance1 = sqrt(pow(fidPoints[0].x - fidPoints[1].x, 2) + pow(fidPoints[0].y - fidPoints[1].y, 2));
 	float distance2 = sqrt(pow(fidPoints[2].x - fidPoints[1].x, 2) + pow(fidPoints[2].y - fidPoints[1].y, 2));
-	bounds.size = cv::Size(distance1, distance2);
+
+	// Multiply by the total size of the crate divided by the real distance between the fiducial points
+	bounds.size = cv::Size(distance1*(5.0/3.15), distance2*(5.0/3.15));
 
 	return bounds;
 }
@@ -42,63 +115,8 @@ cv::RotatedRect Crate::rect() {
 std::vector<cv::Point2f> Crate::points() {
 	if(fidOrdered) return fidPoints;
 
-	// Find the two diagonal opposite points
-	float distance = 0;
-	cv::Point2f start;
-	cv::Point2f end;
-	cv::Point2f extra;
-	std::vector<cv::Point2f>::iterator it;
-	std::vector<cv::Point2f>::iterator subIt;
-	for(it = fidPoints.begin(); it!=fidPoints.end(); it++) {
-		for(subIt = fidPoints.begin(); subIt!=fidPoints.end(); subIt++) {
-			float dist = sqrt(pow(it->x - subIt->x, 2) + pow(it->y - subIt->y, 2));
-			if(dist > distance) {
-				distance = dist;
-				if(it->x < subIt->x) {
-					start = *it;
-					end = *subIt;
-				}
-				else {
-					start = *subIt;
-					end = *it;
-				}
-			}
-		}
-	}
-
-	for(it = fidPoints.begin(); it!=fidPoints.end(); it++) {
-		if(*it != start && *it != end) {
-			extra = *it;
-		}
-	}
-
-	fidPoints[0] = start;
-	fidPoints[1] = extra;
-	fidPoints[2] = end;
-
-	// If we have the two outer points the center can be detected regardless of the order
-	float alpha = atan2(fidPoints[0].y - fidPoints[2].y, fidPoints[2].x - fidPoints[0].x);
-	bounds.center = cv::Point2f(fidPoints[0].x + (distance / 2.0) * cos(-alpha),
-			fidPoints[0].y + (distance / 2.0) * sin(-alpha));
-
-	// Now the orientation of the crate can be detect and the first two points can be ordered
-	float orientation = atan2(bounds.center.y - fidPoints[1].y, fidPoints[1].x - bounds.center.x);
-	if(orientation > 0) {
-		if(start.x > end.x) {
-			fidPoints[2] = start;
-			fidPoints[0] = end;
-		}
-	}
-	else {
-		if(start.x < end.x) {
-			fidPoints[2] = start;
-			fidPoints[0] = end;
-		}
-	}
-
-	// Now that we know the orientation we can also set the bounding box angle
-	bounds.angle = orientation - 3.0*M_PI/4.0;
-	if(bounds.angle < -M_PI) bounds.angle += M_PI*2.0;
+	// Order the fiducial points and initialize some of the bounding properties
+	order(fidPoints, &bounds.center, &bounds.angle);
 
 	// Finished ordering, ensures it will not be done twice
 	fidOrdered = true;
