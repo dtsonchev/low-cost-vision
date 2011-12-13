@@ -3,7 +3,6 @@
 	<name>Fiducial</name>
 	<comment></comment>
 	<projects>
-		<project>unicap_cv_bridge</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
