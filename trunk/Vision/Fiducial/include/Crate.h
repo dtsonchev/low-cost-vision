@@ -43,6 +43,13 @@ public:
 	//! THe Crate deconstructor
 	virtual ~Crate();
 
+	/*! \brief Order a list of fiducial points
+	 *
+	 *  Orders a vector with 3 fiducial points according
+	 *  to the clockwise crate ordering.
+	 */
+	static void order(std::vector<cv::Point2f>& points, cv::Point2f* center = NULL, float* orientation = NULL);
+
 	/*! \brief Generate a rotated bounding rectangle
 	 *
 	 *  Generates a RotatedRect that represents the
