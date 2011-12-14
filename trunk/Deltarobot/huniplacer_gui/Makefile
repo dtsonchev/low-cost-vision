@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.1/2
+# version: v0.5.4
 #######################################################################
 
 #######################################################################
@@ -94,12 +94,12 @@ PROJ_DIRS  := \
 					$(DIR) \
 				) \
 			) \
-			$(if $(DEP_FOUND),,$(error can not find project $(DEP))) \
+			$(if $(DEP_FOUND),, $(error can not find project $(DEP))) \
 		) \
 	)
 PROJ_DIRS := $(strip $(PROJ_DIRS))
 
-# TODO implement project dependecy crap generation
+# TODO implement project dependecy generation
 # generate and execute project expose script
 #VOID := $(shell \
 #    if [ ! -e $(BUILDDIR)/expose.sh ] ; then \
@@ -134,7 +134,7 @@ LINKERPATHS         := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(LIBDIR)) $(LINKERPAT
 STATIC_LIB_FILES    := 
 $(foreach PRJ, $(PROJ_DIRS), \
 	$(foreach LIB, $(wildcard $(PRJ)$(LIBDIR)/lib*.a), \
-		$(eval LIBRARIES += $(patsubst lib%.a,%,$(notdir $(LIB))) )\
+		$(eval LIBRARIES = $(patsubst lib%.a,%,$(notdir $(LIB))) $(LIBRARIES) )\
 		$(eval STATIC_LIB_FILES += $(LIB) )\
 		 \
 	) \

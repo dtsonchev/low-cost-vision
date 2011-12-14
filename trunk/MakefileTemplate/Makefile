@@ -1,6 +1,6 @@
 #######################################################################
 # low cost vision - generic make file
-# version: v0.5.3
+# version: v0.5.4
 #######################################################################
 
 #######################################################################
@@ -134,7 +134,7 @@ LINKERPATHS         := $(foreach PRJ, $(PROJ_DIRS), $(PRJ)$(LIBDIR)) $(LINKERPAT
 STATIC_LIB_FILES    := 
 $(foreach PRJ, $(PROJ_DIRS), \
 	$(foreach LIB, $(wildcard $(PRJ)$(LIBDIR)/lib*.a), \
-		$(eval LIBRARIES += $(patsubst lib%.a,%,$(notdir $(LIB))) )\
+		$(eval LIBRARIES = $(patsubst lib%.a,%,$(notdir $(LIB))) $(LIBRARIES) )\
 		$(eval STATIC_LIB_FILES += $(LIB) )\
 		 \
 	) \
