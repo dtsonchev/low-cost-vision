@@ -35,7 +35,7 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   := opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_filesystem
+LIBRARIES           := boost_system boost_filesystem
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 

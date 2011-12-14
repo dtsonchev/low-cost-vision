@@ -28,7 +28,7 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-#define RESULT_TYPE double
+typedef double RESULT_TYPE;
 #define MAX_DEVIATION 0.1
 #define MAX_RANGE 10
 
@@ -40,7 +40,7 @@ inline float dist(cv::Point2f p1, cv::Point2f p2) { return(sqrt((p1.x-p2.x)*(p1.
 
 int main(int argc, char** argv){
         if (argc < 3) {
-                cout << "Usage: main <xml path> <xml root tag>\n";
+                cout << "Usage: " << argv[0] << " <xml path> <xml root tag>\n";
                 return 1;
         }
 
