@@ -2,7 +2,7 @@
 ##    Low Cost Vision                                               ##
 ##    Makefile                                                      ##
 ##    Readme                                                        ##
-##    v0.1.0 (for Makefile 0.5.1)                                   ##
+##    v0.1.1 (for Makefile 0.5.5)                                   ##
 ######################################################################
 
 ######################################################################
@@ -154,12 +154,14 @@ Linker paths. Will be included using '-L'
 Names of projects that this project depends on. e.g.:
 Vision/FGBGSeparation, Deltarobot/huniplacer
 
-# LCV_PROJECT_PATHS (not listed in makefile)
+# LCV_PROJECT_PATH (not listed in makefile)
 Environment variable. the makefile searches paths listed in this
 variable for projects listed in DEP_PROJ.
 e.g.:
-export LCV_PROJECT_PATH=~/low-cost-vision
-It is recommended that LCV_PROJECT_PATH is set to the SVN trunk.
+export LCV_PROJECT_PATH=~/low-cost-vision/Vision
+
+# LCV_PROJECT_MAKEFILE(not listed in makefile)
+Environment variable. Contains the path to the generic makefile
 
 ######################################################################
 VI.   Notes and pitfalls

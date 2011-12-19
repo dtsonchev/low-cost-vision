@@ -29,7 +29,7 @@ public:
 	 * @param image the total image
 	 * @param binaryImage a binarie image of the normal image where white means forground and black means background
 	 */
-	void addImageToTrainingsSet(const cv::Mat &image, const cv::Mat &binaryImage);
+	void addImageToTrainingsSet(cv::Mat &image, cv::Mat &binaryImage);
 
 	/**
 	 * @brief trains a decision tree for background foreground separation whit out parameters

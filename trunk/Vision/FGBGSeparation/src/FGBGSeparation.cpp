@@ -31,7 +31,7 @@ FGBGSeparator::FGBGSeparator(int bins, int maskSize, int RGBorHSV){
 	labels = Mat(1, 0, CV_32FC1);
 }
 
-void FGBGSeparator::addImageToTrainingsSet(const Mat &image, const Mat &binaryImage){
+void FGBGSeparator::addImageToTrainingsSet(Mat &image, Mat &binaryImage){
 	DataTrainer.CreateTrainDataFromImage(image, binaryImage, trainData, labels, bins, maskSize, RGBorHSV);
 }
 
