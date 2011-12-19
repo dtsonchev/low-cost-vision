@@ -320,13 +320,13 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 	if(currentCrateNumber == 0){
 		boost::property_tree::ptree* property = &(tempValue->add("category", ""));
 		property->put("<xmlattr>.name", "background");
-		property->put("<xmlattr>.path", BackgroundComboBox->GetValue().ToAscii());
+		property->put("<xmlattr>.value", BackgroundComboBox->GetValue().ToAscii());
 		property = &(tempValue->add("category", ""));
 		property->put("<xmlattr>.name", "light");
-		property->put("<xmlattr>.path", LightingComboBox->GetValue().ToAscii());
+		property->put("<xmlattr>.value", LightingComboBox->GetValue().ToAscii());
 		property = &(tempValue->add("category", ""));
 		property->put("<xmlattr>.name", "perspective");
-		property->put("<xmlattr>.path", PerspectiveComboBox->GetValue().ToAscii());
+		property->put("<xmlattr>.value", PerspectiveComboBox->GetValue().ToAscii());
 
 	}
 
