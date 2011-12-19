@@ -79,33 +79,34 @@ int main(int argc, char** argv){
                 if(crates.size() != img.objects.size()) {
                 	success = false;
                 }
+                else {
+					foreach(Properties object, img.objects) {
+						cv::Point2f ptTarget((int)object["x"], (int)object["y"]);
+						float lastDistance = dist(crates[0].rect().center,ptTarget);
+						Crate result = crates[0];
 
-				foreach(Properties object, img.objects) {
-					cv::Point2f ptTarget((int)object["x"], (int)object["y"]);
-					float lastDistance = dist(crates[0].rect().center,ptTarget);
-					Crate result = crates[0];
-
-					// Get the crate closest to the target
-					foreach(Crate crate, crates) {
-						float d = dist(crate.rect().center,ptTarget);
-						if(d < lastDistance) {
-							result = crate;
-							lastDistance = d;
+						// Get the crate closest to the target
+						foreach(Crate crate, crates) {
+							float d = dist(crate.rect().center,ptTarget);
+							if(d < lastDistance) {
+								result = crate;
+								lastDistance = d;
+							}
 						}
-					}
 
-					vector<cv::Point2f> points = result.points();
-					vector<cv::Point2f> targetPoints;
-					targetPoints.push_back(cv::Point2f((int)object["fid1_x"], (int)object["fid1_y"]));
-					targetPoints.push_back(cv::Point2f((int)object["fid2_x"], (int)object["fid2_y"]));
-					targetPoints.push_back(cv::Point2f((int)object["fid3_x"], (int)object["fid3_y"]));
+						vector<cv::Point2f> points = result.points();
+						vector<cv::Point2f> targetPoints;
+						targetPoints.push_back(cv::Point2f((int)object["fid1_x"], (int)object["fid1_y"]));
+						targetPoints.push_back(cv::Point2f((int)object["fid2_x"], (int)object["fid2_y"]));
+						targetPoints.push_back(cv::Point2f((int)object["fid3_x"], (int)object["fid3_y"]));
 
-					for(int i=0; i<3; i++) {
-						float d = dist(points[i], targetPoints[i]);
-						if(d > MAX_DEVIATION) {
-							success = false;
+						for(int i=0; i<3; i++) {
+							float d = dist(points[i], targetPoints[i]);
+							if(d > MAX_DEVIATION) {
+								success = false;
+							}
+							totalDistance += d;
 						}
-						totalDistance += d;
 					}
                 }
 
