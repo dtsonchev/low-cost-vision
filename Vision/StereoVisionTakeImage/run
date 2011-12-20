@@ -1,4 +1,0 @@
-#!/bin/sh
-
-./bin/StereoVision -t
-./bin/StereoVision -c
