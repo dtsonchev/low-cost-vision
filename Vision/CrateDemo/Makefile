@@ -46,7 +46,7 @@ LINKERPATHS         :=
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
-DEP_PROJ            := Fiducial DetectQRCode unicap_cv_bridge lens_correction
+DEP_PROJ            := Fiducial DetectQRCode unicap_cv_bridge CreateCameraCalibratieMatrix
 
 #######################################################################
 # constants
