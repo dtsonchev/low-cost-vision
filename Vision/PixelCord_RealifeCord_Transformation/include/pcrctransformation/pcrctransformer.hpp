@@ -31,8 +31,6 @@
 #include "point2f.hpp"
 #include <vector>
 
-
-
 namespace pcrctransformation {
 	/**
 	* @brief object that transforms pixel coordinates to real life coordinates \
@@ -55,6 +53,14 @@ namespace pcrctransformation {
 			 * @param fiducials_pixel_coordinates the new coordinates
 			 */
 			void set_fiducials_pixel_coordinates(const point2f::point2fvector& fiducials_pixel_coordinates);
+
+            //TODO to_rc en to_pc zijn qua structuur hetzelfde
+            //TODO er zou een template functie moeten komen
+            //TODO die gebruikt kan worden voor deze 2 functies
+            
+            //TODO bij to_rc en to_pc mischien nog functies maken
+            //TODO of aanpassen met out-parameters ipv een punt returnen
+            //TODO over de stack. bijv: void to_rc(const point2f& in, point2f& out)
 
 			/**
 			 * convert pixel coordinate to a real world coordinate.

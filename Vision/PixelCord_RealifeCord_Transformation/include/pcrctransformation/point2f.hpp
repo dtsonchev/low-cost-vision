@@ -62,7 +62,7 @@ namespace pcrctransformation {
 			 */
 			~point2f() { }
 
-			inline const bool operator==(const point2f& rhs) const
+			inline bool operator==(const point2f& rhs) const
 			{
 				return this->x == rhs.x && this->y == rhs.y;
 			}
@@ -88,21 +88,21 @@ namespace pcrctransformation {
                 return *this;
             }
 
-            inline const point2f operator+(const point2f& rhs) const
+            inline point2f operator+(const point2f& rhs) const
             {
                 point2f res = *this;
                 res += rhs;
                 return res;
             }
 
-            inline const point2f operator-(const point2f& rhs) const
+            inline point2f operator-(const point2f& rhs) const
             {
                 point2f res = *this;
                 res -= rhs;
                 return res;
             }
 
-            inline const point2f operator*(const point2f& rhs) const
+            inline point2f operator*(const point2f& rhs) const
             {
                 point2f res = *this;
                 res *= rhs;
@@ -145,7 +145,5 @@ namespace pcrctransformation {
              * a vector of point2f's
              */
             typedef std::vector<point2f> point2fvector;
-
-
 	};
 }
