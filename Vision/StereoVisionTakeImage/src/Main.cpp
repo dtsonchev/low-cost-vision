@@ -7,7 +7,7 @@
 // File:           example_main.cpp
 // Description:    Program witch use 2 camera's for making 2 images an calibrate them
 // Author:         Glenn Meerstra
-// Notes:          opencv 2.3.1
+// Notes:          
 //
 // License:        GNU GPL v3
 //
