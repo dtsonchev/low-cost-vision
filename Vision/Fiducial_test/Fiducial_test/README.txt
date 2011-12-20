@@ -6,7 +6,7 @@
 Project:        Fiducial_test
 Description:    Detects fiduciary markers
 Author:         Jules Blok
-Dependencies:   Fiducial, TestBenchTools, OpenCV-2.3.1a
+Dependencies:   Fiducial, TestBenchTools, OpenCV-2.3.1a, boost-1.48
 Notes:          None
 
 License:        GNU GPL v3
