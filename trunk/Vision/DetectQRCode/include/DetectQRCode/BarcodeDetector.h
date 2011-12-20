@@ -4,7 +4,7 @@
 //
 //******************************************************************************
 // Project:        DetectQRCode
-// File:           DetectBarcode.cpp
+// File:           BarcodeDetector.h
 // Description:    Detects barcodes and extract values
 // Author:         Glenn Meerstra & Zep Mouris
 // Notes:          ...
@@ -26,30 +26,40 @@
 // You should have received a copy of the GNU General Public License
 // along with DetectQRCode.  If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
+#ifndef DETECTBARCODE_H_
+#define DETECTBARCODE_H_
 
-#include "DetectQRCode/BarcodeDetector.h"
-#include "DetectQRCode/MagickMat.h"
-#include <opencv2/highgui/highgui.hpp>
-#include <boost/filesystem.hpp>
-
+#include <stdlib.h>
+#include <zbar.h>
+#include <iostream>
+#include "MagickMat.h"
 #include <Magick++.h>
+#include <opencv2/core/core.hpp>
 
-int main (int argc, char **argv)
-{
-	if(argc>1){
-		DetectBarcode db;
-		cv::Mat image = cv::imread(argv[1]);
-		std::string result;
+/**
+ * @brief This class can detect barcodes from a Mat object
+ */
+class DetectBarcode{
+private:
+	///@brief the scanner which scans the code from an image
+    zbar::ImageScanner scanner;
+	MagickMatConverter converter;
 
-		result = "BARCODE: ";
-		if(db.detect(image, result)){
-			std::cout << result << std::endl;
-		}else{
-			std::cout << "NOTHING FOUND" << std::endl;
-		}
-	}else{
-		std::cout<<"giva a image"<<std::endl;
-	}
+public:
+    ///@brief constructor sets the values for the scanner
+    DetectBarcode();
+    ///@brief deconstructor
+    ~DetectBarcode();
 
-    return 0;
-}
+    /**
+     * @fn bool detect(cv::Mat image, std::string &result)
+     * @brief detects codes on the image
+     * @param image the image to detect the code on
+     * @param result the string to write the result to
+     * @return true if we have a result
+     */
+	bool detect(cv::Mat image, std::string &result);
+};
+
+
+#endif /* DETECTBARCODE_H_ */
