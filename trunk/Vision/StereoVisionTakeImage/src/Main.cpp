@@ -1,9 +1,31 @@
-/*
- * Main.cpp
- *
- *  Created on: Sep 21, 2011
- *      Author: Glenn
- */
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        StereoVisionTakeImage
+// File:           example_main.cpp
+// Description:    Program witch use 2 camera's for making 2 images an calibrate them
+// Author:         Glenn Meerstra
+// Notes:          opencv 2.3.1
+//
+// License:        GNU GPL v3
+//
+// This file is part of StereoVisionTakeImage.
+//
+// StereoVisionTakeImage is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// StereoVisionTakeImage is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with StereoVisionTakeImage.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
