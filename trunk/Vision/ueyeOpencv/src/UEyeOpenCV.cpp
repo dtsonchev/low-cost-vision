@@ -1,3 +1,32 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        ueyeOpencv
+// File:           UEyeOpenCV.cpp
+// Description:    Wrapper class of UEye camera to support OpenCV Mat using the UEye SDK
+// Author:         Wouter Langerak
+// Notes:          For more functionalities use the SDK of UEye, the purpose of this project is to make it compatible with OpenCV Mat.
+//
+// License:        GNU GPL v3
+//
+// This file is part of ueyeOpencv.
+//
+// ueyeOpencv is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// ueyeOpencv is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with ueyeOpencv.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
+
 #include <UEyeOpenCV.hpp>
 #include <iostream>
 #include <ueye.h>
@@ -68,11 +97,11 @@ void UeyeOpencvCam::getFrame(cv::Mat& mat) {
 	if (retInt != IS_SUCCESS) {
 		throw UeyeOpenCVException(hCam, retInt);
 	}
-	if (mat.cols == width && mat.rows == height && mat.depth() == 3) {
+//	if (mat.cols == width && mat.rows == height && mat.depth() == 3) {
 		memcpy(mat.ptr(), pMem, width * height * 3);
-	} else {
-		throw UeyeOpenCVException(hCam, -1337);
-	}
+//	} else {
+//		throw UeyeOpenCVException(hCam, -1337);
+//	}
 }
 
 HIDS UeyeOpencvCam::getHIDS() {
