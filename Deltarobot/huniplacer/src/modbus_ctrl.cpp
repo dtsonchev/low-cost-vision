@@ -1,3 +1,33 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        modbus_ctrl.cpp
+// File:           wrapper for libmodbus with some extra functionality
+// Description:    Lukas Vermond & Kasper van Nieuwland
+// Author:         -
+// Notes:          
+//
+// License:        GNU GPL v3
+//
+// This file is part of modbus_ctrl.cpp.
+//
+// modbus_ctrl.cpp is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// modbus_ctrl.cpp is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with modbus_ctrl.cpp.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
+
+
 #include <huniplacer/modbus_ctrl.h>
 #include <huniplacer/modbus_exception.h>
 #include <huniplacer/utils.h>
