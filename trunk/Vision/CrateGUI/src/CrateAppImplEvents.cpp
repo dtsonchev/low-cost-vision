@@ -403,7 +403,6 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 	boost::property_tree::xml_writer_settings<char> w('\t', 1);
 	boost::property_tree::write_xml(xmlPath.string().c_str(), pt, std::locale(), w);
 	MessageLabel->SetLabel(wxString(xmlPath.string().c_str(), wxConvLocal));
-	std::cout << xmlPath << std::endl;
 
 	QRCorner = wxPoint(0, 0);
 	OppositeCorner = wxPoint(0, 0);
