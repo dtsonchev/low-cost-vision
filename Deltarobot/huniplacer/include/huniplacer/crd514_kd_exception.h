@@ -56,14 +56,14 @@ namespace huniplacer
 				alarm(alarm)
 			{
 				std::stringstream ss;
-				ss << "controller " << (int)slave << ": warning=" << (int)warning << " alarm=" << (int)alarm;
+				ss << "slave: " << (int)slave << ": warning=" << (int)warning << " alarm=" << (int)alarm;
 				message = ss.str();
 			}
 
 			virtual ~crd514_kd_exception() throw()
 			{ }
 
-			const char* what()
+			virtual const char* what() const throw()
 			{
 				return message.c_str();
 			}

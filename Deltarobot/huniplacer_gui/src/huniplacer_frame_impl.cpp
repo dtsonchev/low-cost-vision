@@ -53,11 +53,17 @@ namespace huniplacer_gui
                 crd514_kd::rtu_config::PARITY,
                 crd514_kd::rtu_config::DATA_BITS,
                 crd514_kd::rtu_config::STOP_BITS);
+            double deviation[] = {huniplacer::measures::MOTOR1_DEVIATION,
+            		huniplacer::measures::MOTOR2_DEVIATION,
+            		huniplacer::measures::MOTOR3_DEVIATION
+            };
             motors = new huniplacer::steppermotor3(
                 rtu,
                 huniplacer::measures::MOTOR_ROT_MIN,
                 huniplacer::measures::MOTOR_ROT_MAX,
-                huniplacer_frame_impl::motionthread_exhandler);
+                huniplacer_frame_impl::motionthread_exhandler,
+                deviation
+                );
             robot = new huniplacer::deltarobot(*ik_model, *motors);
             lab_status->SetLabel(wxT("Status: creating boundaries"));
             lab_status->Update();
