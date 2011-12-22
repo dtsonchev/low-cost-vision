@@ -1,0 +1,17 @@
+<package>
+  <description brief="fiducial">
+
+     fiducial
+
+  </description>
+  <author>Jules Blok</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/fiducial</url>
+  <depend package="roscpp"/>
+  <depend package="std_msgs"/>
+  <depend package="opencv2"/>
+
+</package>
+
+
