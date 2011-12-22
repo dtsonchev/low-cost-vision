@@ -1,0 +1,10 @@
+int32 minRad
+int32 maxRad
+int32 distance
+int32 circleVotes
+int32 lineVotes
+uint32 maxLines
+float32 minDist
+float32 maxDist
+int32 lowThreshold
+int32 highThreshold
