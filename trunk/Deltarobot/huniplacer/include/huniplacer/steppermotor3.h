@@ -50,6 +50,7 @@ namespace huniplacer
             std::queue<motionf> motion_queue;
             bool thread_running;
             double current_angles[3];
+            double deviation[3];
             
             bool idle;
             boost::mutex idle_mutex;
@@ -84,10 +85,10 @@ namespace huniplacer
              * @param mi angles(0-360), speed(?-?), acceleration(?-?), deceleration(?-?)
              * @param mf angles(0-5000), speed(?-?), acceleration(?-?), deceleration(?-?)
              **/
-            static void motion_float_to_int(motioni& mi, const motionf& mf);
+            void motion_float_to_int(motioni& mi, const motionf& mf);
         
         public:
-            steppermotor3(modbus_t* context, double min_angle, double max_angle, motion_thread_exception_handler exhandler);
+            steppermotor3(modbus_t* context, double min_angle, double max_angle, motion_thread_exception_handler exhandler, const double* deviation);
             virtual ~steppermotor3(void);
             
             /**
@@ -117,6 +118,8 @@ namespace huniplacer
             void power_off(void);
 
             void power_on(void);
+
+            void override_current_angles(double * angles);
 
             bool is_powerd_on(void);
 

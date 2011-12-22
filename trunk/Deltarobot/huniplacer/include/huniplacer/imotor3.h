@@ -107,5 +107,11 @@ namespace huniplacer
              * @return true of powered on, false otherwise
              */
             virtual bool is_powerd_on(void) = 0;
+
+            /**
+             * @brief synchronises software and real world angels.
+             * @param angles the new angles
+             */
+            virtual void override_current_angles(double * angles) = 0;
     };
 }
