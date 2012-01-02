@@ -2,7 +2,7 @@
 # low cost vision - generic make file
 # This makefile will be included by a project specific Makefile
 # Required configuration make file version: v1.0.0
-# version: v0.5.5
+# version: v0.5.6
 #######################################################################
 
 #######################################################################
