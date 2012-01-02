@@ -1,6 +1,0 @@
-*	Create project Readme
-*	Add headers to:
-	-	src/Tools.cpp
-	-	include/Html.hpp
-	-	include/imageMetaData/Tools.hpp
-	-	include/imageMetaData/Types.hpp
