@@ -1,13 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        addjobwizard.h
-// Purpose:     
-// Author:      Franc
-// Modified by: 
-// Created:     Fri 14 Oct 2011 11:46:22 CEST
-// RCS-ID:      
-// Copyright:   
-// Licence:     
-/////////////////////////////////////////////////////////////////////////////
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        TestBenchGUI
+// File:           addjobwizard.hpp
+// Description:    Wizard for creating a testing job
+// Author:         Franc Pape
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of TestBenchGUI.
+//
+// TestBenchGUI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TestBenchGUI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TestBenchGUI.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 
 #ifndef _ADDJOBWIZARD_H_
 #define _ADDJOBWIZARD_H_
@@ -27,7 +45,7 @@
 /*!
  * Forward declarations
  */
- 
+
 class MainFrame;
 
 ////@begin forward declarations
@@ -67,7 +85,7 @@ class WizardPage2;
  */
 
 class AddJobWizard: public wxWizard
-{    
+{
     DECLARE_DYNAMIC_CLASS( AddJobWizard )
     DECLARE_EVENT_TABLE()
 
@@ -127,7 +145,7 @@ public:
  */
 
 class WizardPage: public wxWizardPageSimple
-{    
+{
     DECLARE_DYNAMIC_CLASS( WizardPage )
     DECLARE_EVENT_TABLE()
 
@@ -177,7 +195,7 @@ public:
  */
 
 class WizardPage1: public wxWizardPageSimple
-{    
+{
     DECLARE_DYNAMIC_CLASS( WizardPage1 )
     DECLARE_EVENT_TABLE()
 
@@ -237,7 +255,7 @@ private:
  */
 
 class WizardPage2: public wxWizardPageSimple
-{    
+{
     DECLARE_DYNAMIC_CLASS( WizardPage2 )
     DECLARE_EVENT_TABLE()
 

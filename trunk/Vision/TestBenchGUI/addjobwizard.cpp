@@ -1,13 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        addjobwizard.cpp
-// Purpose:     
-// Author:      Franc Pape
-// Modified by: 
-// Created:     Fri 14 Oct 2011 11:46:22 CEST
-// RCS-ID:      
-// Copyright:   
-// Licence:     
-/////////////////////////////////////////////////////////////////////////////
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        TestBenchGUI
+// File:           addjobwizard.cpp
+// Description:    Wizard for creating a testing job
+// Author:         Franc Pape
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of TestBenchGUI.
+//
+// TestBenchGUI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TestBenchGUI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TestBenchGUI.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 
 // For compilers that support precompilation, includes "wx/wx.h".
 #include "wx/wxprec.h"
@@ -116,7 +134,7 @@ void AddJobWizard::Init()
  */
 
 void AddJobWizard::CreateControls()
-{    
+{
 ////@begin AddJobWizard content construction
     AddJobWizard* itemWizard1 = this;
 
@@ -286,7 +304,7 @@ void WizardPage::Init()
  */
 
 void WizardPage::CreateControls()
-{    
+{
 ////@begin WizardPage content construction
     WizardPage* itemWizardPageSimple2 = this;
 
@@ -456,7 +474,7 @@ void WizardPage1::Init()
  */
 
 void WizardPage1::CreateControls()
-{    
+{
 ////@begin WizardPage1 content construction
     WizardPage1* itemWizardPageSimple12 = this;
 
@@ -633,7 +651,7 @@ void WizardPage2::Init()
  */
 
 void WizardPage2::CreateControls()
-{    
+{
 ////@begin WizardPage2 content construction
     WizardPage2* itemWizardPageSimple19 = this;
 
@@ -733,17 +751,17 @@ wxIcon WizardPage2::GetIconResource( const wxString& name )
 void AddJobWizard::OnAddjobwizardFinished( wxWizardEvent& event )
 {
     std::cout << "OnAddjobwizardFinished: " << "start" << std::endl;
-    
+
     Script s(scripts[scriptIndex].path, scripts[scriptIndex].name, scripts[scriptIndex].training,
         scripts[scriptIndex].description, scripts[scriptIndex].python, scripts[scriptIndex].params);
-    
+
     if(s.training)
         s.params.push_back(Param("trainXmlPath", "string", trainXmlPath));
     s.params.push_back(Param("testXmlPath", "string", testXmlPath));
-    
+
     MainFrame* mf = (MainFrame*)GetParent();
     mf->scripts.push_back(s);
-    
+
     std::cout << "OnAddjobwizardFinished: " << "end" << std::endl;
 }
 
@@ -769,7 +787,7 @@ void WizardPage2::OnButtonBrowseTrainXMLClick( wxCommandEvent& event )
     wxFileDialog openFileDialog(this, _("Open XML file"), _(""), _(""), _("XML files (*.xml)|*.xml"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;
-    
+
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldTrainXML);
     txt->SetValue(openFileDialog.GetPath());
 }
@@ -783,7 +801,7 @@ void WizardPage2::OnAjWizardPage3PageChanged( wxWizardEvent& event )
 {
     wxWindow* txt = FindWindowById(TextFieldTrainXML);
     wxWindow* but = FindWindowById(ButtonBrowseTrainXML);
-    
+
     if(scripts[scriptIndex].training){
         txt->Enable();
         but->Enable();
@@ -803,7 +821,7 @@ void WizardPage2::OnButtonBrowseTestXMLClick( wxCommandEvent& event )
     wxFileDialog openFileDialog(this, _("Open XML file"), _(""), _(""), _("XML files (*.xml)|*.xml"), wxFD_OPEN|wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL)
         return;
-    
+
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldTestXML);
     txt->SetValue(openFileDialog.GetPath());
 }
@@ -832,7 +850,7 @@ void WizardPage1::OnAjWizardPage2PageChanged( wxWizardEvent& event )
         s += scripts[scriptIndex].params[i].name + "; ";
     }
     s += scripts[scriptIndex].params[scripts[scriptIndex].params.size() - 1].name;
-    
+
     wxStaticText* txt = (wxStaticText*)FindWindowById(LabelParams);
     txt->SetLabel(wxString(s.c_str(), wxConvUTF8));
     txt->Wrap(250);
@@ -845,7 +863,7 @@ void WizardPage1::OnAjWizardPage2PageChanged( wxWizardEvent& event )
 
 void WizardPage1::OnTextFieldParamsTextUpdated( wxCommandEvent& event )
 {
-    
+
 }
 
 
@@ -858,10 +876,10 @@ void WizardPage1::OnAjWizardPage2PageChanging( wxWizardEvent& event )
     wxTextCtrl* txt = (wxTextCtrl*)FindWindowById(TextFieldParams);
     std::string s = std::string(txt->GetValue().mb_str());
     boost::erase_all(s, " ");
-    
+
     std::vector<std::string> params;
     boost::split(params, s,  boost::is_any_of(";"));
-    
+
     if(params.size() != scripts[scriptIndex].params.size()){
         event.Veto();
         std::stringstream ss;
@@ -869,7 +887,7 @@ void WizardPage1::OnAjWizardPage2PageChanging( wxWizardEvent& event )
         wxMessageBox(wxString(ss.str().c_str(), wxConvUTF8), _("Incorrect number of parameters"), wxOK, this);
         return;
     }
-    
+
     for(unsigned int i = 0; i < params.size(); i++){
         scripts[scriptIndex].params[i].value = params[i];
     }

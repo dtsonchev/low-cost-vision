@@ -1,13 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        mainframe.cpp
-// Purpose:     
-// Author:      Franc
-// Modified by: 
-// Created:     Fri 14 Oct 2011 10:41:09 CEST
-// RCS-ID:      
-// Copyright:   
-// Licence:     
-/////////////////////////////////////////////////////////////////////////////
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        TestBenchGUI
+// File:           mainframe.cpp
+// Description:    Frame for the main application
+// Author:         Franc Pape
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of TestBenchGUI.
+//
+// TestBenchGUI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TestBenchGUI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TestBenchGUI.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 
 #include <Python.h>
 // For compilers that support precompilation, includes "wx/wx.h".
@@ -120,7 +138,7 @@ void MainFrame::Init()
  */
 
 void MainFrame::CreateControls()
-{    
+{
 ////@begin MainFrame content construction
     MainFrame* itemFrame1 = this;
 
@@ -163,8 +181,8 @@ void MainFrame::CreateControls()
     lj->InsertColumn(0, _("Name"));
     lj->InsertColumn(1, _("Test"));
     lj->InsertColumn(2, _("Train"));
-    
-    //scripts = new 
+
+    //scripts = new
 }
 
 
@@ -213,7 +231,7 @@ void MainFrame::OnButtonAddJobClick( wxCommandEvent& event )
     AddJobWizard* window = new AddJobWizard(this);
     bool finished = window->Run();
     window->Destroy();
-    
+
     if(finished && !scripts.empty()){
         wxListCtrl* lj = (wxListCtrl*)FindWindowById(ListJobs);
         Script s = scripts[scripts.size() - 1];
@@ -231,11 +249,11 @@ void MainFrame::OnButtonAddJobClick( wxCommandEvent& event )
 
 void MainFrame::OnButtonClearJobsClick( wxCommandEvent& event )
 {
-    int answer = wxMessageBox(_("This will clear all jobs, are you sure?"), _("Confirm"), 
+    int answer = wxMessageBox(_("This will clear all jobs, are you sure?"), _("Confirm"),
         wxOK|wxCANCEL|wxICON_EXCLAMATION, this);
     if(answer == wxOK){
         scripts.clear();
-        
+
         wxListCtrl* lj = (wxListCtrl*)FindWindowById(ListJobs);
         lj->DeleteAllItems();
     }
@@ -272,33 +290,33 @@ std::string MainFrame::callPythonFunc(
     pName = pImporter = pModule = pDict = pFunc = pValue = pArgs = NULL;
 
     Py_Initialize();
-    
+
     // Import module from file
     pName = PyString_FromString("imp");
     pImporter = PyImport_Import(pName);
-  
+
     pArgs = PyTuple_New(2);
     PyTuple_SetItem(pArgs, 0, PyString_FromString(moduleName));
     PyTuple_SetItem(pArgs, 1, PyString_FromString( (std::string(modulePath) + std::string(moduleName) + ".py").c_str() ));
 
     pModule = PyObject_CallObject( PyDict_GetItemString(PyModule_GetDict(pImporter), "load_source"), pArgs);
-    
+
     //Clean up
     Py_DECREF(pArgs);
     Py_DECREF(pImporter);
     Py_DECREF(pName);
     pArgs = NULL;
-    
+
     if(pModule == NULL){
         PyErr_Print();
         Py_Finalize();
         throw PythonErr("No module named " + std::string(moduleName) + " in folder " + std::string(modulePath));
     }
-  
+
     // Borrowed references
 	pDict = PyModule_GetDict(pModule);
 	pFunc = PyDict_GetItemString(pDict, func);
-  
+
     if (PyCallable_Check(pFunc)) {
         // New reference, call Py_DECREF() when not used anymore
         pArgs = PyTuple_New( argCount );
@@ -318,7 +336,7 @@ std::string MainFrame::callPythonFunc(
             pValue = PyObject_CallObject(pFunc, pArgs);
             Py_DECREF(pArgs);
         }
-    
+
         if (pValue != NULL) {
             char* temp = PyString_AsString(pValue);
             result = std::string(temp);
@@ -327,7 +345,7 @@ std::string MainFrame::callPythonFunc(
 			PyErr_Print();
 			Py_DECREF(pModule);
             Py_Finalize();
-			
+
             throw PythonErr("Python call failed.\nDid you provide the right number of arguments?");
         }
     } else {
@@ -336,7 +354,7 @@ std::string MainFrame::callPythonFunc(
         // Clean up
         Py_DECREF(pModule);
         Py_Finalize();
-		
+
         throw PythonErr("No function '" + std::string(func) + "' in module '" + std::string(moduleName) + "'");
     }
 
@@ -358,13 +376,13 @@ void MainFrame::OnButtonBashClick( wxCommandEvent& event )
     wxFileDialog saveFileDialog(this, _("Save bash script"), _(""), _(""), _("Shell script (*.sh)|*.sh"), wxFD_SAVE);
     if (saveFileDialog.ShowModal() == wxID_CANCEL)
         return;
-    
+
     std::string bashPath = std::string(saveFileDialog.GetPath().mb_str());
-    
+
     if(path(bashPath).extension() == ""){
         bashPath += ".sh";
     }
-    
+
     std::ofstream bashFile;
     bashFile.open(bashPath.c_str());
     bashFile << "#!/bin/bash\n\n";
@@ -372,7 +390,7 @@ void MainFrame::OnButtonBashClick( wxCommandEvent& event )
         wxMessageBox(_("Failed to make bash script"), _("Error"), wxOK|wxICON_ERROR, this);
         return;
     }
-    
+
     for(unsigned int i = 0; i < scripts.size(); i++){
         bashFile << scripts[i].python << " \"" << scripts[i].path << scripts[i].name << ".py\"";
         for(unsigned int j = 0; j < scripts[i].params.size(); j++){
@@ -380,7 +398,7 @@ void MainFrame::OnButtonBashClick( wxCommandEvent& event )
         }
         bashFile << "\n";
     }
-    
+
     bashFile.close();
     chmod(bashPath.c_str(), 0775);
 }

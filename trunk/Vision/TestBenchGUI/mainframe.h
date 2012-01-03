@@ -1,13 +1,31 @@
-/////////////////////////////////////////////////////////////////////////////
-// Name:        mainframe.h
-// Purpose:     
-// Author:      Franc
-// Modified by: 
-// Created:     Fri 14 Oct 2011 10:41:09 CEST
-// RCS-ID:      
-// Copyright:   
-// Licence:     
-/////////////////////////////////////////////////////////////////////////////
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        TestBenchGUI
+// File:           mainframe.hpp
+// Description:    Frame for the main application
+// Author:         Franc Pape
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of TestBenchGUI.
+//
+// TestBenchGUI is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// TestBenchGUI is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with TestBenchGUI.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 
 #ifndef _MAINFRAME_H_
 #define _MAINFRAME_H_
@@ -57,7 +75,7 @@
  */
 
 class MainFrame: public wxFrame
-{    
+{
     DECLARE_CLASS( MainFrame )
     DECLARE_EVENT_TABLE()
 
