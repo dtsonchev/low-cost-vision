@@ -192,7 +192,7 @@ int main(int argc, char** argv)
 		}else if(key == 'b'){
 			ss.str("");
 			ss << "Image" << counter++ << ".jpg";
-			if(undistorted) imwrite(ss.str().c_str(), undistorted);
+			if(undistort) imwrite(ss.str().c_str(), undistorted);
 			else imwrite(ss.str().c_str(), frame);
 			cout << "Image taken: " << ss.str().c_str() << endl;
 			key = 0;	
