@@ -145,6 +145,16 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
 	}else if(ZoomBox_radioBtn->GetValue()){
 		zoomWidth = event.GetX() + coordinateOffset - zoomX;
 		zoomHeight = event.GetY() + coordinateOffset - zoomY;
+
+		if(zoomWidth < 0) {
+			zoomX += zoomWidth;
+			zoomWidth = abs(zoomWidth);
+		}
+
+		if(zoomHeight < 0) {
+			zoomY += zoomHeight;
+			zoomHeight = abs(zoomHeight);
+		}
 	}
 
 	calculateFiducialPoints();
@@ -153,12 +163,12 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
 
 void CrateAppImpl::OnImageMotion(wxMouseEvent& event){
 	if(mousePressedInImageField){
-
 		if(QRCodeCornerRDB->GetValue()){
 			QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
 		}else if(LineRDB->GetValue() || OppositeCornerRDB->GetValue()){
 			OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
 		}else if(ZoomBox_radioBtn->GetValue()){
+
 			zoomWidth = event.GetX() + coordinateOffset - zoomX;
 			zoomHeight = event.GetY() + coordinateOffset - zoomY;
 		}
@@ -192,7 +202,7 @@ void CrateAppImpl::OnZoomChange(wxMouseEvent& event) {
 }
 
 void CrateAppImpl::OnZoom(wxCommandEvent& event) {
-	if (zoomX > 0 && zoomY > 0 && zoomWidth > 0 && zoomHeight > 0) {
+	if (zoomWidth != 0 && zoomHeight != 0) {
 		zoomImage = image.Size(
 				wxSize(zoomX * Scale + zoomWidth * Scale,
 						zoomY * Scale + zoomHeight * Scale),
