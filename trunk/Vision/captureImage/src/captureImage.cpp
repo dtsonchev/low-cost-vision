@@ -128,6 +128,7 @@ int main(int argc, char** argv)
 	unicap_cv_camera cam(device_number, format_number);
 	Size camSize(cam.get_img_width(), cam.get_img_height());
 
+	Mat undistorted;
 	RectifyImage rectifier;
 	if(argc > 3) rectifier.initRectify(argv[3], camSize);
 
@@ -147,7 +148,6 @@ int main(int argc, char** argv)
 		cam.get_frame(&frame);
 
 		if(undistort) {
-			Mat undistorted;
 			rectifier.rectify(frame, undistorted);
 			imshow("undistorted", undistorted);
 		}
@@ -187,12 +187,13 @@ int main(int argc, char** argv)
 		}else if(key == 't'){
 			tripmode = !tripmode;
 			cam.set_trip_mode(tripmode);
-		}else if(key == 't'){
+		}else if(key == 'c'){
 			if(argc > 3) undistort = !undistort;
 		}else if(key == 'b'){
 			ss.str("");
 			ss << "Image" << counter++ << ".jpg";
-			imwrite(ss.str().c_str(), undistorted);
+			if(undistorted) imwrite(ss.str().c_str(), undistorted);
+			else imwrite(ss.str().c_str(), frame);
 			cout << "Image taken: " << ss.str().c_str() << endl;
 			key = 0;	
 		}
