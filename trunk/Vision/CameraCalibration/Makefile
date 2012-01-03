@@ -12,7 +12,7 @@
 BUILDTYPE           := library
 
 # name of target binary or library
-TARGET              := CreateCameraCalibratieMatrix
+TARGET              := CameraCalibration
 
 # virtual path
 VPATH               :=
@@ -36,16 +36,13 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   := opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_filesystem
+LIBRARIES           := boost_filesystem boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 
 
 #linker paths that will be included using '-L'
-LINKERPATHS         :=	opencv_core \
-			opencv_calib3d \
-			opencv_highgui \
-			opencv_imgproc
+LINKERPATHS         :=	
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
