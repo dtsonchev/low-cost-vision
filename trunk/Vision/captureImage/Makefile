@@ -9,7 +9,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := library
+BUILDTYPE           := binary
 
 # name of target binary or library
 TARGET              := captureImage
@@ -33,10 +33,10 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := libunicap
+PKGCONF_LIBRARIES   := libunicap opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           := boost_thread opencv_core opencv_highgui opencv_imgproc
+LIBRARIES           := boost_thread boost_filesystem boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 
@@ -46,7 +46,7 @@ LINKERPATHS         := /usr/local/lib
 
 # projects that this project depends on
 # paths in environment variable LCV_PROJECT_PATH will be searched for projects
-DEP_PROJ            := unicap_cv_bridge
+DEP_PROJ            := unicap_cv_bridge CameraCalibration
 
 
 #######################################################################

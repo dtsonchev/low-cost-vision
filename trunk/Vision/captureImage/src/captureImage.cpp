@@ -28,6 +28,7 @@
 //******************************************************************************
 
 #include <unicap_cv_bridge.hpp>
+#include <CameraCalibration/RectifyImage.h>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -114,48 +115,46 @@ void draw_hist(Mat& dest, const Mat& src, int histSize)
 
 int main(int argc, char** argv)
 {
-	if(argc == 1){
-		printf("usage for starting capture: %s device_number format_number\ndevices:\n", argv[0]);
+	if(argc < 3) {
+		printf("usage for starting capture: %s device_number format_number [calibration_xml]\ndevices:\n", argv[0]);
 		print_devices_inventory();
 
 		return 0;
-	}else if (argc != 3){
-		return 1;
 	}
 
 	int device_number = atoi(argv[1]);
 	int format_number = atoi(argv[2]);
 
 	unicap_cv_camera cam(device_number, format_number);
+	Size camSize(cam.get_img_width(), cam.get_img_height());
 
-	Mat frame(cam.get_img_height(), cam.get_img_width(), cam.get_img_format());
+	RectifyImage rectifier;
+	if(argc > 3) rectifier.initRectify(argv[3], camSize);
+
+	Mat frame(camSize, cam.get_img_format());
 	Mat hist(600, 900, CV_8UC3);
 
-	cam.set_white_balance(1, 1);
-
-	Mat cameraMatrix, distCoeffs;
-	Mat undistorted, map1, map2, rotated;
-
-	FileStorage fs("cameraMatrix.xml", FileStorage::READ);
-	fs["cameraMatrix"] >> cameraMatrix;
-	fs["distCoeffs"] >> distCoeffs;
-
-	initUndistortRectifyMap(cameraMatrix, distCoeffs, cv::Mat(), cv::Mat(), frame.size(), CV_32FC1, map1, map2);
+	cam.set_auto_white_balance(true);
 
 	int counter = 0;
-	double exposure = 0.03;
+	double exposure = 0.015;
 	double blue, red;
 	char key = 0;
 	bool tripmode = false;
+	bool undistort = argc > 3;
 
-	while(key != 'q'){
-
+	while(key != 'q') {
 		cam.get_frame(&frame);
-		remap(frame, undistorted, map1, map2, INTER_LINEAR);
 
-		transpose(undistorted, rotated);
-		flip(rotated, rotated, -1);
-		
+		if(undistort) {
+			Mat undistorted;
+			rectifier.rectify(frame, undistorted);
+			imshow("undistorted", undistorted);
+		}
+		else {
+			imshow("distorted", frame);
+		}
+
 		draw_hist(hist, frame, 128);
 
 		cam.get_white_balance(blue, red);
@@ -173,7 +172,6 @@ int main(int argc, char** argv)
 		cv::putText(hist, ss.str(), cv::Point(20, 60), FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 
 		imshow("histogram", hist);
-		imshow("rotated", rotated);
 
 		key = waitKey(10);
 		if(key == 'w'){
@@ -189,10 +187,12 @@ int main(int argc, char** argv)
 		}else if(key == 't'){
 			tripmode = !tripmode;
 			cam.set_trip_mode(tripmode);
+		}else if(key == 't'){
+			if(argc > 3) undistort = !undistort;
 		}else if(key == 'b'){
 			ss.str("");
 			ss << "Image" << counter++ << ".jpg";
-			imwrite(ss.str().c_str(), rotated);
+			imwrite(ss.str().c_str(), undistorted);
 			cout << "Image taken: " << ss.str().c_str() << endl;
 			key = 0;	
 		}
