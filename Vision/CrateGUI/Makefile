@@ -33,12 +33,10 @@ LFLAGS              := $(shell wx-config --libs)
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   :=  Magick++ \
-                        opencv
+PKGCONF_LIBRARIES   :=  Magick++ opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           :=  zbar \
-                        boost_filesystem
+LIBRARIES           :=  zbar boost_filesystem boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     :=
