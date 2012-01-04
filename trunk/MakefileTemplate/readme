@@ -14,8 +14,9 @@ II.   Introduction
 III.  Project structure
 IV.   Usage
 V.    Configuration
-VI.   Notes and pitfalls
-VII.  Literature
+VI.   Building with rosmake
+VII.  Notes and pitfalls
+VIII. Literature
 
 ######################################################################
 II.   Introduction
@@ -164,7 +165,26 @@ export LCV_PROJECT_PATH=~/low-cost-vision/Vision
 Environment variable. Contains the path to the generic makefile
 
 ######################################################################
-VI.   Notes and pitfalls
+VI.   Building with rosmake
+######################################################################
+
+If you have a ros project that builds with rosmake and uses a LCV 
+library project then you have to add soms lines to your CMakeLists.txt.
+
+First start building your LCV library project(s).
+
+For every LCV library project:
+	- target_link_libraries(<executable name> $ENV{LCV_PROJECT_PATH}
+		/<path to .a file>)
+	- include_directories(<path to include folder(with the headers)>)
+
+For every library that was added in the LCV makefile by the variable 
+LIBRARIES add these lines to the CMakeLists.txt. Note: These lines 
+must be placed after the rosbuild_add_executable line.
+	- target_link_libraries(<executable name> <library name>)
+
+######################################################################
+VII.  Notes and pitfalls
 ######################################################################
 
 # All includes in project sourcecode should be made in the form of:
@@ -179,7 +199,7 @@ VI.   Notes and pitfalls
   should now also depend on opencv2.
 
 ######################################################################
-VII.  Literature
+VIII. Literature
 ######################################################################
 
 # Managing Projects with GNU Make, 3rd Edition
