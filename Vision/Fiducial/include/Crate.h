@@ -38,11 +38,12 @@ class Crate {
 private:
 	//! Bounding rectangle saved after calling rect()
 	cv::RotatedRect bounds;
-	//! Fiducial points belonging to the crate returned from points()
-	std::vector<cv::Point2f> fidPoints;
-	//! Tracks if fidPoints is ordered
-	bool fidOrdered;
 public:
+	//! The crate identifier
+	std::string name;
+	//! Fiducial points belonging to the crate
+	std::vector<cv::Point2f> fidPoints;
+
 	/*! \brief The Crate constructor
 	 *
 	 *  Constructs a crate without any fiducial points
@@ -55,6 +56,13 @@ public:
 	 */
 	Crate(const std::vector<cv::Point2f>& points);
 
+	/*! \brief The Crate constructor
+	 *
+	 *  Constructs a crate with the given three fiducial points
+	 *  and a name. The fiducial points should be ordered clockwise
+	 */
+	Crate(std::string name, const std::vector<cv::Point2f>& points);
+
 	/*! \brief The Crate copy-constructor
 	 *
 	 *  Constructs a crate with the same values as the
@@ -65,26 +73,12 @@ public:
 	//! THe Crate deconstructor
 	virtual ~Crate();
 
-	/*! \brief Order a list of fiducial points
-	 *
-	 *  Orders a vector with 3 fiducial points according
-	 *  to the clockwise crate ordering.
-	 */
-	static void order(std::vector<cv::Point2f>& points, cv::Point2f* center = NULL, float* orientation = NULL);
-
 	/*! \brief Generate a rotated bounding rectangle
 	 *
 	 *  Generates a RotatedRect that represents the
 	 *  crate.
 	 */
 	cv::RotatedRect rect();
-
-	/*! \brief Return the fiducial points
-	 *
-	 *  Returns the fiducial points ordered clockwise.
-	 *  Will only order fiducial points on first call.
-	 */
-	std::vector<cv::Point2f> points();
 
 	/*! \brief Draw the rectangle in the image
 	 *
