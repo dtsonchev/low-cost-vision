@@ -63,11 +63,12 @@ cv::RotatedRect Crate::rect() {
 	float length = sqrt(distance1*distance1 + distance2*distance2);
 	float alpha = atan2(fidPoints[0].y - fidPoints[2].y, fidPoints[2].x - fidPoints[0].x);
 
-	// Determine the center
+	// Determine the center, size and angle
 	bounds.center = cv::Point2f(fidPoints[0].x + (length / 2.0) * cos(-alpha),
 			fidPoints[0].y + (length / 2.0) * sin(-alpha));
 	bounds.size = cv::Size(distance1, distance2);
 	bounds.angle = alpha - acos(distance1/length);
+	if(bounds.angle < -M_PI) bounds.angle += 2*M_PI;
 
 	return bounds;
 }
