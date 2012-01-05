@@ -69,6 +69,11 @@ namespace huniplacer
         return angle > motors.get_min_angle() && angle < motors.get_max_angle();
     }
 
+    bool deltarobot::check_path(const point3& begin,const point3& end)
+    {
+    	return boundaries->check_path(begin, end);
+    }
+
     void deltarobot::moveto(const point3& p, double speed, bool async)
     {
     	if(!motors.is_powerd_on())

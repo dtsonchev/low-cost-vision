@@ -73,6 +73,13 @@ namespace huniplacer
             void generate_boundaries(double voxel_size);
 
             /**
+			 * @brief checks the path between two points
+			 * @param begin start point
+			 * @param end finish point
+			 **/
+            bool check_path(const point3& begin,const point3& end);
+
+            /**
              * @brief makes the deltarobot move to a point
              * @param p 3-dimensional point to move to
              * @param speed movement speed speed in degrees per second
