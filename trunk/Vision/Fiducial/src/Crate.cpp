@@ -35,17 +35,17 @@ Crate::Crate() {
 }
 
 Crate::Crate(const std::vector<cv::Point2f>& points) {
-	this->fidPoints.assign(points.begin(), points.begin()+3);
+	this->points.assign(points.begin(), points.begin()+3);
 }
 
 Crate::Crate(std::string name, const std::vector<cv::Point2f>& points) {
 	this->name = name;
-	this->fidPoints.assign(points.begin(), points.begin()+3);
+	this->points.assign(points.begin(), points.begin()+3);
 }
 
 Crate::Crate(const Crate& crate) :
 		bounds(crate.bounds), name(crate.name),
-		fidPoints(crate.fidPoints) {
+		points(crate.points) {
 }
 
 Crate::~Crate() {
@@ -56,18 +56,18 @@ cv::RotatedRect Crate::rect() {
 		return bounds;
 
 	// Determine the distance between the fiducial points
-	float distance1 = sqrt(pow(fidPoints[0].x - fidPoints[1].x, 2) + pow(fidPoints[0].y - fidPoints[1].y, 2));
-	float distance2 = sqrt(pow(fidPoints[2].x - fidPoints[1].x, 2) + pow(fidPoints[2].y - fidPoints[1].y, 2));
+	float distance1 = sqrt(pow(points[0].x - points[1].x, 2) + pow(points[0].y - points[1].y, 2));
+	float distance2 = sqrt(pow(points[2].x - points[1].x, 2) + pow(points[2].y - points[1].y, 2));
 
 	// Distance and angle between the diagonal points
 	float length = sqrt(distance1*distance1 + distance2*distance2);
-	float alpha = atan2(fidPoints[0].y - fidPoints[2].y, fidPoints[2].x - fidPoints[0].x);
+	float alpha = atan2(points[0].y - points[2].y, points[2].x - points[0].x);
 
 	// Determine the center, size and angle
-	bounds.center = cv::Point2f(fidPoints[0].x + (length / 2.0) * cos(-alpha),
-			fidPoints[0].y + (length / 2.0) * sin(-alpha));
+	bounds.center = cv::Point2f(points[0].x + (length / 2.0) * cos(-alpha),
+			points[0].y + (length / 2.0) * sin(-alpha));
 	bounds.size = cv::Size(distance1, distance2);
-	bounds.angle = alpha - M_PI/4.0;//acos(distance1/length);
+	bounds.angle = alpha - M_PI/4.0;
 	if(bounds.angle < -M_PI) bounds.angle += 2*M_PI;
 
 	return bounds;
@@ -75,11 +75,10 @@ cv::RotatedRect Crate::rect() {
 
 void Crate::draw(cv::Mat& image) {
 	// Draw the fiducial points
-	cv::circle(image, fidPoints[0], 1, cv::Scalar(255, 0, 0), 2);
-	cv::circle(image, fidPoints[1], 1, cv::Scalar(0, 255, 0), 2);
-	cv::circle(image, fidPoints[2], 1, cv::Scalar(0, 0, 255), 2);
+	cv::circle(image, points[0], 1, cv::Scalar(255, 0, 0), 2);
+	cv::circle(image, points[1], 1, cv::Scalar(0, 255, 0), 2);
+	cv::circle(image, points[2], 1, cv::Scalar(0, 0, 255), 2);
 
-	// Order the points and intialize the bounds
 	cv::RotatedRect rect = this->rect();
 
 	// Draw rect

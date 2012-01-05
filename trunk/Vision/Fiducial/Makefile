@@ -32,10 +32,10 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := opencv
+PKGCONF_LIBRARIES   := opencv Magick++ zbar
 
 # libraries that are linked against with '-l'
-LIBRARIES           := 
+LIBRARIES           := boost_filesystem boost_system
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 

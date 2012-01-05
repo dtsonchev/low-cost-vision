@@ -29,6 +29,7 @@
 
 #include "FiducialDetector.h"
 #include "CrateDetector.h"
+#include "QRCodeDetector.h"
 #include "Crate.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -38,12 +39,13 @@
 
 FiducialDetector fidDetector;
 CrateDetector crateDetector;
+QRCodeDetector qrDetector;
 
 bool showValues = true;
 bool showContours = false;
 bool showDebug = true;
 
-void process(cv::Mat& image, cv::Mat& debug) {
+void processFid(cv::Mat& image, cv::Mat& debug) {
 	std::vector<cv::Point2f> points;
 	cv::RotatedRect rect;
 	if(showDebug)
@@ -80,6 +82,7 @@ void process(cv::Mat& image, cv::Mat& debug) {
 		if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
 	}
 	else if(points.size() == 3) {
+		CrateDetector::order(points);
 		Crate crate(points);
 		if(showDebug) crate.draw(debug);
 	}
@@ -102,6 +105,14 @@ void process(cv::Mat& image, cv::Mat& debug) {
 		ss << "Method: " << ((fidDetector.centerMethod==FiducialDetector::MEAN)?"Mean":(fidDetector.centerMethod==FiducialDetector::MEDOID_RHO)?"MedoidRho":"MedoidTheta");
 		cv::putText(debug, ss.str(), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 	}
+}
+
+void processQR(cv::Mat& image, cv::Mat& debug) {
+	std::vector<Crate> crates;
+
+	qrDetector.detectCrates(image, crates);
+
+	if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
 }
 
 void callback(char key, cv::Mat* image = NULL) {
@@ -170,7 +181,7 @@ int main(int argc, char* argv[]) {
 		char key = 0;
 		while (key != 'q') {
 			cv::Mat debug = image.clone();
-			process(gray, debug);
+			processQR(gray, debug);
 
 			cv::imshow("Image", debug);
 			key = cv::waitKey();
@@ -200,7 +211,7 @@ int main(int argc, char* argv[]) {
 			cv::Mat gray;
 			cv::cvtColor(frame, gray, CV_BGR2GRAY);
 
-			process(gray, frame);
+			processQR(gray, frame);
 
 			cv::imshow("Frame", frame);
 			key = cv::waitKey(10);
