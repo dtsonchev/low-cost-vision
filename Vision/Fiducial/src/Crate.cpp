@@ -67,7 +67,7 @@ cv::RotatedRect Crate::rect() {
 	bounds.center = cv::Point2f(fidPoints[0].x + (length / 2.0) * cos(-alpha),
 			fidPoints[0].y + (length / 2.0) * sin(-alpha));
 	bounds.size = cv::Size(distance1, distance2);
-	bounds.angle = alpha - acos(distance1/length);
+	bounds.angle = alpha - M_PI/4.0;//acos(distance1/length);
 	if(bounds.angle < -M_PI) bounds.angle += 2*M_PI;
 
 	return bounds;
