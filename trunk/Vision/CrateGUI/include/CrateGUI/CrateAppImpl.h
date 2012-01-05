@@ -45,6 +45,9 @@
 #define LINE_LENGTH 7.1
 #define FID_OFFSET 2.25
 #define FID_RADIUS 0.75
+#define QR_MARKER_SIDE 0.8
+#define QR_CODE_SIDE 2.9
+
 
 /**
  * This class is the implementation of the GUI functions
@@ -243,6 +246,12 @@ public:
 	 */
 	void OnOriginal(wxCommandEvent& event);
 	/**
+	 * The function that is called when the type of object is changed in
+	 * the object type combo box
+	 * @param event the event that is created when the type changes
+	 */
+	void OnObjectType( wxCommandEvent& event );
+	/**
 	 * The function that is called when the Next button is pressed
 	 * Checks if all the values are filled and writes them to the xml file
 	 * @param event the event that is created when the button is pessed
@@ -262,9 +271,16 @@ public:
 	void OnReset(wxCommandEvent& event);
 	/**
 	 * The function that is called when the done button is pressed
+	 * Closes the GUI
 	 * @param event the event that is created when the button is pessed
 	 */
 	void OnDoneButton(wxCommandEvent& event);
+	/**
+	 * The function that is called when the Next image button is pressed
+	 * calls the function to load the next image
+	 * @param event the event that is created when the button is pessed
+	 */
+	void OnNextImage( wxMouseEvent& event );
 
 	/**
 	 * Transfer the chosen directory path to this class

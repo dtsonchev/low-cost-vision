@@ -31,17 +31,6 @@ ChoiceFrame::ChoiceFrame(wxWindow* parent, wxWindowID id, const wxString& title,
 			wxDIRP_DEFAULT_STYLE);
 	bSizer1->Add(dirPicker, 0, wxALL | wxEXPAND, 5);
 
-	m_staticText27 = new wxStaticText(this, wxID_ANY,
-			wxT("Select a .xml file to edit"), wxDefaultPosition,
-			wxDefaultSize, 0);
-	m_staticText27->Wrap(-1);
-	bSizer1->Add(m_staticText27, 0, wxALL, 5);
-
-	XMLPicker = new wxFilePickerCtrl(this, wxID_ANY, wxEmptyString,
-			wxT("Select a file"), wxT("XML|*.xml; *.XML"),
-			wxDefaultPosition, wxDefaultSize, wxFLP_DEFAULT_STYLE);
-	bSizer1->Add(XMLPicker, 0, wxALL | wxEXPAND, 5);
-
 	wxBoxSizer* bSizer41;
 	bSizer41 = new wxBoxSizer(wxVERTICAL);
 

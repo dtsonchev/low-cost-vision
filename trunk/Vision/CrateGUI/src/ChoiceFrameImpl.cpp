@@ -48,10 +48,8 @@
 using namespace boost::filesystem;
 
 void ChoiceFrameImpl::OnXMLOption(wxMouseEvent& event) {
-	XMLPicker->Enable(true);
 	if (event.GetId() == CreateNewXMLradioBtn->GetId()) {
-		XMLPicker->Enable(false);
-		MessageField->SetLabel(wxT("Crates a \"crateTestSet.xml\" file"));
+		MessageField->SetLabel(wxT("Crates a .xml file"));
 		CreateNewXMLradioBtn->SetValue(true);
 	} else if (event.GetId() == EditExistingXMLradioBtn->GetId()) {
 		MessageField->SetLabel(wxT("If an image within this directory\n"
@@ -60,13 +58,12 @@ void ChoiceFrameImpl::OnXMLOption(wxMouseEvent& event) {
 		EditExistingXMLradioBtn->SetValue(true);
 	} else if (event.GetId() == AddToExistingXMLradioBtn->GetId()) {
 		MessageField->SetLabel(
-				wxT("Only adds images not available\nin TestSet.xml"));
+				wxT("Only adds images not available\nin the .xml file"));
 		AddToExistingXMLradioBtn->SetValue(true);
 	}
 }
 
 void ChoiceFrameImpl::OnExit(wxMouseEvent& event) {
-	crateApp->Close(true);
 	this->Close(true);
 }
 
@@ -74,14 +71,9 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 	boost::filesystem::path dirPath = std::string(
 			dirPicker->GetPath().ToAscii()).c_str();
 	std::stringstream s;
-	s << dirPath << "/Images";
+	s << dirPath << "/Metadata.xml";
+	path xmlPath = s.str();//std::string(XMLPicker->GetPath().ToAscii());
 
-	if (!is_directory(s.str().c_str())) {
-		MessageField->SetLabel(wxT("Unable to Locate\n\"Images\" directory"));
-		return;
-	}
-
-	path xmlPath = std::string(XMLPicker->GetPath().ToAscii());
 	if (!CreateNewXMLradioBtn->GetValue()) {
 		if (xmlPath == "") {
 			MessageField->SetLabel(wxT("No .xml file selected"));
@@ -95,7 +87,15 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 
 	} else {
 		MessageField->SetLabel(
-				wxT("create new xml file in\nselected directory"));
+				wxT("create new .xml file in\nselected directory"));
+	}
+
+	s.str("");
+	s << dirPath << "/Images";
+
+	if (!is_directory(s.str().c_str())) {
+		MessageField->SetLabel(wxT("Unable to Locate\n\"Images\" directory"));
+		return;
 	}
 
 	imagePaths.clear();
@@ -158,7 +158,6 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 	}
 
 	AddToExistingXMLradioBtn->SetValue(true);
-	XMLPicker->Enable(true);
 	crateApp->Start();
 	crateApp->Show(true);
 	this->Show(false);
@@ -204,5 +203,4 @@ ChoiceFrameImpl::ChoiceFrameImpl(wxWindow* parent, wxWindowID id,
 		const wxString& title, const wxPoint& pos, const wxSize& size,
 		long style) :
 		ChoiceFrame(parent, id, title, pos, size, style), crateApp(NULL) {
-	XMLPicker->Enable(!CreateNewXMLradioBtn->GetValue());
 }

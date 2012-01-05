@@ -78,10 +78,46 @@ void CrateAppImpl::OnSizeChange(wxSizeEvent& event){
 	zoomWidth = 0;
 	zoomHeight = 0;
 
-	LineRDB->SetValue(true);
+	CrateLineRDB->SetValue(true);
 	UpdateImageField();
 
 	this->Layout();
+}
+
+void CrateAppImpl::OnObjectType( wxCommandEvent& event ){
+	CrateLineRDB->SetValue(true);
+	if(ObjectTypeCombo->GetValue() == wxT("QR code")){
+		QRCodeCornerText->SetLabel(wxT("Bottom right"));
+		OppositeCornerText->SetLabel(wxT("Top Left"));
+
+	}else if(ObjectTypeCombo->GetValue() == wxT("Crate")){
+		QRCodeCornerText->SetLabel(wxT("QR code corner"));
+		OppositeCornerText->SetLabel(wxT("Opposite corner"));
+
+	}else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
+		QRCodeCornerText->SetLabel(wxT("Center point"));
+		OppositeCornerText->SetLabel(wxT("Marker edge"));
+
+	}
+}
+
+void CrateAppImpl::OnNextImage( wxMouseEvent& event ){
+
+	zoomX = 0;
+	zoomY = 0;
+	zoomWidth = 0;
+	zoomHeight = 0;
+
+	QRCorner = wxPoint(0, 0);
+	OppositeCorner = wxPoint(0, 0);
+
+	zoom = false;
+
+	ZoomButton->Enable(true);
+	ZoomBox_radioBtn->Enable(true);
+	OriginalImageButton->Enable(false);
+
+	NextImage();
 }
 
 void CrateAppImpl::OnLeaveImageField(wxMouseEvent& event){
@@ -92,7 +128,7 @@ void CrateAppImpl::OnLeaveImageField(wxMouseEvent& event){
 void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
 	mousePressedInImageField = true;
 
-	if(LineRDB->GetValue() || QRCodeCornerRDB->GetValue()){
+	if(CrateLineRDB->GetValue() || QRCodeCornerRDB->GetValue()){
 		QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
 		std::stringstream coordinate;
 		if(!zoom){
@@ -133,7 +169,7 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
 			coordinate << "(" << (int)(QRCorner.x * Scale + zoomX) << ", " << (int)(QRCorner.y * Scale + zoomY) << ")";
 		}
 		QRCodeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
-	}else if(LineRDB->GetValue() || OppositeCornerRDB->GetValue()){
+	}else if(CrateLineRDB->GetValue() || OppositeCornerRDB->GetValue()){
 		OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
 		std::stringstream coordinate;
 		if(!zoom){
@@ -165,7 +201,7 @@ void CrateAppImpl::OnImageMotion(wxMouseEvent& event){
 	if(mousePressedInImageField){
 		if(QRCodeCornerRDB->GetValue()){
 			QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
-		}else if(LineRDB->GetValue() || OppositeCornerRDB->GetValue()){
+		}else if(CrateLineRDB->GetValue() || OppositeCornerRDB->GetValue()){
 			OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
 		}else if(ZoomBox_radioBtn->GetValue()){
 
@@ -195,7 +231,7 @@ void CrateAppImpl::OnZoomChange(wxMouseEvent& event) {
 		ZoomBox_radioBtn->SetValue(true);
 		ZoomCheckBox->SetValue(true);
 	} else {
-		LineRDB->SetValue(true);
+		CrateLineRDB->SetValue(true);
 		ZoomCheckBox->SetValue(false);
 	}
 	drawCrateAttributes();
@@ -242,7 +278,7 @@ void CrateAppImpl::OnZoom(wxCommandEvent& event) {
 		ZoomButton->Enable(false);
 		OriginalImageButton->Enable(true);
 		ZoomBox_radioBtn->Enable(false);
-		LineRDB->SetValue(true);
+		CrateLineRDB->SetValue(true);
 
 		UpdateImageField();
 
@@ -287,46 +323,31 @@ void CrateAppImpl::OnOriginal(wxCommandEvent& event) {
 }
 
 void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
-	double temp;
 
 	SkipButton->Enable(false);
-
-	if(!AmountOfObjectsTxtField->GetValue().ToDouble(&temp) || temp < 1){
-		MessageLabel->SetLabel(wxT("Give a amount of crate number"));
+	if(ObjectTypeCombo->GetValue() == wxT("None")){
+		MessageLabel->SetLabel(wxT("No object type selected"));
 		return;
 	}
 
-	amountOfCrates = (int)temp;
-
-	if(QRCorner == wxPoint(0, 0) &&
+	if(QRCorner == wxPoint(0, 0) ||
 			OppositeCorner == wxPoint(0, 0)){
-		MessageLabel->SetLabel(wxT("Crate corners are not defined"));
-		LineRDB->SetValue(true);
-		LineRDB->SetFocus();
-		return;
-
-	}else if(QRCorner == wxPoint(0, 0)){
-		MessageLabel->SetLabel(wxT("QR code crate corner is not defined"));
-		QRCodeCornerRDB->SetValue(true);
-		QRCodeCornerRDB->SetFocus();
-		return;
-
-	}else if(OppositeCorner == wxPoint(0, 0)){
-		MessageLabel->SetLabel(wxT("Crate corner opposite of the QR code is not defined"));
-		OppositeCornerRDB->SetValue(true);
-		OppositeCornerRDB->SetFocus();
+		MessageLabel->SetLabel(wxT("Corners are not defined"));
+		CrateLineRDB->SetValue(true);
+		CrateLineRDB->SetFocus();
 		return;
 
 	}
 
-
-	if(QRCodeTextBox->GetValue() == wxT("")){
+	if(QRCodeTextBox->GetValue() == wxT("") && ObjectTypeCombo->GetValue() != wxT("Marker")){
 		QRCodeTextBox->SetFocus();
 		MessageLabel->SetLabel(wxT("QR code value is not given"));
 		return;
 	}
 
-	if (XMLOption == Edit && currentCrateNumber == 1) {
+	if (XMLOption == Edit && currentCrateNumber == 0) {
+
+		SkipButton->Enable(false);
 		//if images available within the xml need to overwritten
 		foreach(boost::property_tree::ptree::value_type & imageValue,
 				pt.get_child("Test_set"))
@@ -369,46 +390,118 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 	}
 
 	QRCode = (std::string)QRCodeTextBox->GetValue().ToAscii();
+	if(ObjectTypeCombo->GetValue() == wxT("Marker")){
+		center.m_x = QRCorner.x;
+		center.m_y = QRCorner.y;
+	}
+
+	center.m_x = center.m_x * Scale;
+	fid1.m_x = fid1.m_x * Scale;
+	fid2.m_x = fid2.m_x * Scale;
+	fid3.m_x = fid3.m_x * Scale;
+
+	center.m_y = center.m_y * Scale;
+	fid1.m_y = fid1.m_y * Scale;
+	fid2.m_y = fid2.m_y * Scale;
+	fid3.m_y = fid3.m_y * Scale;
 
 	if(zoom){
 		center.m_x += zoomX;
-		center.m_y += zoomY;
 		fid1.m_x += zoomX;
-		fid1.m_y += zoomY;
 		fid2.m_x += zoomX;
-		fid2.m_y += zoomY;
 		fid3.m_x += zoomX;
+
+		center.m_y += zoomY;
+		fid1.m_y += zoomY;
+		fid2.m_y += zoomY;
 		fid3.m_y += zoomY;
+
+		wxSize imageMaxSize = this->GetSize();
+		imageMaxSize.SetWidth(
+				imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
+		imageMaxSize.SetHeight(
+				imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
+						- 20);
+
+		double heightScale = (double) image.GetHeight()
+				/ (double) imageMaxSize.GetHeight();
+		double widthScale = (double) image.GetWidth()
+				/ (double) imageMaxSize.GetWidth();
+
+		double LargestScale = heightScale > widthScale ? heightScale : widthScale;
+
+		center.m_x = center.m_x * LargestScale;
+		fid1.m_x = fid1.m_x * LargestScale;
+		fid2.m_x = fid2.m_x * LargestScale;
+		fid3.m_x = fid3.m_x * LargestScale;
+
+		center.m_y = center.m_y * LargestScale;
+		fid1.m_y = fid1.m_y * LargestScale;
+		fid2.m_y = fid2.m_y * LargestScale;
+		fid3.m_y = fid3.m_y * LargestScale;
 	}
 
 	boost::property_tree::ptree& object = tempValue->add("object", "");
 	boost::property_tree::ptree* property = &(object.add("property", ""));
+	property->put("<xmlattr>.name", "type");
+	property->put("<xmlattr>.value", ObjectTypeCombo->GetValue().ToAscii());
+	property = &(object.add("property", ""));
 	property->put("<xmlattr>.name", "x");
-	property->put("<xmlattr>.value", center.m_x * Scale);
+	property->put("<xmlattr>.value", center.m_x);
 	property = &(object.add("property", ""));
 	property->put("<xmlattr>.name", "y");
-	property->put("<xmlattr>.value", center.m_y * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid1.x");
-	property->put("<xmlattr>.value", fid1.m_x * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid1.y");
-	property->put("<xmlattr>.value", fid1.m_y * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid2.x");
-	property->put("<xmlattr>.value", fid2.m_x * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid2.y");
-	property->put("<xmlattr>.value", fid2.m_y * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid3.x");
-	property->put("<xmlattr>.value", fid3.m_x * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "fid3.y");
-	property->put("<xmlattr>.value", fid3.m_y * Scale);
-	property = &(object.add("property", ""));
-	property->put("<xmlattr>.name", "qrcode");
-	property->put("<xmlattr>.value", QRCode);
+	property->put("<xmlattr>.value", center.m_y);
+
+	if(ObjectTypeCombo->GetValue() == wxT("Crate")){
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid1.x");
+		property->put("<xmlattr>.value", fid1.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid1.y");
+		property->put("<xmlattr>.value", fid1.m_y);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid2.x");
+		property->put("<xmlattr>.value", fid2.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid2.y");
+		property->put("<xmlattr>.value", fid2.m_y);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid3.x");
+		property->put("<xmlattr>.value", fid3.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "fid3.y");
+		property->put("<xmlattr>.value", fid3.m_y);
+
+	}else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker1.x");
+		property->put("<xmlattr>.value", fid1.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker1.y");
+		property->put("<xmlattr>.value", fid1.m_y);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker2.x");
+		property->put("<xmlattr>.value", fid2.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker2.y");
+		property->put("<xmlattr>.value", fid2.m_y);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker3.x");
+		property->put("<xmlattr>.value", fid3.m_x);
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "marker3.y");
+		property->put("<xmlattr>.value", fid3.m_y);
+	}
+
+	if(ObjectTypeCombo->GetValue() != wxT("Marker")){
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "qrcode");
+		property->put("<xmlattr>.value", QRCode);
+	}else{
+		property = &(object.add("property", ""));
+		property->put("<xmlattr>.name", "radius");
+		property->put("<xmlattr>.value", sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2)) * Scale);
+	}
 
 	boost::property_tree::xml_writer_settings<char> w('\t', 1);
 	boost::property_tree::write_xml(xmlPath.string().c_str(), pt, std::locale(), w);
@@ -417,29 +510,15 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 	QRCorner = wxPoint(0, 0);
 	OppositeCorner = wxPoint(0, 0);
 
-	zoomX = 0;
-	zoomY = 0;
-	zoomWidth = 0;
-	zoomHeight = 0;
-
 	currentCrateNumber++;
 
 	QRCodeCornerLabel->SetLabel(wxT("(000,000)"));
 	OppositeCornerLabel->SetLabel(wxT("(000,000)"));
 
-	if(currentCrateNumber == amountOfCrates){
-		zoom = false;
-
-		OriginalImageButton->Enable(false);
-		ZoomButton->Enable(true);
-		ZoomBox_radioBtn->Enable(true);
-		NextImage();
-	}else{
-		UpdateImageField();
-		std::stringstream s;
-		s << "Next image, current object number: " << currentCrateNumber + 1;
-		MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
-	}
+	UpdateImageField();
+	std::stringstream s;
+	s << "Next image, current object number: " << currentCrateNumber + 1;
+	MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 }
 
 void CrateAppImpl::OnSkip(wxMouseEvent& event){
@@ -500,7 +579,7 @@ void CrateAppImpl::OnReset(wxCommandEvent& event){
 	s << "Image reset, current object number: " << currentCrateNumber + 1;
 	MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 
-	UpdateImageField();
+	setCurrentImagePath(currentImagePath);
 }
 
 void CrateAppImpl::OnDoneButton(wxCommandEvent& event){

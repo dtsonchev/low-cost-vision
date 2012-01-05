@@ -109,12 +109,23 @@ void CrateAppImpl::calculateFiducialPoints(){
 	center = wxPoint2DDouble(QRCorner.x + (distance / 2.0) * cos(-angle),
 			QRCorner.y + (distance / 2.0) * sin(-angle));
 
-	fid1 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle-M_PI/2.0),
-					center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle-M_PI/2.0));
-	fid2 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle),
-			center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle));
-	fid3 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle+M_PI/2.0),
-			center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle+M_PI/2.0));
+	if(ObjectTypeCombo->GetValue() == wxT("Crate")){
+		fid1 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle-M_PI/2.0),
+						center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle-M_PI/2.0));
+		fid2 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle),
+				center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle));
+		fid3 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle+M_PI/2.0),
+				center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle+M_PI/2.0));
+	}else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
+		float QRCodeLineLength = sqrt(pow(QR_CODE_SIDE, 2) * 2);
+		float MarkerOffset = QRCodeLineLength/2.0 - sqrt(pow(QR_MARKER_SIDE / 2 , 2) * 2);
+		fid1 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle-M_PI/2.0),
+						center.m_y + (MarkerOffset*(distance/QRCodeLineLength)) * sin(-angle-M_PI/2.0));
+		fid2 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle),
+				center.m_y + (MarkerOffset*(distance/QRCodeLineLength)) * sin(-angle));
+		fid3 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle+M_PI/2.0),
+				center.m_y + (MarkerOffset*(distance/QRCodeLineLength)) * sin(-angle+M_PI/2.0));
+	}
 
 	if(!mousePressedInImageField){
 		std::string code;
@@ -162,50 +173,143 @@ void CrateAppImpl::drawCrateAttributes(){
 
 	int color = ColorSlider->GetValue();
 
+
 	if(QRCorner != wxPoint(0, 0) &&
 			OppositeCorner != wxPoint(0, 0)){
 
-		wxPaintDC dc(ImageField);
-		dc.SetPen(wxPen(wxColour(color, color, color), 2, wxSOLID));
-		dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
-		dc.DrawLine(QRCorner, OppositeCorner);
+		if(ObjectTypeCombo->GetValue() == wxT("Crate")){
 
-		double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
-		double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
-		double fidRadius = FID_RADIUS*(distance/LINE_LENGTH);
+			wxPaintDC dc(ImageField);
+			dc.SetPen(wxPen(wxColour(color, color, color), 2, wxSOLID));
+			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
+			dc.DrawLine(QRCorner, OppositeCorner);
 
-		dc.SetPen(wxPen(wxColour(255-color, color, color), 2, wxSOLID));
-		dc.DrawCircle(fid1.m_x, fid1.m_y, fidRadius);
-		dc.DrawLine(fid1.m_x + fidRadius * cos(-angle-M_PI/4.0),
-				fid1.m_y + fidRadius * sin(-angle-M_PI/4.0),
-				fid1.m_x - fidRadius * cos(-angle-M_PI/4.0),
-				fid1.m_y - fidRadius * sin(-angle-M_PI/4.0));
-		dc.DrawLine(fid1.m_x + fidRadius * cos(-angle+M_PI/4.0),
-				fid1.m_y + fidRadius * sin(-angle+M_PI/4.0),
-				fid1.m_x - fidRadius * cos(-angle+M_PI/4.0),
-				fid1.m_y - fidRadius * sin(-angle+M_PI/4.0));
+			double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
+			double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
+			double fidRadius = FID_RADIUS*(distance/LINE_LENGTH);
 
-		dc.SetPen(wxPen(wxColour(color, 255-color, color), 2, wxSOLID));
-		dc.DrawCircle(fid2.m_x, fid2.m_y, fidRadius);
-		dc.DrawLine(fid2.m_x + fidRadius * cos(-angle-M_PI/4.0),
-				fid2.m_y + fidRadius * sin(-angle-M_PI/4.0),
-				fid2.m_x - fidRadius * cos(-angle-M_PI/4.0),
-				fid2.m_y - fidRadius * sin(-angle-M_PI/4.0));
-		dc.DrawLine(fid2.m_x + fidRadius * cos(-angle+M_PI/4.0),
-				fid2.m_y + fidRadius * sin(-angle+M_PI/4.0),
-				fid2.m_x - fidRadius * cos(-angle+M_PI/4.0),
-				fid2.m_y - fidRadius * sin(-angle+M_PI/4.0));
+			dc.SetPen(wxPen(wxColour(255-color, color, color), 2, wxSOLID));
+			dc.DrawCircle(fid1.m_x, fid1.m_y, fidRadius);
+			dc.DrawLine(fid1.m_x + fidRadius * cos(-angle-M_PI/4.0),
+					fid1.m_y + fidRadius * sin(-angle-M_PI/4.0),
+					fid1.m_x - fidRadius * cos(-angle-M_PI/4.0),
+					fid1.m_y - fidRadius * sin(-angle-M_PI/4.0));
+			dc.DrawLine(fid1.m_x + fidRadius * cos(-angle+M_PI/4.0),
+					fid1.m_y + fidRadius * sin(-angle+M_PI/4.0),
+					fid1.m_x - fidRadius * cos(-angle+M_PI/4.0),
+					fid1.m_y - fidRadius * sin(-angle+M_PI/4.0));
 
-		dc.SetPen(wxPen(wxColour(color, color, 255-color), 2, wxSOLID));
-		dc.DrawCircle(fid3.m_x, fid3.m_y, fidRadius);
-		dc.DrawLine(fid3.m_x + fidRadius * cos(-angle-M_PI/4.0),
-				fid3.m_y + fidRadius * sin(-angle-M_PI/4.0),
-				fid3.m_x - fidRadius * cos(-angle-M_PI/4.0),
-				fid3.m_y - fidRadius * sin(-angle-M_PI/4.0));
-		dc.DrawLine(fid3.m_x + fidRadius * cos(-angle+M_PI/4.0),
-				fid3.m_y + fidRadius * sin(-angle+M_PI/4.0),
-				fid3.m_x - fidRadius * cos(-angle+M_PI/4.0),
-				fid3.m_y - fidRadius * sin(-angle+M_PI/4.0));
+			dc.SetPen(wxPen(wxColour(color, 255-color, color), 2, wxSOLID));
+			dc.DrawCircle(fid2.m_x, fid2.m_y, fidRadius);
+			dc.DrawLine(fid2.m_x + fidRadius * cos(-angle-M_PI/4.0),
+					fid2.m_y + fidRadius * sin(-angle-M_PI/4.0),
+					fid2.m_x - fidRadius * cos(-angle-M_PI/4.0),
+					fid2.m_y - fidRadius * sin(-angle-M_PI/4.0));
+			dc.DrawLine(fid2.m_x + fidRadius * cos(-angle+M_PI/4.0),
+					fid2.m_y + fidRadius * sin(-angle+M_PI/4.0),
+					fid2.m_x - fidRadius * cos(-angle+M_PI/4.0),
+					fid2.m_y - fidRadius * sin(-angle+M_PI/4.0));
+
+			dc.SetPen(wxPen(wxColour(color, color, 255-color), 2, wxSOLID));
+			dc.DrawCircle(fid3.m_x, fid3.m_y, fidRadius);
+			dc.DrawLine(fid3.m_x + fidRadius * cos(-angle-M_PI/4.0),
+					fid3.m_y + fidRadius * sin(-angle-M_PI/4.0),
+					fid3.m_x - fidRadius * cos(-angle-M_PI/4.0),
+					fid3.m_y - fidRadius * sin(-angle-M_PI/4.0));
+			dc.DrawLine(fid3.m_x + fidRadius * cos(-angle+M_PI/4.0),
+					fid3.m_y + fidRadius * sin(-angle+M_PI/4.0),
+					fid3.m_x - fidRadius * cos(-angle+M_PI/4.0),
+					fid3.m_y - fidRadius * sin(-angle+M_PI/4.0));
+
+		}else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
+
+			wxPaintDC dc(ImageField);
+			dc.SetPen(wxPen(wxColour(color, color, color), 2, wxSOLID));
+			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
+			dc.DrawLine(QRCorner, OppositeCorner);
+
+			double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
+			double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
+
+			dc.SetPen(wxPen(wxColour(255-color, color, color), 2, wxSOLID));
+			dc.DrawCircle(QRCorner.x, QRCorner.y, distance);
+			dc.DrawLine(QRCorner.x + distance * cos(-angle-M_PI/4.0),
+					QRCorner.y + distance * sin(-angle-M_PI/4.0),
+					QRCorner.x - distance * cos(-angle-M_PI/4.0),
+					QRCorner.y - distance * sin(-angle-M_PI/4.0));
+			dc.DrawLine(QRCorner.x + distance * cos(-angle+M_PI/4.0),
+					QRCorner.y + distance * sin(-angle+M_PI/4.0),
+					QRCorner.x - distance * cos(-angle+M_PI/4.0),
+					QRCorner.y - distance * sin(-angle+M_PI/4.0));
+
+		}else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
+
+			wxPaintDC dc(ImageField);
+			dc.SetPen(wxPen(wxColour(color, color, color), 2, wxSOLID));
+			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
+			dc.DrawLine(QRCorner, OppositeCorner);
+
+			double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
+			double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
+
+			float QRCodeLineLength = sqrt(pow(QR_CODE_SIDE, 2) * 2);
+			float length_marker = (distance / QRCodeLineLength ) * QR_MARKER_SIDE;
+
+			dc.SetPen(wxPen(wxColour(255-color, color, color), 2, wxSOLID));
+			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
+
+			angle += (M_PI/4.0);
+			wxPoint pt1(fid2.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid2.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			wxPoint pt2(fid2.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid2.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			wxPoint pt3(fid2.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid2.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			wxPoint pt4(fid2.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid2.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+
+			dc.DrawLine(pt1, pt2);
+			dc.DrawLine(pt2, pt3);
+			dc.DrawLine(pt3, pt4);
+			dc.DrawLine(pt4, pt1);
+			dc.DrawLine(pt3, pt1);
+			dc.DrawLine(pt4, pt2);
+
+			pt1 = wxPoint(fid1.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid1.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt2 = wxPoint(fid1.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid1.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt3 = wxPoint(fid1.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid1.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt4 = wxPoint(fid1.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid1.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+
+			dc.DrawLine(pt1, pt2);
+			dc.DrawLine(pt2, pt3);
+			dc.DrawLine(pt3, pt4);
+			dc.DrawLine(pt4, pt1);
+			dc.DrawLine(pt3, pt1);
+			dc.DrawLine(pt4, pt2);
+
+			pt1 = wxPoint(fid3.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid3.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt2 = wxPoint(fid3.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					fid3.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt3 = wxPoint(fid3.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid3.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt4 = wxPoint(fid3.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					fid3.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+
+			dc.DrawLine(pt1, pt2);
+			dc.DrawLine(pt2, pt3);
+			dc.DrawLine(pt3, pt4);
+			dc.DrawLine(pt4, pt1);
+			dc.DrawLine(pt3, pt1);
+			dc.DrawLine(pt4, pt2);
+
+			//dc.DrawLine(wxPoint(OppositeCorner.x, OppositeCorner.y), wxPoint(OppositeCorner.x + Offset_x - Offset_y, OppositeCorner.x + Offset_y - Offset_x));
+
+		}
 	}
 
 	if(zoomWidth != 0 && zoomHeight != 0 &&
@@ -275,7 +379,6 @@ void CrateAppImpl::NextImage() {
 					s << objectCount;
 					const wxString temp = wxString(s.str().c_str(),
 							wxConvLocal);
-					AmountOfObjectsTxtField->SetValue(temp);
 
 					MessageLabel->SetLabel(
 							wxT("Image is already available within the xml file, press skip button to go to next image."));
@@ -303,8 +406,6 @@ void CrateAppImpl::NextImage() {
 						LightingComboBox->SetValue( wxString(s, wxConvLocal));
 					} else if (values.second.get( "<xmlattr>.name", "")	== "perspective") {
 						PerspectiveComboBox->SetValue( wxString(s, wxConvLocal));
-					} else if (values.second.get( "<xmlattr>.name", "")	== "object-amount") {
-						AmountOfObjectsTxtField->SetValue( wxString(s, wxConvLocal));
 					} else if (values.second.get( "<xmlattr>.name", "")	== "qrcode") {
 						QRCodeTextBox->SetValue( wxString(s, wxConvLocal));
 					}
@@ -319,28 +420,31 @@ void CrateAppImpl::NextImage() {
 	} else {
 
 
-		LineRDB->Enable(false);
 		ZoomButton->Enable(false);
 		SkipButton->Enable(false);
 		ImageField->Enable(false);
 		ResetButton->Enable(false);
 		ColorSlider->Enable(false);
+		CrateLineRDB->Enable(false);
 		ZoomCheckBox->Enable(false);
 		QRCodeTextBox->Enable(false);
 		m_staticText11->Enable(false);
 		m_staticText29->Enable(false);
 		QRCodeCornerRDB->Enable(false);
+		ObjectTypeCombo->Enable(false);
+		ObjectTypeCombo->Enable(false);
+		NextImageButton->Enable(false);
 		LightingComboBox->Enable(false);
 		NextObjectButton->Enable(false);
 		ZoomBox_radioBtn->Enable(false);
+		QRCodeCornerText->Enable(false);
 		QRCodeCornerLabel->Enable(false);
 		OppositeCornerRDB->Enable(false);
 		BackgroundComboBox->Enable(false);
+		OppositeCornerText->Enable(false);
 		OppositeCornerLabel->Enable(false);
 		PerspectiveComboBox->Enable(false);
 		OriginalImageButton->Enable(false);
-		AmountOfObjectsLabel->Enable(false);
-		AmountOfObjectsTxtField->Enable(false);
 
 		MessageLabel->SetLabel(wxT("All images handled, press done to finish"));
 	}
@@ -348,23 +452,16 @@ void CrateAppImpl::NextImage() {
 
 void CrateAppImpl::Start(){
 	if (XMLOption == NewXML) {
-		boost::property_tree::ptree temp;
-		temp.add("Test_set", "");
+		pt.add("Test_set", "");
+	}else{
+		if (!boost::filesystem::is_regular_file(xmlPath.string()) || !boost::filesystem::exists(xmlPath.string())) {
+			this->Close(true);
+			return;
+		}
 
-		std::stringstream path;
-		path << dirPath << "/crateTestSet.xml";
-		xmlPath = path.str().c_str();
+		boost::property_tree::read_xml(xmlPath.string().c_str(), pt);
 	}
 
-	if (!boost::filesystem::is_regular_file(xmlPath.string().c_str())) {
-		std::stringstream temp;
-		temp << "Couldn't handle: " << xmlPath.string().c_str();
-		MessageLabel->SetLabel(wxString(temp.str().c_str(), wxConvLocal));
-		this->Close(true);
-		return;
-	}
-
-	boost::property_tree::read_xml(xmlPath.string().c_str(), pt);
 	imagePathsIt = imagePaths.begin() -1;
 	NextImage();
 }
@@ -379,7 +476,7 @@ CrateAppImpl::CrateAppImpl(wxWindow* parent, wxWindowID id,
 	wxImage::AddHandler(new wxJPEGHandler);
 	wxImage::AddHandler(new wxPNGHandler);
 
-	LineRDB->SetValue(true);
+	CrateLineRDB->SetValue(true);
 
 	Scale = 0;
 
