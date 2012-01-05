@@ -72,7 +72,7 @@ void CrateDetector::order(std::vector<cv::Point2f>& points) {
 	}
 
 	// Now the orientation of the crate can be detect and the first two points can be ordered
-	float angle = acos(sqrt(pow(start.x - extra.x, 2) + pow(start.y - extra.y, 2))/distance);
+	float angle = (extra.x - start.x) * (end.y - start.y) - (extra.y - start.y) * (end.x - start.x);
 	if(angle > 0) {
 		if(start.x > end.x) {
 			points[0] = end;

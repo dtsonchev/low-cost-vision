@@ -42,7 +42,7 @@ public:
 	//! The crate identifier
 	std::string name;
 	//! Fiducial points belonging to the crate
-	std::vector<cv::Point2f> fidPoints;
+	std::vector<cv::Point2f> points;
 
 	/*! \brief The Crate constructor
 	 *
@@ -53,13 +53,14 @@ public:
 	/*! \brief The Crate constructor
 	 *
 	 *  Constructs a crate with the given three fiducial points.
+	 *  The fiducial points ordering must be left-handed.
 	 */
 	Crate(const std::vector<cv::Point2f>& points);
 
 	/*! \brief The Crate constructor
 	 *
 	 *  Constructs a crate with the given three fiducial points
-	 *  and a name. The fiducial points should be ordered clockwise
+	 *  and a name. The fiducial points ordering must be left-handed.
 	 */
 	Crate(std::string name, const std::vector<cv::Point2f>& points);
 

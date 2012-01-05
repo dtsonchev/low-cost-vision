@@ -41,9 +41,6 @@
  *  points into instances of the Crate class.
  */
 class CrateDetector {
-private:
-	//! Order the fiducial points
-	void order(std::vector<cv::Point2f>& points);
 public:
 	//! First canny threshold
 	int lowThreshold;
@@ -61,6 +58,8 @@ public:
 	//! The CrateDetector deconstructor
 	virtual ~CrateDetector();
 
+	//! Order the fiducial points
+	static void order(std::vector<cv::Point2f>& points);
 
 	/*! \brief Segment the points into crates
 	 *
