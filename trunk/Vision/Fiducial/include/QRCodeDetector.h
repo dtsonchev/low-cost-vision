@@ -33,8 +33,6 @@
 #include <zbar.h>
 #include <iostream>
 #include <vector>
-#include "MagickMat.h"
-#include <Magick++.h>
 #include <opencv2/core/core.hpp>
 #include "Crate.h"
 
@@ -49,9 +47,6 @@ class QRCodeDetector{
 private:
 	///@brief the scanner which scans the code from an image
     zbar::ImageScanner scanner;
-	MagickMatConverter converter;
-
-
 public:
     ///@brief constructor sets the values for the scanner
     QRCodeDetector();
