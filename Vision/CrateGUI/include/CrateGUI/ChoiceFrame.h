@@ -33,10 +33,6 @@ protected:
 	wxStaticText* m_staticText28;
 	///A object to select a directory with the correct contents
 	wxDirPickerCtrl* dirPicker;
-	///Information text field
-	wxStaticText* m_staticText27;
-	///A object to select a xml file
-	wxFilePickerCtrl* XMLPicker;
 	///A cosmetic line
 	wxStaticLine* m_staticline41;
 	///A text field to display messages
