@@ -41,13 +41,14 @@
 
 /**
  * Defines used in order to caculate the fiducial locations
+ *
  */
+/////!!!!!!! turn into const static private variables
 #define LINE_LENGTH 7.1
 #define FID_OFFSET 2.25
 #define FID_RADIUS 0.75
 #define QR_MARKER_SIDE 0.8
 #define QR_CODE_SIDE 2.9
-
 
 /**
  * This class is the implementation of the GUI functions
@@ -96,6 +97,8 @@ private:
 
 	///The scale at which the image is scaled
 	double Scale;
+
+	double LargestScale;
 
 	///The top left x coordinate of the part at which the image is zoom into
 	int zoomX;

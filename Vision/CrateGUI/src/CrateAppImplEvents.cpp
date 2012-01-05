@@ -64,10 +64,18 @@ void CrateAppImpl::OnSizeChange(wxSizeEvent& event){
 				/ (double) imageMaxSize.GetWidth();
 	}
 
-	if(widthScale < heightScale){
-		Scale = heightScale;
+	if(!zoom){
+		if(widthScale < heightScale){
+			Scale = heightScale;
+		}else{
+			Scale = widthScale;
+		}
 	}else{
-		Scale = widthScale;
+		if(widthScale < heightScale){
+			LargestScale = heightScale;
+		}else{
+			LargestScale = widthScale;
+		}
 	}
 
 	QRCorner = wxPoint(0, 0);
@@ -265,9 +273,9 @@ void CrateAppImpl::OnZoom(wxCommandEvent& event) {
 				/ (double) imageMaxSize.GetWidth();
 
 		if(widthScale < heightScale){
-			Scale = heightScale;
+			LargestScale = heightScale;
 		}else{
-			Scale = widthScale;
+			LargestScale = widthScale;
 		}
 
 		QRCodeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
@@ -291,23 +299,6 @@ void CrateAppImpl::OnZoom(wxCommandEvent& event) {
 void CrateAppImpl::OnOriginal(wxCommandEvent& event) {
 	MessageLabel->SetLabel(
 			wxT("The values of the box and rotation line are reset"));
-	wxSize imageMaxSize = this->GetSize();
-	imageMaxSize.SetWidth(
-			imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
-	imageMaxSize.SetHeight(
-			imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
-					- 20);
-
-	double heightScale = (double) image.GetHeight()
-			/ (double) imageMaxSize.GetHeight();
-	double widthScale = (double) image.GetWidth()
-			/ (double) imageMaxSize.GetWidth();
-
-	if(widthScale < heightScale){
-		Scale = heightScale;
-	}else{
-		Scale = widthScale;
-	}
 
 	QRCorner = wxPoint(0, 0);
 	OppositeCorner = wxPoint(0, 0);
@@ -395,41 +386,7 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 		center.m_y = QRCorner.y;
 	}
 
-	center.m_x = center.m_x * Scale;
-	fid1.m_x = fid1.m_x * Scale;
-	fid2.m_x = fid2.m_x * Scale;
-	fid3.m_x = fid3.m_x * Scale;
-
-	center.m_y = center.m_y * Scale;
-	fid1.m_y = fid1.m_y * Scale;
-	fid2.m_y = fid2.m_y * Scale;
-	fid3.m_y = fid3.m_y * Scale;
-
 	if(zoom){
-		center.m_x += zoomX;
-		fid1.m_x += zoomX;
-		fid2.m_x += zoomX;
-		fid3.m_x += zoomX;
-
-		center.m_y += zoomY;
-		fid1.m_y += zoomY;
-		fid2.m_y += zoomY;
-		fid3.m_y += zoomY;
-
-		wxSize imageMaxSize = this->GetSize();
-		imageMaxSize.SetWidth(
-				imageMaxSize.GetWidth() - bSizer121->GetSize().GetWidth());
-		imageMaxSize.SetHeight(
-				imageMaxSize.GetHeight() - MessageLabel->GetSize().GetHeight()
-						- 20);
-
-		double heightScale = (double) image.GetHeight()
-				/ (double) imageMaxSize.GetHeight();
-		double widthScale = (double) image.GetWidth()
-				/ (double) imageMaxSize.GetWidth();
-
-		double LargestScale = heightScale > widthScale ? heightScale : widthScale;
-
 		center.m_x = center.m_x * LargestScale;
 		fid1.m_x = fid1.m_x * LargestScale;
 		fid2.m_x = fid2.m_x * LargestScale;
@@ -439,7 +396,27 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 		fid1.m_y = fid1.m_y * LargestScale;
 		fid2.m_y = fid2.m_y * LargestScale;
 		fid3.m_y = fid3.m_y * LargestScale;
+
+		center.m_x += zoomX;
+		fid1.m_x += zoomX;
+		fid2.m_x += zoomX;
+		fid3.m_x += zoomX;
+
+		center.m_y += zoomY;
+		fid1.m_y += zoomY;
+		fid2.m_y += zoomY;
+		fid3.m_y += zoomY;
 	}
+
+	center.m_x = center.m_x * Scale;
+	fid1.m_x = fid1.m_x * Scale;
+	fid2.m_x = fid2.m_x * Scale;
+	fid3.m_x = fid3.m_x * Scale;
+
+	center.m_y = center.m_y * Scale;
+	fid1.m_y = fid1.m_y * Scale;
+	fid2.m_y = fid2.m_y * Scale;
+	fid3.m_y = fid3.m_y * Scale;
 
 	boost::property_tree::ptree& object = tempValue->add("object", "");
 	boost::property_tree::ptree* property = &(object.add("property", ""));

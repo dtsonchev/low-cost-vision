@@ -96,7 +96,7 @@ void CrateAppImpl::UpdateImageField() {
 		ImageField->SetBitmap(copy);
 	} else {
 		wxImage copy = zoomImage.Copy();
-		copy.Rescale(zoomImage.GetWidth() / Scale, zoomImage.GetHeight() / Scale);
+		copy.Rescale(zoomImage.GetWidth() / LargestScale, zoomImage.GetHeight() / LargestScale);
 		ImageField->SetBitmap(copy);
 	}
 	ImageField->Refresh();
@@ -118,7 +118,7 @@ void CrateAppImpl::calculateFiducialPoints(){
 				center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle+M_PI/2.0));
 	}else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
 		float QRCodeLineLength = sqrt(pow(QR_CODE_SIDE, 2) * 2);
-		float MarkerOffset = QRCodeLineLength/2.0 - sqrt(pow(QR_MARKER_SIDE / 2 , 2) * 2);
+		float MarkerOffset = QRCodeLineLength/2.0;// - sqrt(pow(QR_MARKER_SIDE / 2 , 2) * 2);
 		fid1 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle-M_PI/2.0),
 						center.m_y + (MarkerOffset*(distance/QRCodeLineLength)) * sin(-angle-M_PI/2.0));
 		fid2 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle),
@@ -139,31 +139,41 @@ std::string CrateAppImpl::getBarcode(int distance, double angle){
 	std::string result = "";
 
 	if(distance != 0){
-		int crateSideLenght = sin(45) * abs(distance);
-		cv::Rect barcodeBox(center.m_x * Scale - (crateSideLenght/2.0) * Scale, center.m_y * Scale - (crateSideLenght/2.0) * Scale, crateSideLenght * Scale, crateSideLenght * Scale);
+		double actualCenterX = center.m_x;
+		double actualCenterY = center.m_y;
+		int crateSideLenght = (sin(45) * abs(distance));
 
-		if(barcodeBox.width > 0 && barcodeBox.height > 0 &&
-				barcodeBox.x > 0 && barcodeBox.y > 0){
+		if(zoom){
+			actualCenterX = actualCenterX * LargestScale;
+			actualCenterY = actualCenterY * LargestScale ;
+			crateSideLenght = crateSideLenght * LargestScale;
+
+			actualCenterX += zoomX;
+			actualCenterY += zoomY;
+		}
+
+		actualCenterX *= Scale;
+		actualCenterY *= Scale;
+		crateSideLenght *= Scale;
+
+		cv::Mat original = (cv::imread((std::string)currentImagePath.ToAscii()));
+		cv::circle(original, cv::Point(actualCenterX, actualCenterY), 3, cv::Scalar(255,255,255), 3);
+		cv::imshow("ORIGINAL + DOT", original);
+		cv::waitKey(100);
+
+		cv::Rect barcodeBox(actualCenterX - (crateSideLenght/2.0), actualCenterY - (crateSideLenght/2.0), crateSideLenght + 5, crateSideLenght + 5);
+/*
+		if(barcodeBox.width > 0 && barcodeBox.height > 0 &&	barcodeBox.x > 0 && barcodeBox.y > 0){
 
 			cv::Mat barcode = (cv::imread((std::string)currentImagePath.ToAscii()))(barcodeBox);
 
 			DetectBarcode detector;
 			detector.detect(barcode, result);
+			imshow("QRCODE", barcode);
+			cv::waitKey(1000);
 
-			if(result != ""){
-				return result;
-			}
-
-			cv::Mat rotationMatrix = cv::getRotationMatrix2D( cv::Point(barcode.cols/2, barcode.rows/2), (angle / (double)M_PI) * 180, 1.0 );
-
-			cv::Mat temp = barcode.clone();
-			cv::warpAffine( temp, barcode, rotationMatrix, barcode.size() );
-			temp.release();
-
-			detector.detect(barcode, result);
-		}
+		}*/
 	}
-
 	return result;
 }
 
@@ -479,6 +489,7 @@ CrateAppImpl::CrateAppImpl(wxWindow* parent, wxWindowID id,
 	CrateLineRDB->SetValue(true);
 
 	Scale = 0;
+	LargestScale = 1;
 
 	QRCorner = wxPoint(0, 0);
 	OppositeCorner = wxPoint(0, 0);
