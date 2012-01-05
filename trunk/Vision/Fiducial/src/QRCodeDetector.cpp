@@ -33,7 +33,7 @@
 #include "QRCodeDetector.h"
 
 QRCodeDetector::QRCodeDetector() {
-    scanner.set_config(zbar::ZBAR_NONE, zbar::ZBAR_CFG_ENABLE, 1);
+    scanner.set_config(zbar::ZBAR_QRCODE, zbar::ZBAR_CFG_ENABLE, 1);
 }
 
 QRCodeDetector::~QRCodeDetector() {}
@@ -46,8 +46,6 @@ bool QRCodeDetector::detect(cv::Mat& image, std::string &result) {
 
 		if (amountOfScannedResults) {
 			zbar::Image::SymbolIterator symbol = zbarImage.symbol_begin();
-
-			if(symbol->get_type() != zbar::ZBAR_QRCODE) return false;
 
 			result = symbol->get_data();
 
@@ -69,22 +67,20 @@ void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates, cv
 		if (amountOfScannedResults > 0) {
 			zbar::Image::SymbolIterator it = zbarImage.symbol_begin();
 			for(; it!=zbarImage.symbol_end(); ++it) {
-				if(it->get_type() == zbar::ZBAR_QRCODE) {
-					std::vector<cv::Point2f> points;
-					points.push_back(cv::Point2f(it->get_location_x(1), it->get_location_y(1)));
-					points.push_back(cv::Point2f(it->get_location_x(0), it->get_location_y(0)));
-					points.push_back(cv::Point2f(it->get_location_x(3), it->get_location_y(3)));
+				std::vector<cv::Point2f> points;
+				points.push_back(cv::Point2f(it->get_location_x(1), it->get_location_y(1)));
+				points.push_back(cv::Point2f(it->get_location_x(0), it->get_location_y(0)));
+				points.push_back(cv::Point2f(it->get_location_x(3), it->get_location_y(3)));
 
-					//std::cout << "Before: " << points << std::endl;
+				//std::cout << "Before: " << points << std::endl;
 
-					// Refine to subpixel-percision
-					// TODO: Utilize more corners to improve robustness and percision
-					cv::cornerSubPix(image, points, cv::Size(5,5), cv::Size(-1,-1), criteria);
+				// Refine to subpixel-percision
+				// TODO: Utilize more corners to improve robustness and percision
+				cv::cornerSubPix(image, points, cv::Size(2,2), cv::Size(-1,-1), criteria);
 
-					//std::cout << "After: " << points << std::endl;
+				//std::cout << "After: " << points << std::endl;
 
-					crates.push_back(Crate(it->get_data(), points));
-				}
+				crates.push_back(Crate(it->get_data(), points));
 			}
 		}
 	} catch (std::exception &e) {
