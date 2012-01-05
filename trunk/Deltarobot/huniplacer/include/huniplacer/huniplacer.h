@@ -27,9 +27,6 @@
 // along with huniplacer.  If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 
-
-#pragma once
-
 #include <huniplacer/utils.h>
 #include <huniplacer/crd514_kd_exception.h>
 #include <huniplacer/CRD514_KD.h>

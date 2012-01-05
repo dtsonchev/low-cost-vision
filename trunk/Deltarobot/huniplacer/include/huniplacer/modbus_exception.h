@@ -66,10 +66,10 @@ namespace huniplacer
             {
             }
             
-            const char* what()
-            {
-                return msg.c_str();
-            }
+            virtual const char* what() const throw()
+			{
+				return msg.c_str();
+			}
             
             int get_error_code(void)
             {
