@@ -60,7 +60,7 @@ bool QRCodeDetector::detect(cv::Mat& image, std::string &result) {
 	return true;
 }
 
-void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates) {
+void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates, cv::TermCriteria criteria) {
 	try {
 		zbar::Image zbarImage(image.cols, image.rows, "Y800", (void*)image.data, image.cols * image.rows);
 
@@ -79,10 +79,7 @@ void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates) {
 
 					// Refine to subpixel-percision
 					// TODO: Utilize more corners to improve robustness and percision
-					cv::TermCriteria term;
-					term.epsilon = 0.001;
-					term.type = cv::TermCriteria::EPS;
-					cv::cornerSubPix(image, points, cv::Size(5,5), cv::Size(-1,-1), term);
+					cv::cornerSubPix(image, points, cv::Size(5,5), cv::Size(-1,-1), criteria);
 
 					//std::cout << "After: " << points << std::endl;
 

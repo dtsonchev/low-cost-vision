@@ -68,7 +68,8 @@ public:
 	 * @param image the image to detect the code on
 	 * @param crates list of crates
 	 */
-	void detectCrates(cv::Mat& image, std::vector<Crate>& crates);
+	void detectCrates(cv::Mat& image, std::vector<Crate>& crates, cv::TermCriteria criteria =
+			cv::TermCriteria(cv::TermCriteria::EPS | cv::TermCriteria::MAX_ITER, 500, 0.001));
 };
 
 
