@@ -36,10 +36,6 @@
 #include <opencv2/core/core.hpp>
 #include "Crate.h"
 
-// According to calculations the ratio should be 3.6.
-// The current value was derived from trail-and-error.
-#define QR_FID_RATIO 2.6
-
 /**
  * @brief This class can detect barcodes from a Mat object
  */
