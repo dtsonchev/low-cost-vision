@@ -54,8 +54,6 @@ bool QRCodeDetector::detect(cv::Mat& image, std::string &result) {
 		} else {
 			return false;
 		}
-		scanner.recycle_image(zbarImage);
-		zbarImage.set_data(NULL, 0);
 	} catch (std::exception &e) {
 		return false;
 	}
@@ -92,8 +90,6 @@ void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates) {
 				}
 			}
 		}
-		scanner.recycle_image(zbarImage);
-		zbarImage.set_data(NULL, 0);
 	} catch (std::exception &e) {
 		return;
 	}
