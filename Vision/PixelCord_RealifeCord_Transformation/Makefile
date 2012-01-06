@@ -12,7 +12,7 @@
 BUILDTYPE           := binary
 
 # name of target binary or library
-TARGET              := cordtrans
+TARGET              := coordinates
 
 # virtual path
 VPATH               :=

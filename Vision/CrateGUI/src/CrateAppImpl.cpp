@@ -135,44 +135,32 @@ void CrateAppImpl::calculateFiducialPoints(){
 	}
 }
 
-std::string CrateAppImpl::getBarcode(int distance, double angle){
+std::string CrateAppImpl::getBarcode(double distance, double angle){
 	std::string result = "";
 
 	if(distance != 0){
 		double actualCenterX = center.m_x;
 		double actualCenterY = center.m_y;
-		int crateSideLenght = (sin(45) * abs(distance));
+		double crateSideLength = sqrt((distance*distance) / 2.0);
 
 		if(zoom){
 			actualCenterX = actualCenterX * LargestScale;
-			actualCenterY = actualCenterY * LargestScale ;
-			crateSideLenght = crateSideLenght * LargestScale;
-
-			actualCenterX += zoomX;
-			actualCenterY += zoomY;
+			actualCenterY = actualCenterY * LargestScale;
+			crateSideLength = crateSideLength * LargestScale;
+			actualCenterX += zoomX* Scale;
+			actualCenterY += zoomY* Scale;
+		}else{
+			actualCenterX *= Scale;
+			actualCenterY *= Scale;
+			crateSideLength *= Scale;
 		}
+		cv::Rect barcodeBox(actualCenterX - (crateSideLength/2.0), actualCenterY - (crateSideLength/2.0), crateSideLength + 5, crateSideLength + 5);
 
-		actualCenterX *= Scale;
-		actualCenterY *= Scale;
-		crateSideLenght *= Scale;
-
-		cv::Mat original = (cv::imread((std::string)currentImagePath.ToAscii()));
-		cv::circle(original, cv::Point(actualCenterX, actualCenterY), 3, cv::Scalar(255,255,255), 3);
-		cv::imshow("ORIGINAL + DOT", original);
-		cv::waitKey(100);
-
-		cv::Rect barcodeBox(actualCenterX - (crateSideLenght/2.0), actualCenterY - (crateSideLenght/2.0), crateSideLenght + 5, crateSideLenght + 5);
-/*
-		if(barcodeBox.width > 0 && barcodeBox.height > 0 &&	barcodeBox.x > 0 && barcodeBox.y > 0){
-
+		if(barcodeBox.width > 0 && barcodeBox.height > 0 && barcodeBox.x > 0 && barcodeBox.y > 0){
 			cv::Mat barcode = (cv::imread((std::string)currentImagePath.ToAscii()))(barcodeBox);
-
 			DetectBarcode detector;
 			detector.detect(barcode, result);
-			imshow("QRCODE", barcode);
-			cv::waitKey(1000);
-
-		}*/
+		}
 	}
 	return result;
 }
@@ -505,7 +493,7 @@ CrateAppImpl::CrateAppImpl(wxWindow* parent, wxWindowID id,
 	zoomY = 0;
 	zoomWidth = 0;
 	zoomHeight = 0;
-	coordinateOffset = 4;
+	coordinateOffset = 2;
 
 	mousePressedInImageField = false;
 

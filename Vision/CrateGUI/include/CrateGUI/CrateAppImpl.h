@@ -130,7 +130,7 @@ private:
 	 * @param angle the angle at which the QR code is rotated at in radialen
 	 * @return returns the barcode
 	 */
-	std::string getBarcode(int distance, double angle);
+	std::string getBarcode(double distance, double angle);
 	/**
 	 * gets the path from the chosen dir
 	 * @param path the path where the chosen dir needs to be substracted from

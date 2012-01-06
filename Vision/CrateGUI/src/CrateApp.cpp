@@ -106,8 +106,7 @@ CrateApp::CrateApp( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	m_staticline21 = new wxStaticLine( OptionScrollWindow, wxID_ANY, wxDefaultPosition, wxSize( -1,1 ), wxLI_HORIZONTAL );
 	bSizer1211->Add( m_staticline21, 0, wxEXPAND | wxALL, 5 );
 
-	ObjectTypeCombo = new wxComboBox( OptionScrollWindow, wxID_ANY, wxT("None"), wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
-	ObjectTypeCombo->Append( wxT("None") );
+	ObjectTypeCombo = new wxComboBox( OptionScrollWindow, wxID_ANY, wxT("Crate"), wxDefaultPosition, wxDefaultSize, 0, NULL, 0 );
 	ObjectTypeCombo->Append( wxT("Crate") );
 	ObjectTypeCombo->Append( wxT("Marker") );
 	ObjectTypeCombo->Append( wxT("QR code") );
