@@ -7,7 +7,7 @@ private:
 	static const float CRATE_WIDTH;
 	static const float CRATE_DEPTH;
 	static const float CRATE_HEIGHT;
-	static const int MAX_NUMBER_OF_OBJECTS;
+	static const int MAX_NUMBER_OF_OBJECTS = 16;
 	static const int GRID_WIDTH = 4;
 	static const int GRID_HEIGHT = 4;
 	static const float DISTANCE_TO_SIDE;
@@ -33,20 +33,3 @@ public:
 };
 
 }
-
-/*
- * GridCrate(
-		std::string name,
-		datatypes::point2f position,
-		float angle,
-		datatypes::size3f size,
-		size_t maxNumberOfObjects,
-		size_t gridWidth,
-		size_t gridHeight,
-		double distanceToSide,
-		double distanceToNext,
-		double radiusOfBallContainer,
-		double bottomThickness);
-
-
- */
