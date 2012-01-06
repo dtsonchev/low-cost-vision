@@ -33,11 +33,14 @@
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/exceptions.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
 
 #include <iostream>
 #include <sstream>
+
+#include <stdexcept>
 
 #ifdef __CDT_PARSER__
 	#define foreach(a, b) for(a : b)
@@ -130,37 +133,41 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 
 	boost::property_tree::ptree pt;
 	boost::property_tree::read_xml(s.str().c_str(), pt);
+	try{
 
-	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.backgroundTypes") ){
-		std::string backgroundType = image.second.get("<xmlattr>.name", "");
+		foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.backgroundTypes") ){
+			std::string backgroundType = image.second.get("<xmlattr>.name", "");
 
-		if (backgroundType != "") {
-			crateApp->AddBackground(
-					wxString(backgroundType.c_str(), wxConvLocal));
+			if (backgroundType != "") {
+				crateApp->AddBackground(
+						wxString(backgroundType.c_str(), wxConvLocal));
+			}
 		}
-	}
 
-	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.lightOptions") ){
-		std::string LightOption = image.second.get("<xmlattr>.name", "");
+		foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.lightOptions") ){
+			std::string LightOption = image.second.get("<xmlattr>.name", "");
 
-		if (LightOption!= "") {
-			crateApp->AddLight(wxString(LightOption.c_str(), wxConvLocal));
+			if (LightOption!= "") {
+				crateApp->AddLight(wxString(LightOption.c_str(), wxConvLocal));
+			}
 		}
-	}
 
-	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.perspectiveOptions") ){
-		std::string PerspectiveOption = image.second.get("<xmlattr>.name", "");
+		foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.perspectiveOptions") ){
+			std::string PerspectiveOption = image.second.get("<xmlattr>.name", "");
 
-		if (PerspectiveOption != "") {
-			crateApp->AddPerspective(
-					wxString(PerspectiveOption.c_str(), wxConvLocal));
+			if (PerspectiveOption != "") {
+				crateApp->AddPerspective(
+						wxString(PerspectiveOption.c_str(), wxConvLocal));
+			}
 		}
-	}
 
-	AddToExistingXMLradioBtn->SetValue(true);
-	crateApp->Start();
-	crateApp->Show(true);
-	this->Show(false);
+		AddToExistingXMLradioBtn->SetValue(true);
+		crateApp->Start();
+		crateApp->Show(true);
+		this->Show(false);
+	}catch(boost::property_tree::ptree_bad_path& ex){
+		MessageField->SetLabel(wxT("Values.xml contains the false values"));
+	}
 }
 
 void ChoiceFrameImpl::LoadImagePaths(const path &itPath, const path &xmlPath) {
