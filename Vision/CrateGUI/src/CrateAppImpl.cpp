@@ -117,8 +117,8 @@ void CrateAppImpl::calculateFiducialPoints(){
 		fid3 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle+M_PI/2.0),
 				center.m_y + (FID_OFFSET*(distance/LINE_LENGTH)) * sin(-angle+M_PI/2.0));
 	}else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
-		float QRCodeLineLength = sqrt(pow(QR_CODE_SIDE, 2) * 2);
-		float MarkerOffset = QRCodeLineLength/2.0;// - sqrt(pow(QR_MARKER_SIDE / 2 , 2) * 2);
+		float QRCodeLineLength = sqrt(pow(QR_CODE_SIDE, 2) * 2.0);
+		float MarkerOffset = QRCodeLineLength/2.0;// - sqrt(pow(QR_MARKER_SIDE / 2.0 , 2) * 2.0);
 		fid1 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle-M_PI/2.0),
 						center.m_y + (MarkerOffset*(distance/QRCodeLineLength)) * sin(-angle-M_PI/2.0));
 		fid2 = wxPoint2DDouble(center.m_x + (MarkerOffset*(distance/QRCodeLineLength)) * cos(-angle),
@@ -268,15 +268,21 @@ void CrateAppImpl::drawCrateAttributes(){
 			dc.SetPen(wxPen(wxColour(255-color, color, color), 2, wxSOLID));
 			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
 
+			// Translate the outer points back to the centers
+			float offset = sqrt(pow(QR_MARKER_SIDE / 2.0 , 2) * 2.0) * (distance/QRCodeLineLength);
+			wxPoint2DDouble f1(fid1.m_x - offset * sin(-angle), fid1.m_y + offset * cos(-angle));
+			wxPoint2DDouble f2(fid2.m_x - offset * cos(-angle), fid2.m_y - offset * sin(-angle));
+			wxPoint2DDouble f3(fid3.m_x + offset * sin(-angle), fid3.m_y - offset * cos(-angle));
+
 			angle += (M_PI/4.0);
-			wxPoint pt1(fid2.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid2.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
-			wxPoint pt2(fid2.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid2.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			wxPoint pt3(fid2.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid2.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			wxPoint pt4(fid2.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid2.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			wxPoint pt1(f2.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f2.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			wxPoint pt2(f2.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f2.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			wxPoint pt3(f2.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f2.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			wxPoint pt4(f2.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f2.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
 
 			dc.DrawLine(pt1, pt2);
 			dc.DrawLine(pt2, pt3);
@@ -285,14 +291,14 @@ void CrateAppImpl::drawCrateAttributes(){
 			dc.DrawLine(pt3, pt1);
 			dc.DrawLine(pt4, pt2);
 
-			pt1 = wxPoint(fid1.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid1.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
-			pt2 = wxPoint(fid1.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid1.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			pt3 = wxPoint(fid1.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid1.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			pt4 = wxPoint(fid1.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid1.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt1 = wxPoint(f1.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f1.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt2 = wxPoint(f1.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f1.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt3 = wxPoint(f1.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f1.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt4 = wxPoint(f1.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f1.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
 
 			dc.DrawLine(pt1, pt2);
 			dc.DrawLine(pt2, pt3);
@@ -301,14 +307,14 @@ void CrateAppImpl::drawCrateAttributes(){
 			dc.DrawLine(pt3, pt1);
 			dc.DrawLine(pt4, pt2);
 
-			pt1 = wxPoint(fid3.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid3.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
-			pt2 = wxPoint(fid3.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
-					fid3.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			pt3 = wxPoint(fid3.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid3.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
-			pt4 = wxPoint(fid3.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
-					fid3.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt1 = wxPoint(f3.m_x + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f3.m_y + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
+			pt2 = wxPoint(f3.m_x - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle),
+					f3.m_y + (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt3 = wxPoint(f3.m_x - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f3.m_y - (length_marker / 2.0) * cos(-angle) - (length_marker / 2.0) * sin(-angle));
+			pt4 = wxPoint(f3.m_x + (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle),
+					f3.m_y - (length_marker / 2.0) * cos(-angle) + (length_marker / 2.0) * sin(-angle));
 
 			dc.DrawLine(pt1, pt2);
 			dc.DrawLine(pt2, pt3);
