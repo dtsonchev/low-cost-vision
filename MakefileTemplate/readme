@@ -168,7 +168,7 @@ Environment variable. Contains the path to the generic makefile
 VI.   Building with rosmake
 ######################################################################
 
-If you have a ros project that builds with rosmake and uses a LCV 
+If you have a ros project that builds with rosmake and uses an LCV 
 library project then you have to add soms lines to your CMakeLists.txt.
 
 First start building your LCV library project(s).
