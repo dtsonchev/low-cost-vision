@@ -35,6 +35,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/foreach.hpp>
+#include <boost/filesystem.hpp>
 #include <imageMetaData/Types.hpp>
 #include <imageMetaData/Tools.hpp>
 
@@ -52,12 +53,15 @@ std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string path,
 	using std::map;
 	using boost::property_tree::ptree;
 
+	std::string base = boost::filesystem::path(path).parent_path().string();
+	if(base.empty()) base = ".";
+
 	vector<ImageMD> md;
 	ptree pt;
 
 	read_xml(path, pt);
 	foreach(ptree::value_type &img, pt.get_child(rootTag)){
-		ImageMD imd(img.second.get<string>("<xmlattr>.path"));
+		ImageMD imd(base + img.second.get<string>("<xmlattr>.path"));
 
 		foreach(ptree::value_type &img_child, img.second) {
 			if(img_child.first == "category") {
