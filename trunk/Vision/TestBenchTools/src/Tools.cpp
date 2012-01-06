@@ -92,18 +92,21 @@ imageMetaData::AnyType imageMetaData::AnyTypeFromString(std::string str){
 	stringstream ss;
 	ss << str;
 
-	// Check for integer
-	int i;
-	ss >> i;
-	if(!ss.fail()){
-		return AnyType(i);
-	}
-
-	// Check for double
-	double d;
-	ss >> d;
-	if(!ss.fail()){
-		return AnyType(d);
+	// If string contains no decimal point
+	if(str.find_first_of('.') == std::string::npos){
+		// Check for integer
+		int i;
+		ss >> i;
+		if(!ss.fail()){
+			return AnyType(i);
+		}
+	} else {
+		// Check for double
+		double d;
+		ss >> d;
+		if(!ss.fail()){
+			return AnyType(d);
+		}
 	}
 
 	// Otherwise it must be a string
