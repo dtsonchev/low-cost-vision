@@ -33,7 +33,7 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := opencv
+PKGCONF_LIBRARIES   := opencv zbar
 
 # libraries that are linked against with '-l'
 LIBRARIES           := boost_system boost_filesystem

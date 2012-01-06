@@ -41,6 +41,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include "FiducialDetector.h"
 #include "CrateDetector.h"
+#include "QRCodeDetector.h"
 #include "Crate.h"
 
 
@@ -51,7 +52,7 @@
 #endif
 
 typedef double RESULT_TYPE;
-#define MAX_DEVIATION 0.1
+#define MAX_DEVIATION 10
 #define MAX_RANGE 10
 
 using namespace std;
@@ -73,42 +74,54 @@ int main(int argc, char** argv){
 
         // Create a container for storing the result per image.
         // Here we use a double as result, but this can be anything
-        map<string, RESULT_TYPE> imgResults;
+        map<string, RESULT_TYPE> fidResults;
+        map<string, RESULT_TYPE> qrResults;
         // Create a container for storing the categories and their results
-        CategoriesResults catsResults;
+        CategoriesResults fidCats;
+        CategoriesResults qrCats;
 
         // The vision algorithm
         FiducialDetector fidDetector;
         CrateDetector crateDetector;
-		float totalDistance = 0;
+        QRCodeDetector qrDetector;
 
         // Loop through all the images
         foreach(ImageMD& img, images) {
-                bool success = true;
+			bool fidSuccess = false;
+			bool qrSuccess = false;
+			int qrCount = 0;
+			int fidCount = 0;
 
-                cv::Mat image = cv::imread(img.path, CV_LOAD_IMAGE_GRAYSCALE);
-                if(!image.data) {
-                	cout << "Image " << img.path << " not found! Aborting test..." << endl;
-                	return 1;
-                }
+			cv::Mat image = cv::imread(img.path, CV_LOAD_IMAGE_GRAYSCALE);
+			if(!image.data) {
+				cout << "Image " << img.path << " not found! Aborting test..." << endl;
+				return 1;
+			}
+			cout << "Testing image " << img.path << endl;
 
-                vector<cv::Point2f> points;
-                vector<Crate> crates;
-                fidDetector.detect(image, points);
-                crateDetector.detect(image, crates, points);
+			vector<cv::Point2f> points;
+			vector<Crate> fidCrates;
+			vector<Crate> qrCrates;
+			fidDetector.detect(image, points);
+			crateDetector.detect(image, fidCrates, points);
+			qrDetector.detectCrates(image, qrCrates);
 
-                // Check if all crates were detected
-                if(crates.size() != img.objects.size()) {
-                	success = false;
-                }
-                else {
-					foreach(Properties object, img.objects) {
-						cv::Point2f ptTarget((int)object["x"], (int)object["y"]);
-						float lastDistance = dist(crates[0].rect().center,ptTarget);
-						Crate result = crates[0];
+			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
+			for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) it->draw(image);
+			//cv::imshow("Image", image);
+			//cv::waitKey();
+
+			foreach(Properties object, img.objects) {
+				if(object["type"] == "QR code") {
+					if(!qrCrates.empty()) {
+						qrCount++;
+						qrSuccess = true;
+						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
+						float lastDistance = dist(qrCrates[0].rect().center, ptTarget);
+						Crate result = qrCrates[0];
 
 						// Get the crate closest to the target
-						foreach(Crate crate, crates) {
+						foreach(Crate crate, qrCrates) {
 							float d = dist(crate.rect().center,ptTarget);
 							if(d < lastDistance) {
 								result = crate;
@@ -116,62 +129,144 @@ int main(int argc, char** argv){
 							}
 						}
 
-						vector<cv::Point2f> points = result.points();
 						vector<cv::Point2f> targetPoints;
-						targetPoints.push_back(cv::Point2f((int)object["fid1_x"], (int)object["fid1_y"]));
-						targetPoints.push_back(cv::Point2f((int)object["fid2_x"], (int)object["fid2_y"]));
-						targetPoints.push_back(cv::Point2f((int)object["fid3_x"], (int)object["fid3_y"]));
+						targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
+						targetPoints.push_back(cv::Point2f((double)object["marker2.x"], (double)object["marker2.y"]));
+						targetPoints.push_back(cv::Point2f((double)object["marker3.x"], (double)object["marker3.y"]));
+						float totalDistance = 0;
 
 						for(int i=0; i<3; i++) {
-							float d = dist(points[i], targetPoints[i]);
+							float d = dist(result.points[i], targetPoints[i]);
 							if(d > MAX_DEVIATION) {
-								success = false;
+								qrSuccess = false;
 							}
 							totalDistance += d;
 						}
+
+						qrResults[img.path] += totalDistance / 3.0;
 					}
-                }
+					else {
+						qrSuccess = false;
+						qrResults[img.path] = -1.0;
+					}
+				}
+				else if(object["type"] == "Crate") {
+					if(!fidCrates.empty()) {
+						fidCount++;
+						fidSuccess = true;
+						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
+						float lastDistance = dist(fidCrates[0].rect().center, ptTarget);
+						Crate result = fidCrates[0];
 
-				imgResults[img.path] = totalDistance / (3 * crates.size());
+						// Get the crate closest to the target
+						foreach(Crate crate, fidCrates) {
+							float d = dist(crate.rect().center,ptTarget);
+							if(d < lastDistance) {
+								result = crate;
+								lastDistance = d;
+							}
+						}
 
-                // Store the results in the categories container
-                foreach(Category c, img.categories) {
-                        if(success){
-                                // Increment number of correct images in category
-                                catsResults[c.first][c.second].first++;
-                        }
-                        // Increment total number images in category
-                        catsResults[c.first][c.second].second++;
-                }
+						vector<cv::Point2f> targetPoints;
+						targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
+						targetPoints.push_back(cv::Point2f((double)object["fid2.x"], (double)object["fid2.y"]));
+						targetPoints.push_back(cv::Point2f((double)object["fid3.x"], (double)object["fid3.y"]));
+						float totalDistance = 0;
+
+						for(int i=0; i<3; i++) {
+							float d = dist(result.points[i], targetPoints[i]);
+							if(d > MAX_DEVIATION) {
+								fidSuccess = false;
+							}
+							totalDistance += d;
+						}
+
+						fidResults[img.path] += totalDistance / 3.0;
+					}
+					else {
+						fidSuccess = false;
+						fidResults[img.path] = -1.0;
+					}
+				}
+			}
+
+			if(fidCount != 0) fidResults[img.path] /= fidCount;
+			// Store the results in the categories container
+			foreach(Category c, img.categories) {
+				if(fidSuccess){
+					// Increment number of correct images in category
+					fidCats[c.first][c.second].first++;
+				}
+				// Increment total number images in category
+				fidCats[c.first][c.second].second++;
+			}
+
+			if(qrCount != 0) qrResults[img.path] /= qrCount;
+			// Store the results in the categories container
+			foreach(Category c, img.categories) {
+				if(qrSuccess){
+					// Increment number of correct images in category
+					qrCats[c.first][c.second].first++;
+				}
+				// Increment total number images in category
+				qrCats[c.first][c.second].second++;
+			}
         }
 
 		//========================================================================
 		// Create the report
 		//========================================================================
-        Report r("FiducialDetector report");
+        cout << "Writing report..." << endl;
+        Report r("Fiducial report");
+        typedef pair<string, RESULT_TYPE> imgResult;
+
+        /* Fiducial */
 
         // Put the result of each image in a ReportList
-        ReportList* allResults = new ReportList("Fiducial results", 2, STRING, DOUBLE);
-        typedef pair<string, RESULT_TYPE> imgResult;
-        foreach(imgResult imres, imgResults) {
-                allResults->appendRow(imres.first, imres.second);
+        ReportList* fidList = new ReportList("Fiducial results", 2, STRING, DOUBLE);
+        foreach(imgResult imres, fidResults) {
+        	fidList->appendRow(imres.first, imres.second);
         }
-        allResults->setColumnNames("Image path", "Result");
-        r.addField(allResults);
+        fidList->setColumnNames("Image path", "Fiducial result");
+        r.addField(fidList);
 
         // Create a histogram of the results
-        ReportHistogram* his = new ReportHistogram("Histogram", getAllValues(imgResults), 10, 10);
-        his->setColumnNames("Range", "Correct images");
-        r.addField(his);
+        ReportHistogram* fidHis = new ReportHistogram("Histogram", getAllValues(fidResults), 10, 10);
+        fidHis->setColumnNames("Range", "Correct fiducial images");
+        r.addField(fidHis);
 
         // Add all categories and their results to the main report
-        foreach(CategoryResults cr, catsResults) {
+        foreach(CategoryResults cr, fidCats) {
+                CategoryOverview* cat = new CategoryOverview(cr);
+                cat->setColumnNames("Category", "Correct images", "Percentage correct");
+                r.addField(cat);
+        }
+
+        /* QR Code */
+
+        // Put the result of each image in a ReportList
+        ReportList* qrList = new ReportList("QRCode results", 2, STRING, DOUBLE);
+        foreach(imgResult imres, qrResults) {
+        	qrList->appendRow(imres.first, imres.second);
+        }
+        qrList->setColumnNames("Image path", "QRCode result");
+        r.addField(qrList);
+
+        // Create a histogram of the results
+        ReportHistogram* qrHis = new ReportHistogram("Histogram", getAllValues(qrResults), 10, 10);
+        qrHis->setColumnNames("Range", "Correct QRCode images");
+        r.addField(qrHis);
+
+        // Add all categories and their results to the main report
+        foreach(CategoryResults cr, qrCats) {
                 CategoryOverview* cat = new CategoryOverview(cr);
                 cat->setColumnNames("Category", "Correct images", "Percentage correct");
                 r.addField(cat);
         }
 
         r.saveHTML("results.html");
+
+        cout << "Fiducial testbench done" << endl;
 
         return 0;
 }
