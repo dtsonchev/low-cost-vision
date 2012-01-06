@@ -140,7 +140,7 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 		}
 	}
 
-	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.LightOptions") ){
+	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.lightOptions") ){
 		std::string LightOption = image.second.get("<xmlattr>.name", "");
 
 		if (LightOption!= "") {
@@ -148,7 +148,7 @@ void ChoiceFrameImpl::OnOK(wxMouseEvent& event) {
 		}
 	}
 
-	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.PerspectiveOptions") ){
+	foreach( boost::property_tree::ptree::value_type& image, pt.get_child("values.perspectiveOptions") ){
 		std::string PerspectiveOption = image.second.get("<xmlattr>.name", "");
 
 		if (PerspectiveOption != "") {
