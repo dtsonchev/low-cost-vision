@@ -48,7 +48,10 @@ namespace datatypes {
 			 * contains the y value of the point
 			 */
 			T y;
-
+			/**
+			 * default constructor
+			 */
+			point2(void) {}
 			/**
 			 * constructor to make a point at a specific location
 			 * @param x the x value of the point

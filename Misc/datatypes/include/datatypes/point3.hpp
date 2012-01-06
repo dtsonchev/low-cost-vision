@@ -41,8 +41,9 @@ namespace datatypes
         public:
             T x, y, z;
 
+            point3(void) { }
             point3(T x, T y, T z) : x(x), y(y), z(z) { }
-            ~point3() { }
+            ~point3(void) { }
             
             point3 offset(point3<T>& p);
             

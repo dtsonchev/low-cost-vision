@@ -39,7 +39,8 @@ namespace datatypes
         public:
             T width , depth , height;
 
-            size3(T width, T depth, T height) : width(width), height(height), depth(depth) { }
+			size3(void) { }
+            size3(T width, T depth, T height) : width(width), depth(depth), height(height) { }
             ~size3() { }
             
 

@@ -42,7 +42,6 @@ public:
 protected:
 	Crate(std::string name, datatypes::point2f position, float angle, datatypes::size3f size, size_t maxNumberOfObjects);
 
-private:
 	std::string name;
 	datatypes::point2f position;
 	float angle;
