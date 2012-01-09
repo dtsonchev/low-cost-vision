@@ -249,8 +249,7 @@ void CrateAppImpl::drawCrateAttributes(){
 		}else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
 			wxPaintDC dc(ImageField);
 			dc.SetPen(wxPen(wxColour(color, color, color), 2, wxSOLID));
-			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
-			dc.DrawLine(QRCorner, OppositeCorner);
+			dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));dc.DrawLine(QRCorner + wxPoint(coordinateOffset, coordinateOffset), OppositeCorner + wxPoint(coordinateOffset, coordinateOffset));
 
 			double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
 			double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
