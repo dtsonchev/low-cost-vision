@@ -51,7 +51,6 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-typedef double RESULT_TYPE;
 #define MAX_DEVIATION 5
 #define MAX_RANGE 5
 
@@ -74,11 +73,18 @@ int main(int argc, char** argv){
 
         // Create a container for storing the result per image.
         // Here we use a double as result, but this can be anything
-        map<string, RESULT_TYPE> fidResults;
-        map<string, RESULT_TYPE> qrResults;
+        map<string, double> fidResults;
+        map<string, double> qrResults;
+        map<string, double> calibResults;
+
+        map<string, int> fidCounts;
+        map<string, int> qrCounts;
+        map<string, int> calibCounts;
+
         // Create a container for storing the categories and their results
         CategoriesResults fidCats;
         CategoriesResults qrCats;
+        CategoriesResults calibCats;
 
         // The vision algorithm
         FiducialDetector fidDetector;
@@ -89,8 +95,10 @@ int main(int argc, char** argv){
         foreach(ImageMD& img, images) {
 			bool fidSuccess = false;
 			bool qrSuccess = false;
-			int qrCount = 0;
-			int fidCount = 0;
+			bool calibSuccess = false;
+			fidCounts[img.path] = 0;
+			qrCounts[img.path] = 0;
+			calibCounts[img.path] = 0;
 
 			cv::Mat image = cv::imread(img.path, CV_LOAD_IMAGE_GRAYSCALE);
 			if(!image.data) {
@@ -100,10 +108,11 @@ int main(int argc, char** argv){
 			cout << "Testing image " << img.path << endl;
 
 			vector<cv::Point2f> points;
+			vector<cv::Point2f> calib;
 			vector<Crate> fidCrates;
 			vector<Crate> qrCrates;
 			fidDetector.detect(image, points);
-			crateDetector.detect(image, points, fidCrates);
+			crateDetector.detect(image, points, fidCrates, &calib);
 			qrDetector.detectCrates(image, qrCrates);
 
 			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
@@ -114,7 +123,7 @@ int main(int argc, char** argv){
 			foreach(Properties object, img.objects) {
 				if(object["type"] == "QR code") {
 					if(!qrCrates.empty()) {
-						qrCount++;
+						qrCounts[img.path]++;
 						qrSuccess = true;
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(qrCrates[0].rect().center, ptTarget);
@@ -152,7 +161,7 @@ int main(int argc, char** argv){
 				}
 				else if(object["type"] == "Crate") {
 					if(!fidCrates.empty()) {
-						fidCount++;
+						fidCounts[img.path]++;
 						fidSuccess = true;
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(fidCrates[0].rect().center, ptTarget);
@@ -188,9 +197,33 @@ int main(int argc, char** argv){
 						fidResults[img.path] = -1.0;
 					}
 				}
+				else if(object["type"] == "Marker") {
+					if(!calib.empty()) {
+						calibCounts[img.path]++;
+						calibSuccess = true;
+						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
+						float lastDistance = dist(calib[0], ptTarget);
+						cv::Point2f result = calib[0];
+
+						// Get the crate closest to the target
+						foreach(cv::Point2f point, calib) {
+							float d = dist(point,ptTarget);
+							if(d < lastDistance) {
+								result = point;
+								lastDistance = d;
+							}
+						}
+
+						calibResults[img.path] += dist(result, ptTarget);
+					}
+					else {
+						calibSuccess = false;
+						calibResults[img.path] = -1.0;
+					}
+				}
 			}
 
-			if(fidCount != 0) fidResults[img.path] /= fidCount;
+			if(fidCounts[img.path] != 0) fidResults[img.path] /= fidCounts[img.path];
 			// Store the results in the categories container
 			foreach(Category c, img.categories) {
 				if(fidSuccess){
@@ -201,7 +234,7 @@ int main(int argc, char** argv){
 				fidCats[c.first][c.second].second++;
 			}
 
-			if(qrCount != 0) qrResults[img.path] /= qrCount;
+			if(qrCounts[img.path] != 0) qrResults[img.path] /= qrCounts[img.path];
 			// Store the results in the categories container
 			foreach(Category c, img.categories) {
 				if(qrSuccess){
@@ -211,6 +244,18 @@ int main(int argc, char** argv){
 				// Increment total number images in category
 				qrCats[c.first][c.second].second++;
 			}
+
+			if(calibCounts[img.path] != 0) calibResults[img.path] /= calibCounts[img.path];
+			if(calibCounts[img.path] < 3) calibSuccess = false;
+			// Store the results in the categories container
+			foreach(Category c, img.categories) {
+				if(calibSuccess){
+					// Increment number of correct images in category
+					calibCats[c.first][c.second].first++;
+				}
+				// Increment total number images in category
+				calibCats[c.first][c.second].second++;
+			}
         }
 
 		//========================================================================
@@ -218,7 +263,8 @@ int main(int argc, char** argv){
 		//========================================================================
         cout << "Writing report..." << endl;
         Report r("Fiducial report");
-        typedef pair<string, RESULT_TYPE> imgResult;
+        typedef pair<string, double> imgResult;
+        typedef pair<string, int> imgCount;
 
         /* Fiducial */
 
@@ -229,6 +275,15 @@ int main(int argc, char** argv){
         }
         fidList->setColumnNames("Image path", "Mean deviation");
         r.addField(fidList);
+
+        // Put the count of each image in a ReportList
+        ReportList* fidCount = new ReportList("Fiducial counts", 2, STRING, INT);
+        foreach(imgCount imres, fidCounts) {
+        	fidCount->appendRow(imres.first, imres.second);
+        }
+        fidCount->setColumnNames("Image path", "Crate count");
+        r.addField(fidCount);
+
 
         // Create a histogram of the results
         ReportHistogram* fidHis = new ReportHistogram("Fiducial histogram", getAllValues(fidResults), MAX_RANGE*2, MAX_RANGE);
@@ -252,6 +307,14 @@ int main(int argc, char** argv){
         qrList->setColumnNames("Image path", "Mean deviation");
         r.addField(qrList);
 
+        // Put the count of each image in a ReportList
+        ReportList* qrCount = new ReportList("QRCode counts", 2, STRING, INT);
+        foreach(imgCount imres, qrCounts) {
+        	qrCount->appendRow(imres.first, imres.second);
+        }
+        qrCount->setColumnNames("Image path", "Crate count");
+        r.addField(qrCount);
+
         // Create a histogram of the results
         ReportHistogram* qrHis = new ReportHistogram("QRCode histogram", getAllValues(qrResults), MAX_RANGE*2, MAX_RANGE);
         qrHis->setColumnNames("Deviation range", "Images with deviation");
@@ -259,6 +322,36 @@ int main(int argc, char** argv){
 
         // Add all categories and their results to the main report
         foreach(CategoryResults cr, qrCats) {
+                CategoryOverview* cat = new CategoryOverview(cr);
+                cat->setColumnNames("Category", "Correct images", "Percentage correct");
+                r.addField(cat);
+        }
+
+        /* Calibration marker */
+
+        // Put the result of each image in a ReportList
+        ReportList* calibList = new ReportList("Calibration results", 2, STRING, DOUBLE);
+        foreach(imgResult imres, calibResults) {
+        	calibList->appendRow(imres.first, imres.second);
+        }
+        calibList->setColumnNames("Image path", "Mean deviation");
+        r.addField(calibList);
+
+        // Put the count of each image in a ReportList
+        ReportList* calibCount = new ReportList("Calibration counts", 2, STRING, INT);
+        foreach(imgCount imres, calibCounts) {
+        	calibCount->appendRow(imres.first, imres.second);
+        }
+        calibCount->setColumnNames("Image path", "Marker count");
+        r.addField(calibCount);
+
+        // Create a histogram of the results
+        ReportHistogram* calibHis = new ReportHistogram("Calibration histogram", getAllValues(calibResults), MAX_RANGE*2, MAX_RANGE);
+        calibHis->setColumnNames("Deviation range", "Images with deviation");
+        r.addField(calibHis);
+
+        // Add all categories and their results to the main report
+        foreach(CategoryResults cr, calibCats) {
                 CategoryOverview* cat = new CategoryOverview(cr);
                 cat->setColumnNames("Category", "Correct images", "Percentage correct");
                 r.addField(cat);
