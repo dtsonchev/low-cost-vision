@@ -141,7 +141,7 @@ void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
         mousePressedInImageField = true;
 
         if(CrateLineRDB->GetValue() || QRCodeCornerRDB->GetValue()){
-                QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                QRCorner = event.GetPosition();
                 std::stringstream coordinate;
                 if(!zoom){
                         coordinate << "(" << (int)(QRCorner.x * Scale) << ", " << (int)(QRCorner.y * Scale) << ")";
@@ -150,7 +150,7 @@ void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
                 }
                 QRCodeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(OppositeCornerRDB->GetValue()){
-                OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                OppositeCorner = event.GetPosition();
                 std::stringstream coordinate;
                 if(!zoom){
                         coordinate << "(" << (int)(OppositeCorner.x * Scale) << ", " << (int)(OppositeCorner.y * Scale) << ")";
@@ -159,8 +159,8 @@ void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
                 }
                 OppositeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(ZoomBox_radioBtn->GetValue()){
-                zoomX = event.GetX() + coordinateOffset;
-                zoomY = event.GetY() + coordinateOffset;
+                zoomX = event.GetX();
+                zoomY = event.GetY();
                 zoomWidth = 0;
                 zoomHeight = 0;
         }
@@ -173,7 +173,7 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
         mousePressedInImageField = false;
 
         if(QRCodeCornerRDB->GetValue()){
-                QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                QRCorner = event.GetPosition();
                 std::stringstream coordinate;
                 if(!zoom){
                         coordinate << "(" << (int)(QRCorner.x * Scale) << ", " << (int)(QRCorner.y * Scale) << ")";
@@ -182,7 +182,7 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
                 }
                 QRCodeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(CrateLineRDB->GetValue() || OppositeCornerRDB->GetValue()){
-                OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                OppositeCorner = event.GetPosition();
                 std::stringstream coordinate;
                 if(!zoom){
                         coordinate << "(" << (int)(OppositeCorner.x * Scale) << ", " << (int)(OppositeCorner.y * Scale) << ")";
@@ -191,8 +191,8 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
                 }
                 OppositeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(ZoomBox_radioBtn->GetValue()){
-                zoomWidth = event.GetX() + coordinateOffset - zoomX;
-                zoomHeight = event.GetY() + coordinateOffset - zoomY;
+                zoomWidth = event.GetX() - zoomX;
+                zoomHeight = event.GetY() - zoomY;
 
                 if(zoomWidth < 0) {
                         zoomX += zoomWidth;
@@ -212,13 +212,13 @@ void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
 void CrateAppImpl::OnImageMotion(wxMouseEvent& event){
         if(mousePressedInImageField){
                 if(QRCodeCornerRDB->GetValue()){
-                        QRCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                        QRCorner = event.GetPosition();
                 }else if(CrateLineRDB->GetValue() || OppositeCornerRDB->GetValue()){
-                        OppositeCorner = event.GetPosition() + wxPoint(coordinateOffset, coordinateOffset);
+                        OppositeCorner = event.GetPosition();
                 }else if(ZoomBox_radioBtn->GetValue()){
 
-                        zoomWidth = event.GetX() + coordinateOffset - zoomX;
-                        zoomHeight = event.GetY() + coordinateOffset - zoomY;
+                        zoomWidth = event.GetX() - zoomX;
+                        zoomHeight = event.GetY() - zoomY;
                 }
 
                 calculateFiducialPoints();
