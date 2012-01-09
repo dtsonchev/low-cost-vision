@@ -50,8 +50,8 @@
 #define LINE_LENGTH 7.1
 #define FID_OFFSET 2.25
 #define FID_RADIUS 0.75
-#define QR_MARKER_SIDE 0.8
-#define QR_CODE_SIDE 2.9
+#define QR_MARKER_SIDE 0.7
+#define QR_CODE_SIDE 2.8
 
 /**
  * This class is the implementation of the GUI functions
