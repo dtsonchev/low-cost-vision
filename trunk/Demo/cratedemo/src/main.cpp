@@ -3,5 +3,6 @@
 #include <iostream>
 
 int main(int argc, char** argv) {
+	std::cout << "flinterdun" << std::endl;
 	return 0;
 }

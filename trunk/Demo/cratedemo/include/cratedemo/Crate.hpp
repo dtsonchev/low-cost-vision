@@ -1,3 +1,31 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        cratedemo
+// File:           Crate.hpp
+// Description:    Base class for crates.
+// Author:         Wouter Langerak & Lukas Vermond
+// Notes:
+//
+// License:        GNU GPL v3
+//
+// This file is part of cratedemo.
+//
+// cratedemo is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// cratedemo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with cratedemo.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 #pragma once
 #include <string.h>
 #include <string>
@@ -7,6 +35,9 @@
 #include <datatypes/size3.hpp>
 
 namespace cratedemo {
+/**
+ * Base class for crates.
+ */
 class Crate {
 
 public:
@@ -42,7 +73,7 @@ protected:
 
 	std::string name;
 	datatypes::point2f position;
-	float angle;
+	float angle; //Rotation in centerpoint
 	datatypes::size3f size;
 	size_t maxNumberOfObjects;
 	CrateContent** data;
