@@ -1,3 +1,4 @@
+
 //******************************************************************************
 //
 //                 Low Cost Vision
@@ -32,6 +33,9 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+
+#include <iostream>
+#include <string>
 
 #ifdef __CDT_PARSER__
 #define foreach(a, b) for(a : b)
@@ -95,16 +99,16 @@ void CrateAppImpl::OnSizeChange(wxSizeEvent& event){
 void CrateAppImpl::OnObjectType( wxCommandEvent& event ){
         CrateLineRDB->SetValue(true);
         if(ObjectTypeCombo->GetValue() == wxT("QR code")){
-                QRCodeCornerText->SetLabel(wxT("Bottom right"));
-                OppositeCornerText->SetLabel(wxT("Top Left"));
+        	QRCodeCornerRDB->SetLabel(wxT("Bottom right"));
+        	OppositeCornerRDB->SetLabel(wxT("Top Left"));
 
         }else if(ObjectTypeCombo->GetValue() == wxT("Crate")){
-                QRCodeCornerText->SetLabel(wxT("QR code corner"));
-                OppositeCornerText->SetLabel(wxT("Opposite corner"));
+        	QRCodeCornerRDB->SetLabel(wxT("QR code corner"));
+        	OppositeCornerRDB->SetLabel(wxT("Opposite corner"));
 
         }else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
-                QRCodeCornerText->SetLabel(wxT("Center point"));
-                OppositeCornerText->SetLabel(wxT("Marker edge"));
+        	QRCodeCornerRDB->SetLabel(wxT("Center point"));
+        	OppositeCornerRDB->SetLabel(wxT("Marker edge"));
 
         }
 }
@@ -305,12 +309,23 @@ void CrateAppImpl::OnOriginal(wxCommandEvent& event) {
 
         zoom = false;
 
+        zoomX = 0;
+        zoomY = 0;
+        zoomWidth = 0;
+        zoomHeight = 0;
+
         ZoomButton->Enable(true);
         ZoomBox_radioBtn->Enable(true);
         OriginalImageButton->Enable(false);
 
         drawCrateAttributes();
         this->Layout();
+}
+std::string CrateAppImpl::DoubleToStringFormatted(double d){
+	std::stringstream ss;
+	ss << std::fixed;
+	ss << std::setprecision (2) << d;
+	return ss.str();
 }
 
 void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
@@ -427,50 +442,51 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
         property->put("<xmlattr>.value", ObjectTypeCombo->GetValue().ToAscii());
         property = &(object.add("property", ""));
         property->put("<xmlattr>.name", "x");
-        property->put("<xmlattr>.value", center.m_x);
+        property->put("<xmlattr>.value", DoubleToStringFormatted(center.m_x));
         property = &(object.add("property", ""));
         property->put("<xmlattr>.name", "y");
-        property->put("<xmlattr>.value", center.m_y);
+        property->put("<xmlattr>.value", DoubleToStringFormatted(center.m_y));
+
 
         if(ObjectTypeCombo->GetValue() == wxT("Crate")){
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid1.x");
-                property->put("<xmlattr>.value", fid1.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid1.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid1.y");
-                property->put("<xmlattr>.value", fid1.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid1.m_y));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid2.x");
-                property->put("<xmlattr>.value", fid2.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid2.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid2.y");
-                property->put("<xmlattr>.value", fid2.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid2.m_y));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid3.x");
-                property->put("<xmlattr>.value", fid3.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid3.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "fid3.y");
-                property->put("<xmlattr>.value", fid3.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid3.m_y));
 
         }else if(ObjectTypeCombo->GetValue() == wxT("QR code")){
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker1.x");
-                property->put("<xmlattr>.value", fid1.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid1.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker1.y");
-                property->put("<xmlattr>.value", fid1.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid1.m_y));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker2.x");
-                property->put("<xmlattr>.value", fid2.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid2.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker2.y");
-                property->put("<xmlattr>.value", fid2.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid2.m_y));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker3.x");
-                property->put("<xmlattr>.value", fid3.m_x);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid3.m_x));
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "marker3.y");
-                property->put("<xmlattr>.value", fid3.m_y);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(fid3.m_y));
         }
 
         if(ObjectTypeCombo->GetValue() != wxT("Marker")){
@@ -480,7 +496,7 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
         }else{
                 property = &(object.add("property", ""));
                 property->put("<xmlattr>.name", "radius");
-                property->put("<xmlattr>.value", sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2)) * Scale);
+                property->put("<xmlattr>.value", DoubleToStringFormatted(sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2)) * Scale));
         }
 
         boost::property_tree::xml_writer_settings<char> w('\t', 1);
@@ -535,8 +551,7 @@ void CrateAppImpl::OnReset(wxCommandEvent& event){
         OppositeCornerLabel->SetLabel(wxT("(000,000)"));
 
         if(currentCrateNumber > 0){
-                foreach(boost::property_tree::ptree::value_type & imageValue,
-                                                pt.get_child("Test_set"))
+                foreach(boost::property_tree::ptree::value_type & imageValue, pt.get_child("Test_set"))
                 {
                         boost::filesystem::path temp = imageValue.second.get("<xmlattr>.path", "");
                         if (temp.leaf() == (*imagePathsIt).leaf()) {
