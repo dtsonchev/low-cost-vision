@@ -121,10 +121,10 @@ CrateApp::CrateApp( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	wxBoxSizer* bSizer48;
 	bSizer48 = new wxBoxSizer( wxHORIZONTAL );
 
-	QRCodeCornerRDB = new wxRadioButton( OptionScrollWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	QRCodeCornerRDB = new wxRadioButton( OptionScrollWindow, wxID_ANY, wxT("QR code corner"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer48->Add( QRCodeCornerRDB, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	QRCodeCornerText = new wxStaticText( OptionScrollWindow, wxID_ANY, wxT("QR code corner"), wxDefaultPosition, wxDefaultSize, 0 );
+	QRCodeCornerText = new wxStaticText( OptionScrollWindow, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
 	QRCodeCornerText->Wrap( -1 );
 	bSizer48->Add( QRCodeCornerText, 1, wxALL|wxEXPAND, 5 );
 
@@ -139,10 +139,10 @@ CrateApp::CrateApp( wxWindow* parent, wxWindowID id, const wxString& title, cons
 	wxBoxSizer* bSizer481;
 	bSizer481 = new wxBoxSizer( wxHORIZONTAL );
 
-	OppositeCornerRDB = new wxRadioButton( OptionScrollWindow, wxID_ANY, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0 );
+	OppositeCornerRDB = new wxRadioButton( OptionScrollWindow, wxID_ANY, wxT("Opposite corner"), wxDefaultPosition, wxDefaultSize, 0 );
 	bSizer481->Add( OppositeCornerRDB, 0, wxALL|wxALIGN_CENTER_VERTICAL, 5 );
 
-	OppositeCornerText = new wxStaticText( OptionScrollWindow, wxID_ANY, wxT("Opposite corner"), wxDefaultPosition, wxDefaultSize, 0 );
+	OppositeCornerText = new wxStaticText( OptionScrollWindow, wxID_ANY, wxT(""), wxDefaultPosition, wxDefaultSize, 0 );
 	OppositeCornerText->Wrap( -1 );
 	bSizer481->Add( OppositeCornerText, 1, wxALL|wxEXPAND, 5 );
 

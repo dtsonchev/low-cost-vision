@@ -39,6 +39,9 @@
 
 #include <wx/geometry.h>
 
+#include <iostream>
+#include <string>
+
 /**
  * Defines used in order to caculate the fiducial locations
  *
@@ -157,6 +160,7 @@ private:
 	 * selects the next image and cals setCurrentImagePath
 	 */
 	void NextImage();
+	std::string DoubleToStringFormatted(double d);
 
 protected:
 

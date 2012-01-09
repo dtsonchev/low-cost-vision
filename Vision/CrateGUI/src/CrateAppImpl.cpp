@@ -106,8 +106,7 @@ void CrateAppImpl::calculateFiducialPoints(){
 
 	double distance = sqrt(pow(double(QRCorner.x - OppositeCorner.x), 2) + pow(double(QRCorner.y - OppositeCorner.y), 2));
 	double angle = atan2(double(QRCorner.y - OppositeCorner.y), double(OppositeCorner.x - QRCorner.x));
-	center = wxPoint2DDouble(QRCorner.x + (distance / 2.0) * cos(-angle),
-			QRCorner.y + (distance / 2.0) * sin(-angle));
+	center = wxPoint2DDouble(QRCorner.x + (distance / 2.0) * cos(-angle), QRCorner.y + (distance / 2.0) * sin(-angle));
 
 	if(ObjectTypeCombo->GetValue() == wxT("Crate")){
 		fid1 = wxPoint2DDouble(center.m_x + (FID_OFFSET*(distance/LINE_LENGTH)) * cos(-angle-M_PI/2.0),
@@ -493,12 +492,16 @@ CrateAppImpl::CrateAppImpl(wxWindow* parent, wxWindowID id,
 	zoomY = 0;
 	zoomWidth = 0;
 	zoomHeight = 0;
-	coordinateOffset = 2;
+	coordinateOffset = 4;
 
 	mousePressedInImageField = false;
 
 	OriginalImageButton->Enable(false);
 	SkipButton->Enable(false);
+
+
+    QRCodeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
+    OppositeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
 }
 
 CrateAppImpl::~CrateAppImpl(){
