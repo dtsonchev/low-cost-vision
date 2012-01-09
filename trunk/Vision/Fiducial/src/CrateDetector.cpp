@@ -33,6 +33,7 @@
 #include <opencv2/features2d/features2d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <vector>
+#include <set>
 
 CrateDetector::CrateDetector(int lowThreshold, int highThreshold) {
 	this->lowThreshold = lowThreshold;
@@ -99,12 +100,14 @@ void CrateDetector::order(std::vector<cv::Point2f>& points) {
 	}
 }
 
-void CrateDetector::detect(const cv::Mat& image, std::vector<Crate>& crates, const std::vector<cv::Point2f>& points) {
+void CrateDetector::detect(const cv::Mat& image, const std::vector<cv::Point2f>& points, std::vector<Crate>& crates, std::vector<cv::Point2f>* leftovers) {
 	cv::Mat canny;
 	cv::Canny(image, canny, lowThreshold, highThreshold);
 
 	std::vector<std::vector<cv::Point> > contours;
 	cv::findContours(canny, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+	std::vector<cv::Point2f> usedPoints;
 
 	for (std::vector<std::vector<cv::Point> >::iterator it = contours.begin();
 			it != contours.end(); ++it) {
@@ -119,6 +122,14 @@ void CrateDetector::detect(const cv::Mat& image, std::vector<Crate>& crates, con
 			order(fiducials);
 			Crate crate(fiducials);
 			crates.push_back(crate);
+			usedPoints.insert(usedPoints.end(), fiducials.begin(), fiducials.end());
 		}
+	}
+
+	for(std::vector<cv::Point2f>::const_iterator it = points.begin();
+		it != points.end(); ++it) {
+		std::vector<cv::Point2f>::iterator used_it = usedPoints.begin();
+		for(; used_it!=usedPoints.end(); ++used_it) if(*it == *used_it) break;
+		if(used_it == usedPoints.end()) leftovers->push_back(*it);
 	}
 }

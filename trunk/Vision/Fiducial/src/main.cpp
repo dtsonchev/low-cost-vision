@@ -77,9 +77,13 @@ void processFid(cv::Mat& image, cv::Mat& debug) {
 
 	if(points.size() > 3) {
 		std::vector<Crate> crates;
-		crateDetector.detect(image, crates, points);
+		std::vector<cv::Point2f> calibration;
+		crateDetector.detect(image, points, crates, &calibration);
 
-		if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+		if(showDebug) {
+			for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+			for(std::vector<cv::Point2f>::iterator it=calibration.begin(); it!=calibration.end(); ++it) cv::circle(debug, *it, 4, cv::Scalar(0,0,0), -1);
+		}
 	}
 	else if(points.size() == 3) {
 		CrateDetector::order(points);

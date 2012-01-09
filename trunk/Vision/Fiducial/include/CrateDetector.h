@@ -67,11 +67,13 @@ public:
 	 *  belonging to each crate into Crate instances. These
 	 *  are added to the crates vector.
 	 *
-	 *	\param crates Output vector for the crates
-	 *  \param points Detected fiducial points
 	 *  \param image Image with the crates
+	 *  \param points Detected fiducial points
+	 *	\param crates Output vector for the crates
+	 *	\param leftovers Optional pointer to output vector
+	 *	                 for the unused points
 	 */
-	void detect(const cv::Mat& image, std::vector<Crate>& crates, const std::vector<cv::Point2f>& points);
+	void detect(const cv::Mat& image, const std::vector<cv::Point2f>& points, std::vector<Crate>& crates, std::vector<cv::Point2f>* leftovers = NULL);
 };
 
 #endif /* CRATEDETECTOR_H_ */
