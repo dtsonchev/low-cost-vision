@@ -5,6 +5,7 @@
 #include <datatypes/point2.hpp>
 #include <datatypes/point3.hpp>
 #include <datatypes/size3.hpp>
+
 namespace cratedemo {
 class Crate {
 
@@ -16,19 +17,16 @@ public:
 	 * @param crateContent Pointer of the to be inputed CrateContent.
 	 */
 	void put(size_t index, CrateContent* crateContent);
-	/**/
+	/**
+	 *
+	 */
 	CrateContent* get(size_t index) const;
 	/**
 	 * Returns the location of the object on index.
 	 * @param index
 	 * @return the location of the object on index.
 	 */
-	virtual datatypes::point3f getCrateContentLocation(size_t index) const =0;
-		/*
-		  if(data[index] == NULL) {
-			throw cratedemo::LocationIsEmptyException();
-		}*/
-
+	virtual datatypes::point3f getCrateContentLocation(size_t index) const = 0;
 	/**
 	 * Remove the content on location index.
 	 * @param index
