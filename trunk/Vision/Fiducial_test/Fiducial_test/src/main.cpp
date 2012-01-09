@@ -52,8 +52,8 @@
 #endif
 
 typedef double RESULT_TYPE;
-#define MAX_DEVIATION 10
-#define MAX_RANGE 10
+#define MAX_DEVIATION 5
+#define MAX_RANGE 5
 
 using namespace std;
 using namespace imageMetaData;
@@ -227,12 +227,12 @@ int main(int argc, char** argv){
         foreach(imgResult imres, fidResults) {
         	fidList->appendRow(imres.first, imres.second);
         }
-        fidList->setColumnNames("Image path", "Fiducial result");
+        fidList->setColumnNames("Image path", "Mean deviation");
         r.addField(fidList);
 
         // Create a histogram of the results
-        ReportHistogram* fidHis = new ReportHistogram("Histogram", getAllValues(fidResults), 10, 10);
-        fidHis->setColumnNames("Range", "Correct fiducial images");
+        ReportHistogram* fidHis = new ReportHistogram("Fiducial histogram", getAllValues(fidResults), MAX_RANGE*2, MAX_RANGE);
+        fidHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(fidHis);
 
         // Add all categories and their results to the main report
@@ -249,12 +249,12 @@ int main(int argc, char** argv){
         foreach(imgResult imres, qrResults) {
         	qrList->appendRow(imres.first, imres.second);
         }
-        qrList->setColumnNames("Image path", "QRCode result");
+        qrList->setColumnNames("Image path", "Mean deviation");
         r.addField(qrList);
 
         // Create a histogram of the results
-        ReportHistogram* qrHis = new ReportHistogram("Histogram", getAllValues(qrResults), 10, 10);
-        qrHis->setColumnNames("Range", "Correct QRCode images");
+        ReportHistogram* qrHis = new ReportHistogram("QRCode histogram", getAllValues(qrResults), MAX_RANGE*2, MAX_RANGE);
+        qrHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(qrHis);
 
         // Add all categories and their results to the main report
