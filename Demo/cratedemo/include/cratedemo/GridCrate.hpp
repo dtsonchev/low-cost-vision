@@ -17,6 +17,7 @@ public:
 		double radiusOfBallContainer,
 		double bottomThickness);
 	datatypes::point3f getCrateContentGripLocation(size_t index);
+
 private:
 	size_t gridWidth;
 	size_t gridHeight;

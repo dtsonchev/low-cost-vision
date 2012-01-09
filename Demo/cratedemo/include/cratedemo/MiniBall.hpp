@@ -61,7 +61,7 @@ public:
 		CrateContent(datatypes::point3f(GRIPPOINT_X,GRIPPOINT_Y,GRIPPOINT_Z), datatypes::size3f(SIZE_WIDTH,SIZE_DEPTH,SIZE_HEIGHT), WEIGHT){
 		this->color = color;
 	}
-	Color::type getColor() { return color;}
+	Color::type getColor() const { return color;}
 	~MiniBall() {}
 };
 }

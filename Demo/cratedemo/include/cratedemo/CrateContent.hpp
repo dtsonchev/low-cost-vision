@@ -56,17 +56,17 @@ public:
 	 * Returns the gripPoint
 	 * @return
 	 */
-	datatypes::point3f getGripPoint() { return gripPoint; }
+	datatypes::point3f getGripPoint() const { return gripPoint; }
 	/**
 	 * Returns the size
 	 * @return
 	 */
-	datatypes::size3f getSize() { return size; }
+	datatypes::size3f getSize() const { return size; }
 	/**
 	 * Returns the size.
 	 * @return
 	 */
-	double getWeight() {return weight; }
+	double getWeight() const {return weight; }
 
 protected:
 	/**
