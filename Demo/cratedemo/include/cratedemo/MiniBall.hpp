@@ -45,7 +45,9 @@ namespace Color {
 		WHITE
 	} type;
 }
-
+/**
+ * Mini balls used in for the demo
+ */
 class MiniBall : public CrateContent {
 private:
 	Color::type color;
@@ -58,9 +60,17 @@ private:
 	static const double WEIGHT = 4.0;
 public:
 	MiniBall(Color::type color) :
+		/**
+		 * Constructor
+		 * @param color
+		 */
 		CrateContent(datatypes::point3f(GRIPPOINT_X,GRIPPOINT_Y,GRIPPOINT_Z), datatypes::size3f(SIZE_WIDTH,SIZE_DEPTH,SIZE_HEIGHT), WEIGHT){
 		this->color = color;
 	}
+	/**
+	 *
+	 * @return color of the miniball
+	 */
 	Color::type getColor() const { return color;}
 	~MiniBall() {}
 };
