@@ -187,7 +187,6 @@ std::string CrateAppImpl::getBarcode(double distance, double angle){
 			if(bounds.y + bounds.height > image.GetHeight()) bounds.height = image.GetHeight() - bounds.y;
 
 			cv::Mat barcode = (cv::imread((std::string)currentImagePath.ToAscii()))(bounds);
-			cv::imshow("barcode", barcode);
 			DetectBarcode detector;
 			detector.detect(barcode, result);
 		}
