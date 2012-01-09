@@ -46,7 +46,7 @@
  * Defines used in order to caculate the fiducial locations
  *
  */
-/////!!!!!!! turn into const static private variables
+//TODO: turn into const static private variables
 #define LINE_LENGTH 7.1
 #define FID_OFFSET 2.25
 #define FID_RADIUS 0.75
