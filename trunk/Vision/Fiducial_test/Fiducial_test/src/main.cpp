@@ -103,7 +103,7 @@ int main(int argc, char** argv){
 			vector<Crate> fidCrates;
 			vector<Crate> qrCrates;
 			fidDetector.detect(image, points);
-			crateDetector.detect(image, fidCrates, points);
+			crateDetector.detect(image, points, fidCrates);
 			qrDetector.detectCrates(image, qrCrates);
 
 			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
