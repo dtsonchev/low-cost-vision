@@ -126,10 +126,12 @@ void CrateDetector::detect(const cv::Mat& image, const std::vector<cv::Point2f>&
 		}
 	}
 
-	for(std::vector<cv::Point2f>::const_iterator it = points.begin();
-		it != points.end(); ++it) {
-		std::vector<cv::Point2f>::iterator used_it = usedPoints.begin();
-		for(; used_it!=usedPoints.end(); ++used_it) if(*it == *used_it) break;
-		if(used_it == usedPoints.end()) leftovers->push_back(*it);
+	if(leftovers != NULL) {
+		for(std::vector<cv::Point2f>::const_iterator it = points.begin();
+			it != points.end(); ++it) {
+			std::vector<cv::Point2f>::iterator used_it = usedPoints.begin();
+			for(; used_it!=usedPoints.end(); ++used_it) if(*it == *used_it) break;
+			if(used_it == usedPoints.end()) leftovers->push_back(*it);
+		}
 	}
 }
