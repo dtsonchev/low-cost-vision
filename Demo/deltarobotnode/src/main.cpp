@@ -67,7 +67,7 @@ bool enableGripper(deltarobot::gripper::Request &req,
 	try
 	{
 		if(req.enabled){
-			grip->grap();
+			grip->grab();
 		} else {
 			grip->release();
 		}

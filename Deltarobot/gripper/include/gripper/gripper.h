@@ -60,7 +60,7 @@ public:
 	/**
 	 * Switches the gripper on
 	 */
-	void grap();
+	void grab();
 	/**
 	 * Releases the gripper
 	 */
