@@ -89,7 +89,7 @@ void gripper::disconnect()
 	}
 }
 
-void gripper::grap()
+void gripper::grab()
 {
 	if(!connected)
 	{

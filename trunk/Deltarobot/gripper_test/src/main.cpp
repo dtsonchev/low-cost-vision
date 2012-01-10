@@ -35,7 +35,7 @@ int main(void)
 {
 		gripper grip("192.168.0.2", 502);
 		grip.connect();
-		grip.grap();
+		grip.grab();
 		usleep(5*1000*1000);
 		grip.release();
 		grip.disconnect();
