@@ -56,10 +56,8 @@ protected:
 	wxComboBox* ObjectTypeCombo;
 	wxRadioButton* CrateLineRDB;
 	wxRadioButton* QRCodeCornerRDB;
-	wxStaticText* QRCodeCornerText;
 	wxStaticText* QRCodeCornerLabel;
 	wxRadioButton* OppositeCornerRDB;
-	wxStaticText* OppositeCornerText;
 	wxStaticText* OppositeCornerLabel;
 	wxStaticLine* m_staticline12;
 	wxStaticText* m_staticText11;

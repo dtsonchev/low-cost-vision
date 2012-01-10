@@ -347,8 +347,7 @@ void CrateAppImpl::drawCrateAttributes(){
 }
 
 void CrateAppImpl::NextImage() {
-
-	currentCrateNumber = 0;
+	currentObjectNumber = 0;
 
 	imagePathsIt++;
 	if (imagePathsIt < imagePaths.end()) {
@@ -357,7 +356,7 @@ void CrateAppImpl::NextImage() {
 		if (XMLOption == Edit) {
 			//Disables/enables the skip button
 			SkipButton->Enable(false);
-			foreach( boost::property_tree::ptree::value_type& tempValue, pt.get_child("Test_set") )
+			foreach( boost::property_tree::ptree::value_type& tempValue, pt.get_child("metadata") )
 			{
 
 				boost::filesystem::path temp = tempValue.second.get("<xmlattr>.path", "");
@@ -460,11 +459,9 @@ void CrateAppImpl::NextImage() {
 		LightingComboBox->Enable(false);
 		NextObjectButton->Enable(false);
 		ZoomBox_radioBtn->Enable(false);
-		QRCodeCornerText->Enable(false);
 		QRCodeCornerLabel->Enable(false);
 		OppositeCornerRDB->Enable(false);
 		BackgroundComboBox->Enable(false);
-		OppositeCornerText->Enable(false);
 		OppositeCornerLabel->Enable(false);
 		PerspectiveComboBox->Enable(false);
 		OriginalImageButton->Enable(false);
@@ -475,7 +472,7 @@ void CrateAppImpl::NextImage() {
 
 void CrateAppImpl::Start(){
 	if (XMLOption == NewXML) {
-		pt.add("Test_set", "");
+		pt.add("metadata", "");
 	}else{
 		if (!boost::filesystem::is_regular_file(xmlPath.string()) || !boost::filesystem::exists(xmlPath.string())) {
 			this->Close(true);
@@ -519,11 +516,12 @@ CrateAppImpl::CrateAppImpl(wxWindow* parent, wxWindowID id,
 	OriginalImageButton->Enable(false);
 	SkipButton->Enable(false);
 
-
-    QRCodeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
-    OppositeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
+    QRCodeCornerLabel->SetLabel(wxString(("(0.00,0.00)"), wxConvLocal));
+    OppositeCornerLabel->SetLabel(wxString(("(0.00,0.00)"), wxConvLocal));
+    QRCodeCornerRDB->SetLabel(wxString(("QR code"), wxConvLocal));
+    OppositeCornerRDB->SetLabel(wxString(("Opposite"), wxConvLocal));
 }
 
 CrateAppImpl::~CrateAppImpl(){
-	this->GetParent()->Show(true);
+	this->GetParent()->Close(true);
 }

@@ -189,7 +189,7 @@ void ChoiceFrameImpl::LoadImagePaths(const path &itPath, const path &xmlPath) {
 					boost::property_tree::ptree pt;
 					boost::property_tree::read_xml(xmlPath.string(), pt);
 
-					foreach( boost::property_tree::ptree::value_type& imageObject, pt.get_child("Test_set") ){
+					foreach( boost::property_tree::ptree::value_type& imageObject, pt.get_child("metadata") ){
 						path temp = imageObject.second.get("<xmlattr>.path", "");
 						if (temp.leaf() == p.leaf()) {
 							match = true;
