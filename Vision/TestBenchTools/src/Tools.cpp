@@ -45,8 +45,7 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string path,
-		std::string rootTag) {
+std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string path) {
 	using std::string;
 	using std::stringstream;
 	using std::vector;
@@ -60,7 +59,7 @@ std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string path,
 	ptree pt;
 
 	read_xml(path, pt);
-	foreach(ptree::value_type &img, pt.get_child(rootTag)){
+	foreach(ptree::value_type &img, pt.get_child("metadata")){
 		ImageMD imd(base + img.second.get<string>("<xmlattr>.path"));
 
 		foreach(ptree::value_type &img_child, img.second) {
