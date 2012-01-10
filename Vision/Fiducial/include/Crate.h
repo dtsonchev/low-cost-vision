@@ -38,11 +38,11 @@ class Crate {
 private:
 	//! Bounding rectangle saved after calling rect()
 	cv::RotatedRect bounds;
+	//! Fiducial points belonging to the crate
+	std::vector<cv::Point2f> points;
 public:
 	//! The crate identifier
 	std::string name;
-	//! Fiducial points belonging to the crate
-	std::vector<cv::Point2f> points;
 
 	/*! \brief The Crate constructor
 	 *
@@ -84,9 +84,24 @@ public:
 	/*! \brief Generate a rotated bounding rectangle
 	 *
 	 *  Generates a RotatedRect that represents the
-	 *  crate.
+	 *  crate. This rectangle is cached for subsequent
+	 *  calls to rect().
 	 */
 	cv::RotatedRect rect();
+
+	/*! \brief Get the fiducial points
+	 *
+	 * Gets a copy of the fiducial points
+	 * that represent the crate.
+	 */
+	std::vector<cv::Point2f> getPoints();
+
+	/*! \brief Set the fiducial points
+	 *
+	 *  Sets the new fiducial points and resets the
+	 *  bounding rectangle.
+	 */
+	void setPoints(std::vector<cv::Point2f>& points);
 
 	/*! \brief Draw the rectangle in the image
 	 *

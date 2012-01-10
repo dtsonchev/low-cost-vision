@@ -190,3 +190,14 @@ void Crate::draw(cv::Mat& image) {
 		cv::putText(image, name, cv::Point(rect.center.x, rect.center.y-20), CV_FONT_HERSHEY_COMPLEX, 1, cv::Scalar(0,0,255), 2);
 	}
 }
+
+void Crate::setPoints(std::vector<cv::Point2f>& newPoints) {
+	this->bounds.size = cv::Size(0,0); // This is enough to force a regeneration
+	this->points.assign(newPoints.begin(), newPoints.begin()+3);
+}
+
+std::vector<cv::Point2f> Crate::getPoints() {
+	std::vector<cv::Point2f> ret;
+	ret.assign(points.begin(), points.begin()+3);
+	return ret;
+}
