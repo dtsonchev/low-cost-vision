@@ -50,7 +50,7 @@
 #define LINE_LENGTH 6.9
 #define FID_OFFSET 2.15
 #define FID_RADIUS 0.75
-#define QR_MARKER_SIDE 0.7
+#define QR_MARKER_SIDE 0.75
 #define QR_CODE_SIDE 2.8
 
 /**

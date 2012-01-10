@@ -100,8 +100,8 @@ void CrateAppImpl::OnSizeChange(wxSizeEvent& event){
 void CrateAppImpl::OnObjectType( wxCommandEvent& event ){
 	CrateLineRDB->SetValue(true);
 	if(ObjectTypeCombo->GetValue() == wxT("QR code")){
-		QRCodeCornerRDB->SetLabel(wxT("TL point"));
-		OppositeCornerRDB->SetLabel(wxT("BR point"));
+		QRCodeCornerRDB->SetLabel(wxT("BR point"));
+		OppositeCornerRDB->SetLabel(wxT("TL point"));
 
 	}else if(ObjectTypeCombo->GetValue() == wxT("Crate")){
 		QRCodeCornerRDB->SetLabel(wxT("QR code"));

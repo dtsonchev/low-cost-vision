@@ -342,7 +342,7 @@ void CrateAppImpl::drawCrateAttributes(){
 		wxPaintDC dc(ImageField);
 		dc.SetPen(wxPen(wxColour(color, color, 255-color), 2, wxSHORT_DASH));
 		dc.SetBrush(wxBrush(wxColour(0, 0, 0), wxTRANSPARENT));
-		dc.DrawRectangle(wxPoint(zoomX, zoomY), wxSize(zoomWidth, zoomHeight));
+		dc.DrawRectangle(wxPoint(zoomX+coordinateOffset, zoomY+coordinateOffset), wxSize(zoomWidth, zoomHeight));
 	}
 }
 
