@@ -88,9 +88,11 @@ ReportField(name)
 
 	for (unsigned int it = 0; it < vec.size(); it++) {
 		T val = vec.at(it);
-		if(val > range) // If value is out of range
-			binList.at(binList.size() - 1)++;
-		else
-			binList.at((val / (range/bins)))++ ;
+		if(val >= 0) { // No support for negative values
+			if(val > range) // If value is out of range
+				binList.at(binList.size() - 1)++;
+			else
+				binList.at((val / (range/bins)))++ ;
+		}
 	}
 }

@@ -43,10 +43,9 @@ namespace imageMetaData {
 /**
  * Extracts the meta data of images from an XML file and puts it in ImageMD objects
  * @param path the path of the XML file containing the meta data
- * @param rootTag the first tag in the XML file
  * @return a vector of ImageMD objects with the extracted meta data
  */
-std::vector<ImageMD> getMetaData(std::string path, std::string rootTag);
+std::vector<ImageMD> getMetaData(std::string path);
 
 /**
  * Parses the contents of a string and puts it in a AnyType as either an int, a double or a string
