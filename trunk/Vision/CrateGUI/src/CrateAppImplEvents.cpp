@@ -35,6 +35,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 
 #include <iostream>
+#include <iomanip>
 #include <string>
 
 #ifdef __CDT_PARSER__
@@ -97,20 +98,20 @@ void CrateAppImpl::OnSizeChange(wxSizeEvent& event){
 }
 
 void CrateAppImpl::OnObjectType( wxCommandEvent& event ){
-        CrateLineRDB->SetValue(true);
-        if(ObjectTypeCombo->GetValue() == wxT("QR code")){
-        	QRCodeCornerRDB->SetLabel(wxT("Bottom right"));
-        	OppositeCornerRDB->SetLabel(wxT("Top Left"));
+	CrateLineRDB->SetValue(true);
+	if(ObjectTypeCombo->GetValue() == wxT("QR code")){
+		QRCodeCornerRDB->SetLabel(wxT("TL point"));
+		OppositeCornerRDB->SetLabel(wxT("BR point"));
 
-        }else if(ObjectTypeCombo->GetValue() == wxT("Crate")){
-        	QRCodeCornerRDB->SetLabel(wxT("QR code corner"));
-        	OppositeCornerRDB->SetLabel(wxT("Opposite corner"));
+	}else if(ObjectTypeCombo->GetValue() == wxT("Crate")){
+		QRCodeCornerRDB->SetLabel(wxT("QR code"));
+		OppositeCornerRDB->SetLabel(wxT("Opposite"));
 
-        }else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
-        	QRCodeCornerRDB->SetLabel(wxT("Center point"));
-        	OppositeCornerRDB->SetLabel(wxT("Marker edge"));
+	}else if(ObjectTypeCombo->GetValue() == wxT("Marker")){
+		QRCodeCornerRDB->SetLabel(wxT("Center"));
+		OppositeCornerRDB->SetLabel(wxT("Edge"));
 
-        }
+	}
 }
 
 void CrateAppImpl::OnNextImage( wxMouseEvent& event ){
@@ -139,23 +140,23 @@ void CrateAppImpl::OnLeaveImageField(wxMouseEvent& event){
 
 void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
         mousePressedInImageField = true;
+        std::stringstream coordinate;
+        coordinate << std::fixed << std::setprecision(2);
 
         if(CrateLineRDB->GetValue() || QRCodeCornerRDB->GetValue()){
                 QRCorner = event.GetPosition();
-                std::stringstream coordinate;
                 if(!zoom){
-                        coordinate << "(" << (int)(QRCorner.x * Scale) << ", " << (int)(QRCorner.y * Scale) << ")";
+                        coordinate << "(" << (QRCorner.x * Scale) << ", " << (QRCorner.y * Scale) << ")";
                 }else{
-                        coordinate << "(" << (int)(QRCorner.x * Scale + zoomX) << ", " << (int)(QRCorner.y * Scale + zoomY) << ")";
+                        coordinate << "(" << (QRCorner.x * Scale + zoomX) << ", " << (QRCorner.y * Scale + zoomY) << ")";
                 }
                 QRCodeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(OppositeCornerRDB->GetValue()){
                 OppositeCorner = event.GetPosition();
-                std::stringstream coordinate;
                 if(!zoom){
-                        coordinate << "(" << (int)(OppositeCorner.x * Scale) << ", " << (int)(OppositeCorner.y * Scale) << ")";
+                        coordinate << "(" << (OppositeCorner.x * Scale) << ", " << (OppositeCorner.y * Scale) << ")";
                 }else{
-                        coordinate << "(" << (int)(OppositeCorner.x * Scale + zoomX) << ", " << (int)(OppositeCorner.y * Scale + zoomY) << ")";
+                        coordinate << "(" << (OppositeCorner.x * Scale + zoomX) << ", " << (OppositeCorner.y * Scale + zoomY) << ")";
                 }
                 OppositeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(ZoomBox_radioBtn->GetValue()){
@@ -171,23 +172,23 @@ void CrateAppImpl::OnLeftMousePressed(wxMouseEvent& event){
 
 void CrateAppImpl::OnLeftMouseRelease(wxMouseEvent& event){
         mousePressedInImageField = false;
+        std::stringstream coordinate;
+        coordinate << std::fixed << std::setprecision(2);
 
         if(QRCodeCornerRDB->GetValue()){
                 QRCorner = event.GetPosition();
-                std::stringstream coordinate;
                 if(!zoom){
-                        coordinate << "(" << (int)(QRCorner.x * Scale) << ", " << (int)(QRCorner.y * Scale) << ")";
+                        coordinate << "(" << (QRCorner.x * Scale) << ", " << (QRCorner.y * Scale) << ")";
                 }else{
-                        coordinate << "(" << (int)(QRCorner.x * Scale + zoomX) << ", " << (int)(QRCorner.y * Scale + zoomY) << ")";
+                        coordinate << "(" << (QRCorner.x * Scale + zoomX) << ", " << (QRCorner.y * Scale + zoomY) << ")";
                 }
                 QRCodeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(CrateLineRDB->GetValue() || OppositeCornerRDB->GetValue()){
                 OppositeCorner = event.GetPosition();
-                std::stringstream coordinate;
                 if(!zoom){
-                        coordinate << "(" << (int)(OppositeCorner.x * Scale) << ", " << (int)(OppositeCorner.y * Scale) << ")";
+                        coordinate << "(" << (OppositeCorner.x * Scale) << ", " << (OppositeCorner.y * Scale) << ")";
                 }else{
-                        coordinate << "(" << (int)(OppositeCorner.x * Scale + zoomX) << ", " << (int)(OppositeCorner.y * Scale + zoomY) << ")";
+                        coordinate << "(" << (OppositeCorner.x * Scale + zoomX) << ", " << (OppositeCorner.y * Scale + zoomY) << ")";
                 }
                 OppositeCornerLabel->SetLabel(wxString(coordinate.str().c_str(), wxConvLocal));
         }else if(ZoomBox_radioBtn->GetValue()){
@@ -282,8 +283,8 @@ void CrateAppImpl::OnZoom(wxCommandEvent& event) {
                         LargestScale = widthScale;
                 }
 
-                QRCodeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
-                OppositeCornerLabel->SetLabel(wxString(("(000,000)"), wxConvLocal));
+                QRCodeCornerLabel->SetLabel(wxString(("(0.00,0.00)"), wxConvLocal));
+                OppositeCornerLabel->SetLabel(wxString(("(0.00,0.00)"), wxConvLocal));
 
                 zoom = true;
 
@@ -321,20 +322,15 @@ void CrateAppImpl::OnOriginal(wxCommandEvent& event) {
         drawCrateAttributes();
         this->Layout();
 }
+
 std::string CrateAppImpl::DoubleToStringFormatted(double d){
 	std::stringstream ss;
-	ss << std::fixed;
-	ss << std::setprecision (2) << d;
+	ss << std::fixed << std::setprecision(6) << d;
 	return ss.str();
 }
 
 void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
-
         SkipButton->Enable(false);
-        if(ObjectTypeCombo->GetValue() == wxT("None")){
-                MessageLabel->SetLabel(wxT("No object type selected"));
-                return;
-        }
 
         if(QRCorner == wxPoint(0, 0) ||
                         OppositeCorner == wxPoint(0, 0)){
@@ -351,12 +347,12 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
                 return;
         }
 
-        if (XMLOption == Edit && currentCrateNumber == 0) {
+        if (XMLOption == Edit && currentObjectNumber == 0) {
 
                 SkipButton->Enable(false);
                 //if images available within the xml need to overwritten
                 foreach(boost::property_tree::ptree::value_type & imageValue,
-                                pt.get_child("Test_set"))
+                                pt.get_child("metadata"))
                 {
                         //<xmlattr>.path is <image path="/home/...." />
                         boost::filesystem::path temp = imageValue.second.get("<xmlattr>.path", "");
@@ -374,15 +370,15 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
                 }
         }
 
-        if (!AlreadyInXML && currentCrateNumber == 0) {
-                tempValue = &(pt.add("Test_set.image", ""));
+        if (!AlreadyInXML && currentObjectNumber == 0) {
+                tempValue = &(pt.add("metadata.image", ""));
 
                 boost::filesystem::path p = *imagePathsIt;
                 getPathFromChosenDir(p);
                 tempValue->put("<xmlattr>.path", p);
         }
 
-        if(currentCrateNumber == 0){
+        if(currentObjectNumber == 0){
                 boost::property_tree::ptree* property = &(tempValue->add("category", ""));
                 property->put("<xmlattr>.name", "background");
                 property->put("<xmlattr>.value", BackgroundComboBox->GetValue().ToAscii());
@@ -434,8 +430,6 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
 
         }
 
-
-
         boost::property_tree::ptree& object = tempValue->add("object", "");
         boost::property_tree::ptree* property = &(object.add("property", ""));
         property->put("<xmlattr>.name", "type");
@@ -446,7 +440,6 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
         property = &(object.add("property", ""));
         property->put("<xmlattr>.name", "y");
         property->put("<xmlattr>.value", DoubleToStringFormatted(center.m_y));
-
 
         if(ObjectTypeCombo->GetValue() == wxT("Crate")){
                 property = &(object.add("property", ""));
@@ -503,17 +496,17 @@ void CrateAppImpl::OnNextObjectButton(wxCommandEvent& event){
         boost::property_tree::write_xml(xmlPath.string().c_str(), pt, std::locale(), w);
         MessageLabel->SetLabel(wxString(xmlPath.string().c_str(), wxConvLocal));
 
+        currentObjectNumber++;
+
         QRCorner = wxPoint(0, 0);
         OppositeCorner = wxPoint(0, 0);
 
-        currentCrateNumber++;
-
-        QRCodeCornerLabel->SetLabel(wxT("(000,000)"));
-        OppositeCornerLabel->SetLabel(wxT("(000,000)"));
+        QRCodeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
+        OppositeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
 
         UpdateImageField();
         std::stringstream s;
-        s << "Next image, current object number: " << currentCrateNumber + 1;
+        s << "Next image, current object number: " << currentObjectNumber + 1;
         MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 }
 
@@ -529,8 +522,8 @@ void CrateAppImpl::OnSkip(wxMouseEvent& event){
 
         zoom = false;
 
-        QRCodeCornerLabel->SetLabel(wxT("(000,000)"));
-        OppositeCornerLabel->SetLabel(wxT("(000,000)"));
+        QRCodeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
+        OppositeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
 
         NextImage();
 }
@@ -547,11 +540,11 @@ void CrateAppImpl::OnReset(wxCommandEvent& event){
 
         zoom = false;
 
-        QRCodeCornerLabel->SetLabel(wxT("(000,000)"));
-        OppositeCornerLabel->SetLabel(wxT("(000,000)"));
+        QRCodeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
+        OppositeCornerLabel->SetLabel(wxT("(0.00,0.00)"));
 
-        if(currentCrateNumber > 0){
-                foreach(boost::property_tree::ptree::value_type & imageValue, pt.get_child("Test_set"))
+        if(currentObjectNumber > 0){
+                foreach(boost::property_tree::ptree::value_type & imageValue, pt.get_child("metadata"))
                 {
                         boost::filesystem::path temp = imageValue.second.get("<xmlattr>.path", "");
                         if (temp.leaf() == (*imagePathsIt).leaf()) {
@@ -568,10 +561,10 @@ void CrateAppImpl::OnReset(wxCommandEvent& event){
                 }
                 AlreadyInXML = true;
         }
-        currentCrateNumber = 0;
+        currentObjectNumber = 0;
 
         std::stringstream s;
-        s << "Image reset, current object number: " << currentCrateNumber + 1;
+        s << "Image reset, current object number: " << currentObjectNumber + 1;
         MessageLabel->SetLabel(wxString(s.str().c_str(), wxConvLocal));
 
         setCurrentImagePath(currentImagePath);

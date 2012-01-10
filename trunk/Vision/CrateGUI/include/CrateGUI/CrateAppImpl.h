@@ -113,10 +113,8 @@ private:
 	int zoomHeight;
 	///The xml option (add, create, edit)
 	int XMLOption;
-	///The crate number at which the user is currently working
-	int currentCrateNumber;
-	///The total amount of crate in the current image
-	int amountOfCrates;
+	///The object number at which the user is currently working
+	int currentObjectNumber;
 	///The offset of the top left corner of the imagefield to the top left corner of the window
 	int coordinateOffset;
 
