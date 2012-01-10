@@ -53,11 +53,15 @@ public:
 	 */
 	CrateContent* get(size_t index) const;
 	/**
+	 *
+	 */
+	virtual datatypes::point3f getContainerLocation(size_t index) const = 0;
+	/**
 	 * Returns the location of the object on index.
 	 * @param index
 	 * @return the location of the object on index.
 	 */
-	virtual datatypes::point3f getCrateContentLocation(size_t index) const = 0;
+	virtual datatypes::point3f getCrateContentGripLocation(size_t index) const = 0;
 	/**
 	 * Remove the content on location index.
 	 * @param index
@@ -68,14 +72,17 @@ public:
 	 * @return
 	 */
 	bool isEmpty() const;
+	datatypes::point2f position;
+	float angle;
+
+	const std::string& getName(void) const;
 protected:
-	Crate(std::string name, datatypes::point2f position, float angle, datatypes::size3f size, size_t maxNumberOfObjects);
+	Crate(std::string name, datatypes::point2f position, float angle, datatypes::size3f size, std::vector<CrateContent*>& crateContent);
 
 	std::string name;
 	datatypes::point2f position;
 	float angle; //Rotation in centerpoint
 	datatypes::size3f size;
-	size_t maxNumberOfObjects;
-	CrateContent** data;
+	std::vector<CrateContent*>& data;
 };
 }

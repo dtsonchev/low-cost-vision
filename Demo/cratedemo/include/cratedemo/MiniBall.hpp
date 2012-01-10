@@ -51,13 +51,13 @@ namespace Color {
 class MiniBall : public CrateContent {
 private:
 	Color::type color;
-	static const float SIZE_WIDTH = 9.6;
-	static const float SIZE_DEPTH = 9.6;
-	static const float SIZE_HEIGHT = 9.6;
+	static const float SIZE_WIDTH = 9.7;
+	static const float SIZE_DEPTH = 9.7;
+	static const float SIZE_HEIGHT = 9.7;
 	static const float GRIPPOINT_X = 0.0;
 	static const float GRIPPOINT_Y = 0.0;
-	static const float GRIPPOINT_Z = 9.6;
-	static const double WEIGHT = 4.0;
+	static const float GRIPPOINT_Z = 9.7;
+	static const double WEIGHT = 0.4;
 public:
 	MiniBall(Color::type color) :
 		/**

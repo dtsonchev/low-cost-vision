@@ -30,7 +30,20 @@
 #pragma once
 
 #include <string>
+#include <map>
+
 #include <cratedemo/Crate.hpp>
+
+#include <ros/ros.h>
+
+//delta node messages & services
+#include <deltarobotnode/error.h>
+#include <deltarobotnode/gripper.h>
+#include <deltarobotnode/motion.h>
+#include <deltarobotnode/stop.h>
+
+//WOOO 133333337!!!!!!!111111 one
+#include <visDum/CrateEventMsg.h>
 
 namespace cratedemo
 {
@@ -39,10 +52,35 @@ namespace cratedemo
  */
 class CrateDemo
 {
+private:
+	static const float SAFE_HEIGHT = -140;
+
+	// deltarobot services
+	ros::ServiceClient gripperClient;
+	ros::ServiceClient motionClient;
+	ros::ServiceClient stopClient;
+	ros::Subscriber deltaErrorSub;
+
+	// vision services
+	ros::Subscriber crateEventSub;
+
+	CrateContentMap& crateContentMap;
+	void newCrateCb(const visDum::CrateMsg& msg);
+	void crateRemovedCb(const visDum::CrateMsg& msg);
+	void crateMovedCb(const visDum::CrateMsg& msg);
+
 protected:
 	CrateDemo(
-		const std::string& deltaGrip, const std::string& deltaStop, const std::string& deltaMove, const std::string& deltaError,
-		const std::string& visionGetCrate, const std::string& visionGetAllCrates, const std::string& visionError);
+		ros::NodeHandle& hNode,
+		const std::string& deltaGrip,
+		const std::string& deltaStop,
+		const std::string& deltaMotion,
+		const std::string& deltaError,
+		const std::string& visionEvents,
+		CrateContentMap& crateContentMap);
+
+	CrateMap crates;
+
 
 public:
 	/**
@@ -63,6 +101,8 @@ public:
 /**
  * Updates
  */
+	//void GeneralCb(/*message*/);
 	void update();
+	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
 };
 }
