@@ -86,7 +86,7 @@ void processFid(cv::Mat& image, cv::Mat& debug) {
 		}
 	}
 	else if(points.size() == 3) {
-		CrateDetector::order(points);
+		Crate::order(points);
 		Crate crate(points);
 		if(showDebug) crate.draw(debug);
 	}
