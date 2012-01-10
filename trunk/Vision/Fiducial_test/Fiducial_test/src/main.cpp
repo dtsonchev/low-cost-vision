@@ -61,15 +61,15 @@ using namespace report;
 inline float dist(cv::Point2f p1, cv::Point2f p2) { return(sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y))); }
 
 int main(int argc, char** argv){
-        if (argc < 3) {
-                cout << "Usage: " << argv[0] << " <xml path> <xml root tag>\n";
+        if (argc < 2) {
+                cout << "Usage: " << argv[0] << " <xml path>\n";
                 return 1;
         }
 
         cout << setiosflags(ios::left) << setiosflags(ios::fixed);
 
         // Load the metadata of the images from an XML file
-        vector<ImageMD> images = getMetaData(argv[1], argv[2]);
+        vector<ImageMD> images = getMetaData(argv[1]);
 
         // Create a container for storing the result per image.
         // Here we use a double as result, but this can be anything
