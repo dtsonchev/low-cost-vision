@@ -52,17 +52,18 @@ public:
 	 */
 	GridCrate(
 		std::string name,
+		std::vector<CrateContent*>& crateContent,
 		datatypes::point2f position,
 		float angle,
 		datatypes::size3f size,
-		size_t maxNumberOfObjects,
 		size_t gridWidth,
 		size_t gridHeight,
 		double distanceToSide,
 		double distanceToNext,
 		double radiusOfBallContainer,
 		double bottomThickness);
-	datatypes::point3f getCrateContentGripLocation(size_t index);
+	virtual datatypes::point3f getContainerLocation(size_t index) const;
+	virtual datatypes::point3f getCrateContentGripLocation(size_t index) const;
 
 private:
 	size_t gridWidth;
