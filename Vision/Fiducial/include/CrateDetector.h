@@ -58,9 +58,6 @@ public:
 	//! The CrateDetector deconstructor
 	virtual ~CrateDetector();
 
-	//! Order the fiducial points
-	static void order(std::vector<cv::Point2f>& points);
-
 	/*! \brief Segment the points into crates
 	 *
 	 *  Detects all crates in the image and segments points
