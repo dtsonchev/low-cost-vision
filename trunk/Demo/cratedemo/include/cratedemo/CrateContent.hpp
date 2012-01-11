@@ -30,6 +30,9 @@
 #pragma once
 #include <datatypes/point3.hpp>
 #include <datatypes/size3.hpp>
+#include <string>
+#include <map>
+#include <vector>
 /*
 gripPoint is the offset of the most left point of the crateContent.
 For example in the picture(of an object seen from above) the gripPoint(*) has an offset of 7,0,-4.
@@ -49,6 +52,7 @@ Z
  */
 
 namespace cratedemo {
+
 class CrateContent {
 
 public:
@@ -82,4 +86,6 @@ private:
 	datatypes::size3f size; //in mm
 	double weight; //in gram
 };
+
+typedef std::map<std::string, std::vector<CrateContent*> > CrateContentMap;
 }

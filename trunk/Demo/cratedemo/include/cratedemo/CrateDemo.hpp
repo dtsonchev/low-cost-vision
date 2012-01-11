@@ -30,6 +30,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <map>
 
 #include <cratedemo/Crate.hpp>
@@ -47,6 +48,8 @@
 
 namespace cratedemo
 {
+typedef std::map<std::string, Crate*> CrateMap;
+
 /**
  * Framework for a demo with crates.
  */
@@ -98,11 +101,15 @@ public:
 	 * @param crate
 	 */
 	virtual void onCrateMove(Crate& crate) = 0;
+
+	virtual void onCrateRemoved(Crate& crate) = 0;
 /**
  * Updates
  */
 	//void GeneralCb(/*message*/);
 	void update();
 	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
+	void crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg);
+	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
 };
 }
