@@ -95,8 +95,8 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points,
 		cv::Point center((*it)[0], (*it)[1]);
 		float rad = (*it)[2];
 		cv::Rect bounds(MAX(center.x - rad, 0), MAX(center.y - rad, 0),
-				center.x + rad < image.cols ? rad * 2 : image.cols - center.x,
-				center.y + rad < image.rows ? rad * 2 : image.rows - center.y);
+				center.x + rad < image.cols ? rad * 2 : (image.cols - center.x)*2,
+				center.y + rad < image.rows ? rad * 2 : (image.rows - center.y)*2);
 		cv::Mat roi = image(bounds);
 
 		// Generate inverted circle mask
@@ -109,9 +109,9 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points,
 		bool ret = false;
 		if (debugImage != NULL) {
 			cv::Mat roiDebug = (*debugImage)(bounds);
-			ret = detectCrosshair(roi, roiPoint, roiMask, &roiDebug);
+			ret = detectCrosshair(roi, roiPoint, cv::Mat(), &roiDebug);
 		} else {
-			ret = detectCrosshair(roi, roiPoint, roiMask);
+			ret = detectCrosshair(roi, roiPoint, cv::Mat());
 		}
 
 		if (ret) {
