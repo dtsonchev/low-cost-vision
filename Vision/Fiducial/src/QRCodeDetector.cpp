@@ -76,7 +76,9 @@ void QRCodeDetector::detectCrates(cv::Mat& image, std::vector<Crate> &crates, cv
 
 				// Refine to subpixel-percision
 				// TODO: Utilize more corners to improve robustness and precision
-				cv::cornerSubPix(image, points, cv::Size(2,2), cv::Size(-1,-1), criteria);
+				float distance = Crate::distance(points[0], points[2]);
+				float windowsSize = 2.0*(distance/130.0);
+				cv::cornerSubPix(image, points, cv::Size(windowsSize,windowsSize), cv::Size(-1,-1), criteria);
 
 				//std::cout << "After: " << points << std::endl;
 
