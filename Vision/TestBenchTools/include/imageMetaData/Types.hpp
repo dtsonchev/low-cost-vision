@@ -274,12 +274,13 @@ public:
 	 * Constructor that takes the path of the image
 	 * @param path the path of the image
 	 */
-	ImageMD(std::string path) :
-		path(path)
+	ImageMD(std::string path, std::string name) :
+		path(path), name(name)
 	{
 	}
 
 	std::string path;												///< The path to the image
+	std::string name;												///< Image name
 	std::map<std::string, std::string> categories;		///< The categories this image is in
 	Properties properties;										///< The properties of the entire image
 	std::vector<Properties> objects;							///< A list of objects with their properties

@@ -45,22 +45,28 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string path) {
+std::vector<imageMetaData::ImageMD> imageMetaData::getMetaData(std::string xmlFile) {
 	using std::string;
 	using std::stringstream;
 	using std::vector;
 	using std::map;
 	using boost::property_tree::ptree;
+	using boost::filesystem::path;
 
-	std::string base = boost::filesystem::path(path).parent_path().string();
-	if(base.empty()) base = ".";
+	std::string base;
+	path xmlPath(xmlFile);
+	if(xmlPath.has_parent_path()) {
+		base = xmlPath.parent_path().string();
+	} else {
+		base = ".";
+	}
 
-	vector<ImageMD> md;
+	std::vector<imageMetaData::ImageMD> md;
 	ptree pt;
-
-	read_xml(path, pt);
+	read_xml(xmlFile, pt);
 	foreach(ptree::value_type &img, pt.get_child("metadata")){
-		ImageMD imd(base + img.second.get<string>("<xmlattr>.path"));
+		path imgPath(base + img.second.get<string>("<xmlattr>.path"));
+		ImageMD imd(imgPath.string(), imgPath.filename());
 
 		foreach(ptree::value_type &img_child, img.second) {
 			if(img_child.first == "category") {
