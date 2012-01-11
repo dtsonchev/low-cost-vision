@@ -51,9 +51,9 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-#define MAX_DEVIATION 5
+#define MAX_DEVIATION 2
 #define MAX_DISTANCE 50
-#define MAX_RANGE 5
+#define MAX_RANGE 2
 
 using namespace std;
 using namespace imageMetaData;
@@ -110,9 +110,11 @@ int main(int argc, char** argv){
         CategoriesResults calibCats;
 
         // The vision algorithm
-        FiducialDetector fidDetector(15, 25);
+        FiducialDetector fidDetector(15, 30);
         CrateDetector crateDetector;
         QRCodeDetector qrDetector;
+
+        fidDetector.verbose = debugMode;
 
         // Loop through all the images
         for(unsigned int i=0; i<images.size(); i++) {
@@ -266,7 +268,11 @@ int main(int argc, char** argv){
 
 						if(found) {
 							calibMatches[i]++;
-							calibResults[i] += dist(result, ptTarget);
+							float d = dist(result, ptTarget);
+							if(d > MAX_DEVIATION) {
+								calibSuccess = false;
+							}
+							calibResults[i] += d;
 						}
 					}
 				}
