@@ -52,6 +52,7 @@
 #endif
 
 #define MAX_DEVIATION 5
+#define MAX_DISTANCE 100
 #define MAX_RANGE 5
 
 using namespace std;
@@ -111,6 +112,9 @@ int main(int argc, char** argv){
 			fidCounts[i] = 0;
 			qrCounts[i] = 0;
 			calibCounts[i] = 0;
+			fidSizes[i] = 0;
+			qrSizes[i] = 0;
+			calibSizes[i] = 0;
 
 			cv::Mat image = cv::imread(images[i].path, CV_LOAD_IMAGE_GRAYSCALE);
 			if(!image.data) {
@@ -126,9 +130,6 @@ int main(int argc, char** argv){
 			fidDetector.detect(image, points);
 			crateDetector.detect(image, points, fidCrates, &calib);
 			qrDetector.detectCrates(image, qrCrates);
-			fidSizes[i] = fidCrates.size();
-			qrSizes[i] = qrCrates.size();
-			calibSizes[i] = calib.size();
 
 			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
 			for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) it->draw(image);
@@ -142,35 +143,37 @@ int main(int argc, char** argv){
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(qrCrates[0].rect().center, ptTarget);
 						Crate result = qrCrates[0];
+						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
-						foreach(Crate crate, qrCrates) {
-							float d = dist(crate.rect().center,ptTarget);
-							if(d < lastDistance) {
-								result = crate;
+						for(unsigned int j=1; j<qrCrates.size(); j++) {
+							float d = dist(qrCrates[j].rect().center,ptTarget);
+							if(d < lastDistance && d < MAX_DISTANCE) {
+								result = qrCrates[j];
 								lastDistance = d;
+								found = true;
 							}
 						}
 
-						std::vector<cv::Point2f> points = result.getPoints();
-						vector<cv::Point2f> targetPoints;
-						targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
-						targetPoints.push_back(cv::Point2f((double)object["marker2.x"], (double)object["marker2.y"]));
-						targetPoints.push_back(cv::Point2f((double)object["marker3.x"], (double)object["marker3.y"]));
-						float totalDistance = 0;
+						if(found) {
+							qrSizes[i]++;
+							std::vector<cv::Point2f> points = result.getPoints();
+							vector<cv::Point2f> targetPoints;
+							targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
+							targetPoints.push_back(cv::Point2f((double)object["marker2.x"], (double)object["marker2.y"]));
+							targetPoints.push_back(cv::Point2f((double)object["marker3.x"], (double)object["marker3.y"]));
+							float totalDistance = 0;
 
-						for(unsigned int j=0; j<3; j++) {
-							float d = dist(points[j], targetPoints[j]);
-							if(d > MAX_DEVIATION) {
-								qrSuccess = false;
+							for(unsigned int j=0; j<3; j++) {
+								float d = dist(points[j], targetPoints[j]);
+								if(d > MAX_DEVIATION) {
+									qrSuccess = false;
+								}
+								totalDistance += d;
 							}
-							totalDistance += d;
-						}
 
-						qrResults[i] += totalDistance / 3.0;
-					}
-					else {
-						qrSuccess = false;
+							qrResults[i] += totalDistance / 3.0;
+						}
 					}
 				}
 				else if(object["type"] == "Crate") {
@@ -179,35 +182,37 @@ int main(int argc, char** argv){
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(fidCrates[0].rect().center, ptTarget);
 						Crate result = fidCrates[0];
+						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
-						foreach(Crate crate, fidCrates) {
-							float d = dist(crate.rect().center,ptTarget);
-							if(d < lastDistance) {
-								result = crate;
+						for(unsigned int j=1; j<fidCrates.size(); j++) {
+							float d = dist(fidCrates[j].rect().center,ptTarget);
+							if(d < lastDistance && d < MAX_DISTANCE) {
+								result = fidCrates[j];
 								lastDistance = d;
+								found = true;
 							}
 						}
 
-						std::vector<cv::Point2f> points = result.getPoints();
-						vector<cv::Point2f> targetPoints;
-						targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
-						targetPoints.push_back(cv::Point2f((double)object["fid2.x"], (double)object["fid2.y"]));
-						targetPoints.push_back(cv::Point2f((double)object["fid3.x"], (double)object["fid3.y"]));
-						float totalDistance = 0;
+						if(found) {
+							fidSizes[i]++;
+							std::vector<cv::Point2f> points = result.getPoints();
+							vector<cv::Point2f> targetPoints;
+							targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
+							targetPoints.push_back(cv::Point2f((double)object["fid2.x"], (double)object["fid2.y"]));
+							targetPoints.push_back(cv::Point2f((double)object["fid3.x"], (double)object["fid3.y"]));
+							float totalDistance = 0;
 
-						for(unsigned int j=0; j<3; j++) {
-							float d = dist(points[j], targetPoints[j]);
-							if(d > MAX_DEVIATION) {
-								fidSuccess = false;
+							for(unsigned int j=0; j<3; j++) {
+								float d = dist(points[j], targetPoints[j]);
+								if(d > MAX_DEVIATION) {
+									fidSuccess = false;
+								}
+								totalDistance += d;
 							}
-							totalDistance += d;
-						}
 
-						fidResults[i] += totalDistance / 3.0;
-					}
-					else {
-						fidSuccess = false;
+							fidResults[i] += totalDistance / 3.0;
+						}
 					}
 				}
 				else if(object["type"] == "Marker") {
@@ -216,26 +221,30 @@ int main(int argc, char** argv){
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(calib[0], ptTarget);
 						cv::Point2f result = calib[0];
+						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
-						foreach(cv::Point2f point, calib) {
-							float d = dist(point,ptTarget);
-							if(d < lastDistance) {
-								result = point;
+						for(unsigned int j=1; j<points.size(); j++) {
+							float d = dist(calib[i],ptTarget);
+							if(d < lastDistance && d < MAX_DISTANCE) {
+								result = calib[i];
 								lastDistance = d;
+								found = true;
 							}
 						}
 
-						calibResults[i] += dist(result, ptTarget);
-					}
-					else {
-						calibSuccess = false;
+						if(found) {
+							calibSizes[i]++;
+							calibResults[i] += dist(result, ptTarget);
+						}
 					}
 				}
 			}
 
-			if(fidCounts[i] != 0) fidResults[i] /= fidCounts[i];
+			if(fidSizes[i] != 0) fidResults[i] /= fidSizes[i];
 			else fidResults[i] = -1.0;
+
+			if(fidSizes[i] != fidCounts[i]) fidSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(fidSuccess){
@@ -246,8 +255,10 @@ int main(int argc, char** argv){
 				fidCats[c.first][c.second].second++;
 			}
 
-			if(qrCounts[i] != 0) qrResults[i] /= qrCounts[i];
+			if(qrSizes[i] != 0) qrResults[i] /= qrSizes[i];
 			else qrResults[i] = -1.0;
+
+			if(qrSizes[i] != qrCounts[i]) qrSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(qrSuccess){
@@ -258,7 +269,7 @@ int main(int argc, char** argv){
 				qrCats[c.first][c.second].second++;
 			}
 
-			if(calibCounts[i] != 0) calibResults[i] /= calibCounts[i];
+			if(calibSizes[i] != 0) calibResults[i] /= calibSizes[i];
 			else calibResults[i] = -1.0;
 
 			if(calibCounts[i] < 3) calibSuccess = false;
