@@ -33,6 +33,7 @@
 #include <set>
 #include <map>
 #include <boost/foreach.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include <imageMetaData/Types.hpp>
 #include <imageMetaData/Tools.hpp>
 #include <report/Report.hpp>
@@ -58,12 +59,6 @@
 using namespace std;
 using namespace imageMetaData;
 using namespace report;
-
-inline float dist(cv::Point2f p1, cv::Point2f p2) {
-	float dx = p1.x-p2.x;
-	float dy = p1.y-p2.y;
-	return sqrt(dx*dx+dy*dy);
-}
 
 int main(int argc, char** argv){
         if (argc < 2) {
@@ -110,7 +105,7 @@ int main(int argc, char** argv){
         CategoriesResults calibCats;
 
         // The vision algorithm
-        FiducialDetector fidDetector(15, 30);
+        FiducialDetector fidDetector;
         CrateDetector crateDetector;
         QRCodeDetector qrDetector;
 
@@ -172,13 +167,13 @@ int main(int argc, char** argv){
 					qrCounts[i]++;
 					if(!qrCrates.empty()) {
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
-						float lastDistance = dist(qrCrates[0].rect().center, ptTarget);
+						float lastDistance = Crate::distance(qrCrates[0].rect().center, ptTarget);
 						Crate result = qrCrates[0];
 						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
 						for(unsigned int j=1; j<qrCrates.size(); j++) {
-							float d = dist(qrCrates[j].rect().center,ptTarget);
+							float d = Crate::distance(qrCrates[j].rect().center,ptTarget);
 							if(d < lastDistance && d < MAX_DISTANCE) {
 								result = qrCrates[j];
 								lastDistance = d;
@@ -195,7 +190,7 @@ int main(int argc, char** argv){
 							targetPoints.push_back(cv::Point2f((double)object["marker3.x"], (double)object["marker3.y"]));
 
 							for(unsigned int j=0; j<3; j++) {
-								float d = dist(points[j], targetPoints[j]);
+								float d = Crate::distance(points[j], targetPoints[j]);
 								qrDeviation.push_back(d);
 							}
 						}
@@ -205,13 +200,13 @@ int main(int argc, char** argv){
 					fidCounts[i]++;
 					if(!fidCrates.empty()) {
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
-						float lastDistance = dist(fidCrates[0].rect().center, ptTarget);
+						float lastDistance = Crate::distance(fidCrates[0].rect().center, ptTarget);
 						Crate result = fidCrates[0];
 						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
 						for(unsigned int j=1; j<fidCrates.size(); j++) {
-							float d = dist(fidCrates[j].rect().center,ptTarget);
+							float d = Crate::distance(fidCrates[j].rect().center,ptTarget);
 							if(d < lastDistance && d < MAX_DISTANCE) {
 								result = fidCrates[j];
 								lastDistance = d;
@@ -228,7 +223,7 @@ int main(int argc, char** argv){
 							targetPoints.push_back(cv::Point2f((double)object["fid3.x"], (double)object["fid3.y"]));
 
 							for(unsigned int j=0; j<3; j++) {
-								float d = dist(points[j], targetPoints[j]);
+								float d = Crate::distance(points[j], targetPoints[j]);
 								fidDeviation.push_back(d);
 							}
 						}
@@ -238,13 +233,13 @@ int main(int argc, char** argv){
 					calibCounts[i]++;
 					if(!calib.empty()) {
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
-						float lastDistance = dist(calib[0], ptTarget);
+						float lastDistance = Crate::distance(calib[0], ptTarget);
 						cv::Point2f result = calib[0];
 						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
 						for(unsigned int j=1; j<calib.size(); j++) {
-							float d = dist(calib[j],ptTarget);
+							float d = Crate::distance(calib[j],ptTarget);
 							if(d < lastDistance && d < MAX_DISTANCE) {
 								result = calib[j];
 								lastDistance = d;
@@ -254,7 +249,7 @@ int main(int argc, char** argv){
 
 						if(found) {
 							calibMatches[i]++;
-							float d = dist(result, ptTarget);
+							float d = Crate::distance(result, ptTarget);
 							calibDeviation.push_back(d);
 						}
 					}
@@ -403,7 +398,38 @@ int main(int argc, char** argv){
                 r.addField(cat);
         }
 
-        r.saveHTML("results.html");
+        /* FiducialDetector */
+
+        // Put the result of each setting in a ReportList
+		ReportList* fidConf = new ReportList("FiducialDetector settings", 2, STRING, DOUBLE);
+		fidConf->setColumnNames("Setting", "Value");
+		fidConf->appendRow("Verbose", (double)(fidDetector.verbose?1:0));
+		fidConf->appendRow("Center method", (double)fidDetector.centerMethod);
+		fidConf->appendRow("Min. radius", (double)fidDetector.minRad);
+		fidConf->appendRow("Max. radius", (double)fidDetector.maxRad);
+		fidConf->appendRow("Circle votes", (double)fidDetector.circleVotes);
+		fidConf->appendRow("Line votes", (double)fidDetector.lineVotes);
+		fidConf->appendRow("Max. lines", (double)fidDetector.maxLines);
+		fidConf->appendRow("Min. line distance", (double)fidDetector.minDist);
+		fidConf->appendRow("Low threshold", (double)fidDetector.lowThreshold);
+		fidConf->appendRow("High threshold", (double)fidDetector.highThreshold);
+        r.addField(fidConf);
+
+        // Put the result of each setting in a ReportList
+		ReportList* crateConf = new ReportList("CrateDetector settings", 2, STRING, DOUBLE);
+		crateConf->setColumnNames("Setting", "Value");
+		crateConf->appendRow("Low threshold", (double)crateDetector.lowThreshold);
+		crateConf->appendRow("High threshold", (double)crateDetector.highThreshold);
+        r.addField(crateConf);
+
+        stringstream filename;
+
+        //get the current time from the clock -- one second resolution
+		boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();\
+
+		filename << "Fiducial_" << now.date() << "_" << now.time_of_day() << ".html";
+
+        r.saveHTML(filename.str());
 
         cout << "Fiducial testbench done" << endl;
 
