@@ -282,23 +282,15 @@ int main(int argc, char** argv){
         /* Fiducial */
 
         // Put the result of each image in a ReportList
-        ReportList* fidList = new ReportList("Fiducial results", 2, STRING, DOUBLE);
+        ReportList* fidList = new ReportList("CrateDetector results", 4, STRING, INT, INT, DOUBLE);
         for(unsigned int i=0; i<images.size(); i++) {
-        	fidList->appendRow(images[i].name, fidResults[i]);
+        	fidList->appendRow(images[i].name, fidSizes[i], fidCounts[i], fidResults[i]);
         }
-        fidList->setColumnNames("Image", "Mean deviation");
+        fidList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
         r.addField(fidList);
 
-        // Put the count of each image in a ReportList
-        ReportList* fidCount = new ReportList("Detected fiducials", 3, STRING, INT, INT);
-        for(unsigned int i=0; i<images.size(); i++) {
-        	fidCount->appendRow(images[i].name, fidSizes[i], fidCounts[i]);
-        }
-        fidCount->setColumnNames("Image", "Detected", "Tagged");
-        r.addField(fidCount);
-
         // Create a histogram of the results
-        ReportHistogram* fidHis = new ReportHistogram("Fiducial histogram", fidResults, MAX_RANGE*2, MAX_RANGE);
+        ReportHistogram* fidHis = new ReportHistogram("histogram", fidResults, MAX_RANGE*2, MAX_RANGE);
         fidHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(fidHis);
 
@@ -312,23 +304,15 @@ int main(int argc, char** argv){
         /* QR Code */
 
         // Put the result of each image in a ReportList
-		ReportList* qrList = new ReportList("QRCode results", 2, STRING, DOUBLE);
+		ReportList* qrList = new ReportList("QRCodeDetector results", 4, STRING, INT, INT, DOUBLE);
 		for(unsigned int i=0; i<images.size(); i++) {
-			qrList->appendRow(images[i].name, qrResults[i]);
+			qrList->appendRow(images[i].name, qrSizes[i], qrCounts[i], qrResults[i]);
 		}
-		qrList->setColumnNames("Image", "Mean deviation");
+		qrList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
 		r.addField(qrList);
 
-		// Put the count of each image in a ReportList
-		ReportList* qrCount = new ReportList("Detected QRCodes", 3, STRING, INT, INT);
-		for(unsigned int i=0; i<images.size(); i++) {
-			qrCount->appendRow(images[i].name, qrSizes[i], qrCounts[i]);
-		}
-		qrCount->setColumnNames("Image", "Detected", "Tagged");
-		r.addField(qrCount);
-
         // Create a histogram of the results
-        ReportHistogram* qrHis = new ReportHistogram("QRCode histogram", qrResults, MAX_RANGE*2, MAX_RANGE);
+        ReportHistogram* qrHis = new ReportHistogram("histogram", qrResults, MAX_RANGE*2, MAX_RANGE);
         qrHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(qrHis);
 
@@ -342,23 +326,15 @@ int main(int argc, char** argv){
         /* Calibration marker */
 
         // Put the result of each image in a ReportList
-		ReportList* calibList = new ReportList("Calibration results", 2, STRING, DOUBLE);
+		ReportList* calibList = new ReportList("Calibration results", 4, STRING, INT, INT, DOUBLE);
 		for(unsigned int i=0; i<images.size(); i++) {
-			calibList->appendRow(images[i].name, calibResults[i]);
+			calibList->appendRow(images[i].name, calibSizes[i], calibCounts[i], calibResults[i]);
 		}
-		calibList->setColumnNames("Image", "Mean deviation");
+		calibList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
 		r.addField(calibList);
 
-		// Put the count of each image in a ReportList
-		ReportList* calibCount = new ReportList("Detected markers", 3, STRING, INT, INT);
-		for(unsigned int i=0; i<images.size(); i++) {
-			calibCount->appendRow(images[i].name, calibSizes[i], calibCounts[i]);
-		}
-		calibCount->setColumnNames("Image", "Detected", "Tagged");
-		r.addField(calibCount);
-
         // Create a histogram of the results
-        ReportHistogram* calibHis = new ReportHistogram("Calibration histogram", calibResults, MAX_RANGE*2, MAX_RANGE);
+        ReportHistogram* calibHis = new ReportHistogram("histogram", calibResults, MAX_RANGE*2, MAX_RANGE);
         calibHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(calibHis);
 
