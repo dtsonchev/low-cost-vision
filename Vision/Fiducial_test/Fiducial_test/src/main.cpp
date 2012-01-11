@@ -247,7 +247,7 @@ int main(int argc, char** argv){
 				}
 			}
 
-			if(qrMatches[i] > 0) fidResults[i] /= qrMatches[i];
+			if(fidMatches[i] > 0) fidResults[i] /= fidMatches[i];
 			else fidResults[i] = -1.0;
 
 			if(fidSizes[i] != fidCounts[i]) fidSuccess = false;
@@ -275,7 +275,7 @@ int main(int argc, char** argv){
 				qrCats[c.first][c.second].second++;
 			}
 
-			if(qrMatches[i] > 0) calibResults[i] /= qrMatches[i];
+			if(calibMatches[i] > 0) calibResults[i] /= calibMatches[i];
 			else calibResults[i] = -1.0;
 
 			if(calibCounts[i] < 3 || calibSizes[i] < 3) calibSuccess = false;
