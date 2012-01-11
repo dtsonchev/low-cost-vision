@@ -140,6 +140,16 @@ int main(int argc, char** argv){
 				fidDetector.detect(image, points, &debug);
 				crateDetector.detect(image, points, fidCrates, &calib);
 				qrDetector.detectCrates(image, qrCrates);
+
+				for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) {
+					vector<cv::Point2f> points = it->getPoints();
+
+					// Draw the fiducial points
+					cv::circle(debug, points[0], 1, cv::Scalar(255, 0, 0), 2);
+					cv::circle(debug, points[1], 1, cv::Scalar(0, 255, 0), 2);
+					cv::circle(debug, points[2], 1, cv::Scalar(0, 0, 255), 2);
+				}
+
 				cv::imshow(images[i].name, debug);
 			} else {
 				fidDetector.detect(image, points);
