@@ -94,7 +94,7 @@ public:
 	 * Gets a copy of the fiducial points
 	 * that represent the crate.
 	 */
-	std::vector<cv::Point2f> getPoints();
+	std::vector<cv::Point2f> getPoints() const;
 
 	/*! \brief Set the fiducial points
 	 *

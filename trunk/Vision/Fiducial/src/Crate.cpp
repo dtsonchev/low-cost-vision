@@ -196,7 +196,7 @@ void Crate::setPoints(std::vector<cv::Point2f>& newPoints) {
 	this->points.assign(newPoints.begin(), newPoints.begin()+3);
 }
 
-std::vector<cv::Point2f> Crate::getPoints() {
+std::vector<cv::Point2f> Crate::getPoints() const {
 	std::vector<cv::Point2f> ret;
 	ret.assign(points.begin(), points.begin()+3);
 	return ret;
