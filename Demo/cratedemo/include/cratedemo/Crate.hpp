@@ -72,17 +72,18 @@ public:
 	 * @return
 	 */
 	bool isEmpty() const;
-	datatypes::point2f position;
-	float angle;
 
 	const std::string& getName(void) const;
 protected:
 	Crate(std::string name, datatypes::point2f position, float angle, datatypes::size3f size, std::vector<CrateContent*>& crateContent);
 
 	std::string name;
+public:
 	datatypes::point2f position;
-	float angle; //Rotation in centerpoint
+	float angle;
+protected:
 	datatypes::size3f size;
 	std::vector<CrateContent*>& data;
+
 };
 }

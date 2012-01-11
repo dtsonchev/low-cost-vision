@@ -1,4 +1,7 @@
 #include <cratedemo/initialCrateContentDemo1.hpp>
+
+#include <vector>
+
 #include <cratedemo/MiniBall.hpp>
 
 namespace cratedemo
