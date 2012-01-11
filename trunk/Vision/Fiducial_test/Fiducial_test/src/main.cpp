@@ -52,7 +52,7 @@
 #endif
 
 #define MAX_DEVIATION 5
-#define MAX_DISTANCE 100
+#define MAX_DISTANCE 50
 #define MAX_RANGE 5
 
 using namespace std;
@@ -67,11 +67,15 @@ inline float dist(cv::Point2f p1, cv::Point2f p2) {
 
 int main(int argc, char** argv){
         if (argc < 2) {
-                cout << "Usage: " << argv[0] << " <xml path>\n";
+                cout << "Usage: " << argv[0] << " <xml path> [debug]\n";
                 return 1;
         }
 
         cout << setiosflags(ios::left) << setiosflags(ios::fixed);
+
+        // Check if debug mode is enabled
+        bool debugMode = false;
+        if(argc > 2) debugMode = strcmp(argv[2], "debug") == 0;
 
         // Load the metadata of the images from an XML file
         vector<ImageMD> images = getMetaData(argv[1]);
@@ -130,17 +134,28 @@ int main(int argc, char** argv){
 			vector<Crate> fidCrates;
 			vector<Crate> qrCrates;
 			vector<cv::Point2f> calib;
-			fidDetector.detect(image, points);
-			crateDetector.detect(image, points, fidCrates, &calib);
-			qrDetector.detectCrates(image, qrCrates);
+
+			if(debugMode) {
+				cv::Mat debug = cv::imread(images[i].path);
+				fidDetector.detect(image, points, &debug);
+				crateDetector.detect(image, points, fidCrates, &calib);
+				qrDetector.detectCrates(image, qrCrates);
+				cv::imshow(images[i].name, debug);
+			} else {
+				fidDetector.detect(image, points);
+				crateDetector.detect(image, points, fidCrates, &calib);
+				qrDetector.detectCrates(image, qrCrates);
+			}
+
+
 			fidSizes[i] = fidCrates.size();
 			qrSizes[i] = qrCrates.size();
 			calibSizes[i] = calib.size();
 
+
+
 			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
 			for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) it->draw(image);
-			//cv::imshow("Image", image);
-			//cv::waitKey();
 
 			foreach(Properties object, images[i].objects) {
 				if(object["type"] == "QR code") {
@@ -230,10 +245,10 @@ int main(int argc, char** argv){
 						bool found = lastDistance < MAX_DISTANCE;
 
 						// Get the crate closest to the target
-						for(unsigned int j=1; j<points.size(); j++) {
-							float d = dist(calib[i],ptTarget);
+						for(unsigned int j=1; j<calib.size(); j++) {
+							float d = dist(calib[j],ptTarget);
 							if(d < lastDistance && d < MAX_DISTANCE) {
-								result = calib[i];
+								result = calib[j];
 								lastDistance = d;
 								found = true;
 							}
@@ -365,6 +380,8 @@ int main(int argc, char** argv){
         r.saveHTML("results.html");
 
         cout << "Fiducial testbench done" << endl;
+
+        if(debugMode) cv::waitKey();
 
         return 0;
 }
