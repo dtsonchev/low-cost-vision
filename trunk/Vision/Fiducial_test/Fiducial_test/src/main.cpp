@@ -51,9 +51,9 @@
 #define foreach(a, b) BOOST_FOREACH(a, b)
 #endif
 
-#define MAX_DEVIATION 2
+#define MAX_DEVIATION 5
 #define MAX_DISTANCE 50
-#define MAX_RANGE 2
+#define MAX_RANGE 5
 
 using namespace std;
 using namespace imageMetaData;
@@ -125,6 +125,10 @@ int main(int argc, char** argv){
 			qrCounts[i] = 0;
 			calibCounts[i] = 0;
 
+			vector<double> fidDeviation;
+			vector<double> qrDeviation;
+			vector<double> calibDeviation;
+
 			cv::Mat image = cv::imread(images[i].path, CV_LOAD_IMAGE_GRAYSCALE);
 			if(!image.data) {
 				cout << "Image " << images[i].path << " not found! Aborting test..." << endl;
@@ -189,17 +193,11 @@ int main(int argc, char** argv){
 							targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
 							targetPoints.push_back(cv::Point2f((double)object["marker2.x"], (double)object["marker2.y"]));
 							targetPoints.push_back(cv::Point2f((double)object["marker3.x"], (double)object["marker3.y"]));
-							float totalDistance = 0;
 
 							for(unsigned int j=0; j<3; j++) {
 								float d = dist(points[j], targetPoints[j]);
-								if(d > MAX_DEVIATION) {
-									qrSuccess = false;
-								}
-								totalDistance += d;
+								qrDeviation.push_back(d);
 							}
-
-							qrResults[i] += totalDistance / 3.0;
 						}
 					}
 				}
@@ -228,17 +226,11 @@ int main(int argc, char** argv){
 							targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
 							targetPoints.push_back(cv::Point2f((double)object["fid2.x"], (double)object["fid2.y"]));
 							targetPoints.push_back(cv::Point2f((double)object["fid3.x"], (double)object["fid3.y"]));
-							float totalDistance = 0;
 
 							for(unsigned int j=0; j<3; j++) {
 								float d = dist(points[j], targetPoints[j]);
-								if(d > MAX_DEVIATION) {
-									fidSuccess = false;
-								}
-								totalDistance += d;
+								fidDeviation.push_back(d);
 							}
-
-							fidResults[i] += totalDistance / 3.0;
 						}
 					}
 				}
@@ -263,19 +255,25 @@ int main(int argc, char** argv){
 						if(found) {
 							calibMatches[i]++;
 							float d = dist(result, ptTarget);
-							if(d > MAX_DEVIATION) {
-								calibSuccess = false;
-							}
-							calibResults[i] += d;
+							calibDeviation.push_back(d);
 						}
 					}
 				}
 			}
 
-			if(fidMatches[i] > 0) fidResults[i] /= fidMatches[i];
-			else fidResults[i] = -1.0;
+			// Determine result
+			if(fidDeviation.empty()) {
+				fidResults[i] = -1.0;
+				fidSuccess = false;
+			}
+			else {
+				fidResults[i] = *(std::max_element(fidDeviation.begin(), fidDeviation.end()));
+				if (fidResults[i] > MAX_DEVIATION ||
+						fidMatches[i] != fidCounts[i]	||
+						fidSizes[i] != fidCounts[i])
+				fidSuccess = false;
+			}
 
-			if(fidSizes[i] != fidCounts[i]) fidSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(fidSuccess){
@@ -286,10 +284,19 @@ int main(int argc, char** argv){
 				fidCats[c.first][c.second].second++;
 			}
 
-			if(qrMatches[i] > 0) qrResults[i] /= qrMatches[i];
-			else qrResults[i] = -1.0;
+			// Determine result
+			if(qrDeviation.empty()) {
+				qrResults[i] = -1.0;
+				qrSuccess = false;
+			}
+			else {
+				qrResults[i] = *(std::max_element(qrDeviation.begin(), qrDeviation.end()));
+				if (qrResults[i] > MAX_DEVIATION ||
+						qrMatches[i] != qrCounts[i]	||
+						qrSizes[i] != qrCounts[i])
+				qrSuccess = false;
+			}
 
-			if(qrSizes[i] != qrCounts[i]) qrSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(qrSuccess){
@@ -300,10 +307,19 @@ int main(int argc, char** argv){
 				qrCats[c.first][c.second].second++;
 			}
 
-			if(calibMatches[i] > 0) calibResults[i] /= calibMatches[i];
-			else calibResults[i] = -1.0;
+			// Determine result
+			if(calibDeviation.empty()) {
+				calibResults[i] = -1.0;
+				calibSuccess = false;
+			}
+			else {
+				calibResults[i] = *(std::max_element(calibDeviation.begin(), calibDeviation.end()));
+				if (calibResults[i] > MAX_DEVIATION ||
+						calibMatches[i] != calibCounts[i]	||
+						calibSizes[i] != calibCounts[i])
+				calibSuccess = false;
+			}
 
-			if(calibCounts[i] < 3 || calibSizes[i] < 3) calibSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(calibSuccess){
@@ -328,7 +344,7 @@ int main(int argc, char** argv){
         for(unsigned int i=0; i<images.size(); i++) {
         	fidList->appendRow(images[i].name, fidSizes[i], fidCounts[i], fidMatches[i], fidResults[i]);
         }
-        fidList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
+        fidList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Max deviation");
         r.addField(fidList);
 
         // Create a histogram of the results
@@ -350,7 +366,7 @@ int main(int argc, char** argv){
 		for(unsigned int i=0; i<images.size(); i++) {
 			qrList->appendRow(images[i].name, qrSizes[i], qrCounts[i], qrMatches[i], qrResults[i]);
 		}
-		qrList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
+		qrList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Max deviation");
 		r.addField(qrList);
 
         // Create a histogram of the results
@@ -372,7 +388,7 @@ int main(int argc, char** argv){
 		for(unsigned int i=0; i<images.size(); i++) {
 			calibList->appendRow(images[i].name, calibSizes[i], calibCounts[i], calibMatches[i], calibResults[i]);
 		}
-		calibList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
+		calibList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Max deviation");
 		r.addField(calibList);
 
         // Create a histogram of the results
