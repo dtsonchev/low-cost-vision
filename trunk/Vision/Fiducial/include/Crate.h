@@ -74,18 +74,22 @@ public:
 	//! THe Crate deconstructor
 	virtual ~Crate();
 
+	/*! \brief Calculate distance
+	 *
+	 *  Calculates the distance between two fiducial points
+	 */
+	static inline float distance(const cv::Point2f& pt1, const cv::Point2f& pt2) {
+		float dx = pt1.x-pt2.x;
+		float dy = pt1.y-pt2.y;
+		return sqrt(dx*dx+dy*dy);
+	}
+
 	/*! \brief Order a list of fiducial points
 	 *
 	 *  Orders a vector with 3 fiducial points according
 	 *  to the clockwise crate ordering.
 	 */
 	static void order(std::vector<cv::Point2f>& points);
-
-	/*! \brief Calculate distance
-	 *
-	 *  Calculates the distance between two fiducial points
-	 */
-	static inline float distance(const cv::Point2f& pt1, const cv::Point2f& pt2);
 
 	/*! \brief Generate a rotated bounding rectangle
 	 *
