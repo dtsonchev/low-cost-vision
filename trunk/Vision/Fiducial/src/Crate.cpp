@@ -39,13 +39,13 @@ Crate::Crate(const std::vector<cv::Point2f>& points) {
 }
 
 Crate::Crate(std::string name, const std::vector<cv::Point2f>& points) {
-	this->name = name;
 	this->points.assign(points.begin(), points.begin()+3);
+	this->name = name;
 }
 
 Crate::Crate(const Crate& crate) :
-		bounds(crate.bounds), name(crate.name),
-		points(crate.points) {
+		bounds(crate.bounds), points(crate.points),
+		name(crate.name) {
 }
 
 Crate::~Crate() {
