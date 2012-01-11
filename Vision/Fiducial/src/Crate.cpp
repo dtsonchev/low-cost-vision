@@ -51,12 +51,6 @@ Crate::Crate(const Crate& crate) :
 Crate::~Crate() {
 }
 
-inline float Crate::distance(const cv::Point2f& pt1, const cv::Point2f& pt2) {
-	float dx = pt1.x-pt2.x;
-	float dy = pt1.y-pt2.y;
-	return sqrt(dx*dx+dy*dy);
-}
-
 void Crate::order(std::vector<cv::Point2f>& points) {
 	// Find the two diagonal opposite points
 	float distance = 0;
