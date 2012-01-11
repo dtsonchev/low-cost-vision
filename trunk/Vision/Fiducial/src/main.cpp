@@ -45,6 +45,14 @@ bool showValues = true;
 bool showContours = false;
 bool showDebug = true;
 
+void processQR(cv::Mat& image, cv::Mat& debug) {
+	std::vector<Crate> crates;
+
+	qrDetector.detectCrates(image, crates);
+
+	if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+}
+
 void processFid(cv::Mat& image, cv::Mat& debug) {
 	std::vector<cv::Point2f> points;
 	cv::RotatedRect rect;
@@ -109,14 +117,8 @@ void processFid(cv::Mat& image, cv::Mat& debug) {
 		ss << "Method: " << ((fidDetector.centerMethod==FiducialDetector::MEAN)?"Mean":(fidDetector.centerMethod==FiducialDetector::MEDOID_RHO)?"MedoidRho":"MedoidTheta");
 		cv::putText(debug, ss.str(), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 	}
-}
 
-void processQR(cv::Mat& image, cv::Mat& debug) {
-	std::vector<Crate> crates;
-
-	qrDetector.detectCrates(image, crates);
-
-	if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
+	processQR(image, debug);
 }
 
 void callback(char key, cv::Mat* image = NULL) {
@@ -185,7 +187,7 @@ int main(int argc, char* argv[]) {
 		char key = 0;
 		while (key != 'q') {
 			cv::Mat debug = image.clone();
-			processQR(gray, debug);
+			processFid(gray, debug);
 
 			cv::imshow("Image", debug);
 			key = cv::waitKey();
@@ -215,7 +217,7 @@ int main(int argc, char* argv[]) {
 			cv::Mat gray;
 			cv::cvtColor(frame, gray, CV_BGR2GRAY);
 
-			processQR(gray, frame);
+			processFid(gray, frame);
 
 			cv::imshow("Frame", frame);
 			key = cv::waitKey(10);
