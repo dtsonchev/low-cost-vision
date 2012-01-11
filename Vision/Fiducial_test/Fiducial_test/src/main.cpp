@@ -159,15 +159,9 @@ int main(int argc, char** argv){
 				qrDetector.detectCrates(image, qrCrates);
 			}
 
-
 			fidSizes[i] = fidCrates.size();
 			qrSizes[i] = qrCrates.size();
 			calibSizes[i] = calib.size();
-
-
-
-			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
-			for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) it->draw(image);
 
 			foreach(Properties object, images[i].objects) {
 				if(object["type"] == "QR code") {
