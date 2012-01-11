@@ -81,6 +81,12 @@ public:
 	 */
 	static void order(std::vector<cv::Point2f>& points);
 
+	/*! \brief Calculate distance
+	 *
+	 *  Calculates the distance between two fiducial points
+	 */
+	static inline float distance(const cv::Point2f& pt1, const cv::Point2f& pt2);
+
 	/*! \brief Generate a rotated bounding rectangle
 	 *
 	 *  Generates a RotatedRect that represents the
