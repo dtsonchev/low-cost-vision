@@ -110,7 +110,7 @@ int main(int argc, char** argv){
         CategoriesResults calibCats;
 
         // The vision algorithm
-        FiducialDetector fidDetector;
+        FiducialDetector fidDetector(15, 25);
         CrateDetector crateDetector;
         QRCodeDetector qrDetector;
 
