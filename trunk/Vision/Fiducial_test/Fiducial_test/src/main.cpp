@@ -58,7 +58,11 @@ using namespace std;
 using namespace imageMetaData;
 using namespace report;
 
-inline float dist(cv::Point2f p1, cv::Point2f p2) { return(sqrt((p1.x-p2.x)*(p1.x-p2.x)+(p1.y-p2.y)*(p1.y-p2.y))); }
+inline float dist(cv::Point2f p1, cv::Point2f p2) {
+	float dx = p1.x-p2.x;
+	float dy = p1.y-p2.y;
+	return sqrt(dx*dx+dy*dy);
+}
 
 int main(int argc, char** argv){
         if (argc < 2) {
@@ -81,6 +85,10 @@ int main(int argc, char** argv){
         map<string, int> qrCounts;
         map<string, int> calibCounts;
 
+        map<string, int> fidSizes;
+        map<string, int> qrSizes;
+        map<string, int> calibSizes;
+
         // Create a container for storing the categories and their results
         CategoriesResults fidCats;
         CategoriesResults qrCats;
@@ -93,9 +101,9 @@ int main(int argc, char** argv){
 
         // Loop through all the images
         foreach(ImageMD& img, images) {
-			bool fidSuccess = false;
-			bool qrSuccess = false;
-			bool calibSuccess = false;
+			bool fidSuccess = true;
+			bool qrSuccess = true;
+			bool calibSuccess = true;
 			fidCounts[img.path] = 0;
 			qrCounts[img.path] = 0;
 			calibCounts[img.path] = 0;
@@ -124,7 +132,6 @@ int main(int argc, char** argv){
 				if(object["type"] == "QR code") {
 					if(!qrCrates.empty()) {
 						qrCounts[img.path]++;
-						qrSuccess = true;
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(qrCrates[0].rect().center, ptTarget);
 						Crate result = qrCrates[0];
@@ -138,6 +145,7 @@ int main(int argc, char** argv){
 							}
 						}
 
+						std::vector<cv::Point2f> points = result.getPoints();
 						vector<cv::Point2f> targetPoints;
 						targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
 						targetPoints.push_back(cv::Point2f((double)object["marker2.x"], (double)object["marker2.y"]));
@@ -145,7 +153,7 @@ int main(int argc, char** argv){
 						float totalDistance = 0;
 
 						for(int i=0; i<3; i++) {
-							float d = dist(result.points[i], targetPoints[i]);
+							float d = dist(points[i], targetPoints[i]);
 							if(d > MAX_DEVIATION) {
 								qrSuccess = false;
 							}
@@ -156,13 +164,11 @@ int main(int argc, char** argv){
 					}
 					else {
 						qrSuccess = false;
-						qrResults[img.path] = -1.0;
 					}
 				}
 				else if(object["type"] == "Crate") {
 					if(!fidCrates.empty()) {
 						fidCounts[img.path]++;
-						fidSuccess = true;
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(fidCrates[0].rect().center, ptTarget);
 						Crate result = fidCrates[0];
@@ -176,6 +182,7 @@ int main(int argc, char** argv){
 							}
 						}
 
+						std::vector<cv::Point2f> points = result.getPoints();
 						vector<cv::Point2f> targetPoints;
 						targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
 						targetPoints.push_back(cv::Point2f((double)object["fid2.x"], (double)object["fid2.y"]));
@@ -183,7 +190,7 @@ int main(int argc, char** argv){
 						float totalDistance = 0;
 
 						for(int i=0; i<3; i++) {
-							float d = dist(result.points[i], targetPoints[i]);
+							float d = dist(points[i], targetPoints[i]);
 							if(d > MAX_DEVIATION) {
 								fidSuccess = false;
 							}
@@ -194,13 +201,11 @@ int main(int argc, char** argv){
 					}
 					else {
 						fidSuccess = false;
-						fidResults[img.path] = -1.0;
 					}
 				}
 				else if(object["type"] == "Marker") {
 					if(!calib.empty()) {
 						calibCounts[img.path]++;
-						calibSuccess = true;
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = dist(calib[0], ptTarget);
 						cv::Point2f result = calib[0];
@@ -218,12 +223,12 @@ int main(int argc, char** argv){
 					}
 					else {
 						calibSuccess = false;
-						calibResults[img.path] = -1.0;
 					}
 				}
 			}
 
 			if(fidCounts[img.path] != 0) fidResults[img.path] /= fidCounts[img.path];
+			else fidResults[img.path] = -1.0;
 			// Store the results in the categories container
 			foreach(Category c, img.categories) {
 				if(fidSuccess){
@@ -235,6 +240,7 @@ int main(int argc, char** argv){
 			}
 
 			if(qrCounts[img.path] != 0) qrResults[img.path] /= qrCounts[img.path];
+			else qrResults[img.path] = -1.0;
 			// Store the results in the categories container
 			foreach(Category c, img.categories) {
 				if(qrSuccess){
@@ -246,6 +252,8 @@ int main(int argc, char** argv){
 			}
 
 			if(calibCounts[img.path] != 0) calibResults[img.path] /= calibCounts[img.path];
+			else calibResults[img.path] = -1.0;
+
 			if(calibCounts[img.path] < 3) calibSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, img.categories) {
