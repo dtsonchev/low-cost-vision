@@ -314,7 +314,7 @@ int main(int argc, char** argv){
         // Put the result of each image in a ReportList
 		ReportList* qrList = new ReportList("QRCode results", 2, STRING, DOUBLE);
 		for(unsigned int i=0; i<images.size(); i++) {
-			qrList->appendRow(images[i].name, fidResults[i]);
+			qrList->appendRow(images[i].name, qrResults[i]);
 		}
 		qrList->setColumnNames("Image", "Mean deviation");
 		r.addField(qrList);
