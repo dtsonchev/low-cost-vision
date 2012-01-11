@@ -94,6 +94,12 @@ int main(int argc, char** argv){
         vector<int> qrSizes(size);
         vector<int> calibSizes(size);
 
+        // Matched results
+        vector<int> fidMatches(size);
+        vector<int> qrMatches(size);
+        vector<int> calibMatches(size);
+
+
         // Create a container for storing the categories and their results
         CategoriesResults fidCats;
         CategoriesResults qrCats;
@@ -112,9 +118,6 @@ int main(int argc, char** argv){
 			fidCounts[i] = 0;
 			qrCounts[i] = 0;
 			calibCounts[i] = 0;
-			fidSizes[i] = 0;
-			qrSizes[i] = 0;
-			calibSizes[i] = 0;
 
 			cv::Mat image = cv::imread(images[i].path, CV_LOAD_IMAGE_GRAYSCALE);
 			if(!image.data) {
@@ -130,6 +133,9 @@ int main(int argc, char** argv){
 			fidDetector.detect(image, points);
 			crateDetector.detect(image, points, fidCrates, &calib);
 			qrDetector.detectCrates(image, qrCrates);
+			fidSizes[i] = fidCrates.size();
+			qrSizes[i] = qrCrates.size();
+			calibSizes[i] = calib.size();
 
 			for(std::vector<Crate>::iterator it=fidCrates.begin(); it!=fidCrates.end(); ++it) it->draw(image);
 			for(std::vector<Crate>::iterator it=qrCrates.begin(); it!=qrCrates.end(); ++it) it->draw(image);
@@ -156,7 +162,7 @@ int main(int argc, char** argv){
 						}
 
 						if(found) {
-							qrSizes[i]++;
+							qrMatches[i]++;
 							std::vector<cv::Point2f> points = result.getPoints();
 							vector<cv::Point2f> targetPoints;
 							targetPoints.push_back(cv::Point2f((double)object["marker1.x"], (double)object["marker1.y"]));
@@ -195,7 +201,7 @@ int main(int argc, char** argv){
 						}
 
 						if(found) {
-							fidSizes[i]++;
+							fidMatches[i]++;
 							std::vector<cv::Point2f> points = result.getPoints();
 							vector<cv::Point2f> targetPoints;
 							targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
@@ -234,14 +240,14 @@ int main(int argc, char** argv){
 						}
 
 						if(found) {
-							calibSizes[i]++;
+							calibMatches[i]++;
 							calibResults[i] += dist(result, ptTarget);
 						}
 					}
 				}
 			}
 
-			if(fidSizes[i] != 0) fidResults[i] /= fidSizes[i];
+			if(qrMatches[i] > 0) fidResults[i] /= qrMatches[i];
 			else fidResults[i] = -1.0;
 
 			if(fidSizes[i] != fidCounts[i]) fidSuccess = false;
@@ -255,7 +261,7 @@ int main(int argc, char** argv){
 				fidCats[c.first][c.second].second++;
 			}
 
-			if(qrSizes[i] != 0) qrResults[i] /= qrSizes[i];
+			if(qrMatches[i] > 0) qrResults[i] /= qrMatches[i];
 			else qrResults[i] = -1.0;
 
 			if(qrSizes[i] != qrCounts[i]) qrSuccess = false;
@@ -269,10 +275,10 @@ int main(int argc, char** argv){
 				qrCats[c.first][c.second].second++;
 			}
 
-			if(calibSizes[i] != 0) calibResults[i] /= calibSizes[i];
+			if(qrMatches[i] > 0) calibResults[i] /= qrMatches[i];
 			else calibResults[i] = -1.0;
 
-			if(calibCounts[i] < 3) calibSuccess = false;
+			if(calibCounts[i] < 3 || calibSizes[i] < 3) calibSuccess = false;
 			// Store the results in the categories container
 			foreach(Category c, images[i].categories) {
 				if(calibSuccess){
@@ -293,11 +299,11 @@ int main(int argc, char** argv){
         /* Fiducial */
 
         // Put the result of each image in a ReportList
-        ReportList* fidList = new ReportList("CrateDetector results", 4, STRING, INT, INT, DOUBLE);
+        ReportList* fidList = new ReportList("CrateDetector results", 5, STRING, INT, INT, INT, DOUBLE);
         for(unsigned int i=0; i<images.size(); i++) {
-        	fidList->appendRow(images[i].name, fidSizes[i], fidCounts[i], fidResults[i]);
+        	fidList->appendRow(images[i].name, fidSizes[i], fidCounts[i], fidMatches[i], fidResults[i]);
         }
-        fidList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
+        fidList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
         r.addField(fidList);
 
         // Create a histogram of the results
@@ -315,11 +321,11 @@ int main(int argc, char** argv){
         /* QR Code */
 
         // Put the result of each image in a ReportList
-		ReportList* qrList = new ReportList("QRCodeDetector results", 4, STRING, INT, INT, DOUBLE);
+		ReportList* qrList = new ReportList("QRCodeDetector results", 5, STRING, INT, INT, INT, DOUBLE);
 		for(unsigned int i=0; i<images.size(); i++) {
-			qrList->appendRow(images[i].name, qrSizes[i], qrCounts[i], qrResults[i]);
+			qrList->appendRow(images[i].name, qrSizes[i], qrCounts[i], qrMatches[i], qrResults[i]);
 		}
-		qrList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
+		qrList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
 		r.addField(qrList);
 
         // Create a histogram of the results
@@ -337,11 +343,11 @@ int main(int argc, char** argv){
         /* Calibration marker */
 
         // Put the result of each image in a ReportList
-		ReportList* calibList = new ReportList("Calibration results", 4, STRING, INT, INT, DOUBLE);
+		ReportList* calibList = new ReportList("Calibration results", 5, STRING, INT, INT, INT, DOUBLE);
 		for(unsigned int i=0; i<images.size(); i++) {
-			calibList->appendRow(images[i].name, calibSizes[i], calibCounts[i], calibResults[i]);
+			calibList->appendRow(images[i].name, calibSizes[i], calibCounts[i], calibMatches[i], calibResults[i]);
 		}
-		calibList->setColumnNames("Image", "Detected", "Tagged", "Mean deviation");
+		calibList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Mean deviation");
 		r.addField(calibList);
 
         // Create a histogram of the results
