@@ -60,6 +60,15 @@ using namespace std;
 using namespace imageMetaData;
 using namespace report;
 
+// The vision algorithms
+FiducialDetector fidDetector;
+CrateDetector crateDetector;
+QRCodeDetector qrDetector;
+
+void config(bool debugMode) {
+    fidDetector.verbose = debugMode;
+}
+
 int main(int argc, char** argv){
         if (argc < 2) {
                 cout << "Usage: " << argv[0] << " <xml path> [debug]\n";
@@ -71,6 +80,7 @@ int main(int argc, char** argv){
         // Check if debug mode is enabled
         bool debugMode = false;
         if(argc > 2) debugMode = strcmp(argv[2], "debug") == 0;
+        config(debugMode);
 
         // Load the metadata of the images from an XML file
         vector<ImageMD> images = getMetaData(argv[1]);
@@ -98,18 +108,10 @@ int main(int argc, char** argv){
         vector<int> qrMatches(size);
         vector<int> calibMatches(size);
 
-
         // Create a container for storing the categories and their results
         CategoriesResults fidCats;
         CategoriesResults qrCats;
         CategoriesResults calibCats;
-
-        // The vision algorithm
-        FiducialDetector fidDetector;
-        CrateDetector crateDetector;
-        QRCodeDetector qrDetector;
-
-        fidDetector.verbose = debugMode;
 
         // Loop through all the images
         for(unsigned int i=0; i<images.size(); i++) {
@@ -287,7 +289,7 @@ int main(int argc, char** argv){
 			else {
 				qrResults[i] = *(std::max_element(qrDeviation.begin(), qrDeviation.end()));
 				if (qrResults[i] > MAX_DEVIATION ||
-						qrMatches[i] != qrCounts[i]	||
+						qrMatches[i] != qrCounts[i] ||
 						qrSizes[i] != qrCounts[i])
 				qrSuccess = false;
 			}
@@ -310,7 +312,7 @@ int main(int argc, char** argv){
 			else {
 				calibResults[i] = *(std::max_element(calibDeviation.begin(), calibDeviation.end()));
 				if (calibResults[i] > MAX_DEVIATION ||
-						calibMatches[i] != calibCounts[i]	||
+						calibMatches[i] != calibCounts[i] ||
 						calibSizes[i] != calibCounts[i])
 				calibSuccess = false;
 			}
@@ -411,6 +413,7 @@ int main(int argc, char** argv){
 		fidConf->appendRow("Line votes", (double)fidDetector.lineVotes);
 		fidConf->appendRow("Max. lines", (double)fidDetector.maxLines);
 		fidConf->appendRow("Min. line distance", (double)fidDetector.minDist);
+		fidConf->appendRow("Max. line distance", (double)fidDetector.maxDist);
 		fidConf->appendRow("Low threshold", (double)fidDetector.lowThreshold);
 		fidConf->appendRow("High threshold", (double)fidDetector.highThreshold);
         r.addField(fidConf);
