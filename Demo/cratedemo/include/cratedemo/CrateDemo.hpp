@@ -34,7 +34,7 @@
 #include <map>
 
 #include <cratedemo/Crate.hpp>
-
+#include <cratedemo/Environment.hpp>
 #include <ros/ros.h>
 
 //delta node messages & services
@@ -56,8 +56,6 @@ typedef std::map<std::string, Crate*> CrateMap;
 class CrateDemo
 {
 private:
-	static const float SAFE_HEIGHT = -140;
-	static const float TABLE_HEIGHT = -200;
 	// deltarobot services
 	ros::ServiceClient gripperClient;
 	ros::ServiceClient motionClient;
@@ -112,6 +110,7 @@ public:
 	void crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg);
 	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
 
+	
 ///////testing/////////////////////////
 void  CrateDance(Crate& crate);
 };

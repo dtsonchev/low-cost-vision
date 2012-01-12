@@ -29,6 +29,7 @@
 
 #pragma once
 #include <cratedemo/Crate.hpp>
+#include <cratedemo/Environment.hpp>
 #include <string>
 namespace cratedemo {
 /**
