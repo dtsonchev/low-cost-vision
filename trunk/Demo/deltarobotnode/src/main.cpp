@@ -3,10 +3,10 @@
 #include <huniplacer/huniplacer.h>
 #include <gripper/gripper.h>
 #include "ros/ros.h"
-#include "deltarobot/motion.h"
-#include "deltarobot/stop.h"
-#include "deltarobot/gripper.h"
-#include "deltarobot/error.h"
+#include "deltarobotnode/motion.h"
+#include "deltarobotnode/stop.h"
+#include "deltarobotnode/gripper.h"
+#include "deltarobotnode/error.h"
 
 using namespace huniplacer;
 //using namespace deltarobot;
@@ -17,7 +17,7 @@ static ros::Publisher * pub;
 
 static void modbus_exhandler(std::runtime_error& ex)
 {
-	deltarobot::error msg;
+	deltarobotnode::error msg;
 	std::stringstream ss;
 	ss << "runtime error of type "<< typeid(ex).name()<<" in delta robot" << std::endl;
 	ss <<"what(): " << ex.what()<<std::endl;
@@ -26,14 +26,14 @@ static void modbus_exhandler(std::runtime_error& ex)
 	pub->publish(msg);
 }
 
-bool moveTo(deltarobot::motion::Request &req,
-		deltarobot::motion::Response &res)
+bool moveTo(deltarobotnode::motion::Request &req,
+		deltarobotnode::motion::Response &res)
 {
 	res.succeeded = true;
 	try
 	{
-		int n;
-		for(int n = 0; n < req.x.size() - 1; n++)
+		unsigned int n;
+		for(n = 0; n < req.x.size() - 1; n++)
 		{
 			if(!robot->check_path(point3(req.x[n],req.y[n],req.z[n]),point3(req.x[n+1],req.y[n+1],req.z[n+1])))
 			{
@@ -41,15 +41,16 @@ bool moveTo(deltarobot::motion::Request &req,
 				return true;
 			}
 		}
-		for(n = 0; n < req.x.size() - 1; n++)
-		{
-			robot->moveto(point3(req.x[n],req.y[n],req.z[n]),req.speed[n], true);
+		for(n = 0; n < req.x.size(); n++)
+		{	
+			ROS_INFO("moveTo: (%f, %f, %f) speed=%f", req.x[n], req.y[n], req.z[n], req.speed[n]);
+			robot->moveto(point3(req.x[n],req.y[n],req.z[n]),req.speed[n]);
 		}
-		robot->moveto(point3(req.x[n],req.y[n],req.z[n]),req.speed[n], false);
+		robot->wait_for_idle();
 	}
 	catch(std::runtime_error& ex)
 	{
-		deltarobot::error msg;
+		deltarobotnode::error msg;
 		std::stringstream ss;
 		ss << "runtime error of type "<< typeid(ex).name()<<" in delta robot" << std::endl;
 		ss <<"what(): " << ex.what()<<std::endl;
@@ -61,8 +62,8 @@ bool moveTo(deltarobot::motion::Request &req,
 	return true;
 }
 
-bool enableGripper(deltarobot::gripper::Request &req,
-		deltarobot::gripper::Response &res)
+bool enableGripper(deltarobotnode::gripper::Request &req,
+		deltarobotnode::gripper::Response &res)
 {
 	try
 	{
@@ -76,7 +77,7 @@ bool enableGripper(deltarobot::gripper::Request &req,
 	catch(std::runtime_error& ex)
 	{
 		res.succeeded = false;
-		deltarobot::error msg;
+		deltarobotnode::error msg;
 		std::stringstream ss;
 		ss << "runtime error of type "<< typeid(ex).name()<<" in delta robot" << std::endl;
 		ss <<"what(): " << ex.what()<<std::endl;
@@ -87,8 +88,8 @@ bool enableGripper(deltarobot::gripper::Request &req,
 	return true;
 }
 
-bool stop(deltarobot::stop::Request &req,
-		deltarobot::stop::Response &res)
+bool stop(deltarobotnode::stop::Request &req,
+		deltarobotnode::stop::Response &res)
 {
 	robot->stop();
 	return true;
@@ -125,7 +126,7 @@ int main(int argc, char** argv)
 	ros::ServiceServer service2 = n.advertiseService("enableGripper", enableGripper);
 	ros::ServiceServer service3 = n.advertiseService("stop", stop);
 
-	ros::Publisher pubTemp = n.advertise<deltarobot::error>("deltaError", 100);
+	ros::Publisher pubTemp = n.advertise<deltarobotnode::error>("deltaError", 100);
 	pub = &pubTemp;
 
 	ros::spin();
