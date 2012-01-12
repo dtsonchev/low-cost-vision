@@ -34,6 +34,7 @@ public:
 		{
 			moveObject(*(it1->second), i, *(it2->second), i);
 		}
+		ROS_INFO("Demo done...");
 		//CrateDance(crate);
 	}
 

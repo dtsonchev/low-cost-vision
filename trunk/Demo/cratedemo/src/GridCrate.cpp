@@ -26,7 +26,7 @@
 // You should have received a copy of the GNU General Public License
 // along with cratedemo.  If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
-
+#include <cratedemo/CrateDemo.hpp>
 #include <cratedemo/GridCrate.hpp>
 #include <cratedemo/Crate.hpp>
 #include <cratedemo/CrateExceptions.hpp>
@@ -65,21 +65,20 @@ datatypes::point3f GridCrate::getContainerLocation(size_t index) const {
 	point2f location2D;
 	location2D.x = -(size.width / 2.0) + (index % gridWidth) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
 	location2D.y = -(size.depth / 2.0) + (index / gridHeight) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
-	location2D.rotate(angle);
+	location2D = location2D.rotate(angle);
 	location2D += position;
+	std::cout << "TABLE_HEIGHT = " << TABLE_HEIGHT << " bottomThickness = " << bottomThickness << " (TABLE_HEIGHT+bottomThickness) = " << (TABLE_HEIGHT+bottomThickness) << std::endl;
 	point3f location3D(location2D.x, location2D.y, (TABLE_HEIGHT+bottomThickness));
 	//std::cout << "getContainerLocation:\nx:\t" << location3D.x << "\ny:\t" << location3D.y << "\nz:\t" << location3D.z << std::endl;
 	return location3D;
 }
 
 datatypes::point3f GridCrate::getCrateContentGripLocation(size_t index) const {
-	using datatypes::point2f;
-	using datatypes::point3f;
-
 	if (data.at(index) == NULL) {
 		throw cratedemo::LocationIsEmptyException();
 	}
 
+	std::cout << "data.at(index)->getGripPoint().z = " << data.at(index)->getGripPoint().z << std::endl;
 	return getContainerLocation(index) + data.at(index)->getGripPoint();
 }
 }

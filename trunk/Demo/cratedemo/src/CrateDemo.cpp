@@ -65,16 +65,19 @@ void CrateDemo::crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg)
 {
 	enum
 	{
-		NEW,
-		MOVE,
-		REMOVE
+		IN=1,
+		OUT,
+		MOVING,
+		MOVED
 	};
 
 	switch(msg->event)
 	{
-	case NEW: newCrateCb(msg->crate); break;
-	case MOVE: crateMovedCb(msg->crate); break;
-	case REMOVE: crateRemovedCb(msg->crate); break;
+	case IN: newCrateCb(msg->crate); break;
+	case MOVED: crateMovedCb(msg->crate); break;
+	case MOVING: //TODO implements
+	break;
+	case OUT: crateRemovedCb(msg->crate); break;
 	default: break;
 	}
 }
@@ -112,7 +115,7 @@ void CrateDemo::update()
 void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo ){
 	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
 	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
-	const int speed = 50;
+	const int speed = 350;
 	//move to source
 	deltarobotnode::motion move1;
 	move1.request.x.push_back(posFrom.x);
