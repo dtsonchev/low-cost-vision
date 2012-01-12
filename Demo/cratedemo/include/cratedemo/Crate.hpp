@@ -84,6 +84,7 @@ public:
 protected:
 	datatypes::size3f size;
 	std::vector<CrateContent*>& data;
+	static const float TABLE_HEIGHT = -200;
 
 };
 }

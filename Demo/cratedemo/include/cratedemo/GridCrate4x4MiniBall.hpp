@@ -34,13 +34,12 @@ namespace cratedemo {
 class GridCrate4x4MiniBall : public GridCrate {
 private:
 	static const float CRATE_WIDTH = 45.72;
-	static const float CRATE_DEPTH = -45.72;
+	static const float CRATE_DEPTH = 45.72;
 	static const float CRATE_HEIGHT = 16.5;
-	static const int GRID_WIDTH = 4;
-	static const int GRID_HEIGHT = 4;
-	static const int MAX_NUMBER_OF_OBJECTS = 16;
+	static const float GRID_WIDTH = 4.0;
+	static const float GRID_HEIGHT = 4.0;
 	static const float DISTANCE_TO_SIDE = 1.11;
-	static const float DISTANCE_TO_NEXT = 11.0;
+	static const float DISTANCE_TO_NEXT = 0.5;
 	static const float RADIUS_OF_BALL_CONTAINER = 5.25;
 	static const float BOTTOM_THICKNESS = 5.3;
 
