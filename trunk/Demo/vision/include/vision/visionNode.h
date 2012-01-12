@@ -6,7 +6,7 @@
 #include <FiducialDetector.h>
 #include <QRCodeDetector.h>
 #include <Crate.h>
-#include <vision/crateTracker.h>
+#include <vision/CrateTracker.h>
 #include "ros/ros.h"
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -25,8 +25,8 @@ public:
 	~visionNode();
 
 	void run();
-	bool getCrate(vision::getCrate::Request &req,vision::getCrate::Request &res);
-	bool getAllCrates(vision::getAllCrates::Request &req,vision::getAllCrates::Request &res);
+	bool getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res);
+	bool getAllCrates(vision::getAllCrates::Request &req,vision::getAllCrates::Response &res);
 
 private:
 	unicap_cv_bridge::unicap_cv_camera * cam;
@@ -34,12 +34,16 @@ private:
 	QRCodeDetector * qrDetector;
 	pcrctransformation::pc_rc_transformer * cordTransformer;
 	RectifyImage * rectifier;
+	CrateTracker * crateTracker;
+
 	cv::Mat camFrame;
 	cv::Mat rectifiedCamFrame;
 
 	ros::NodeHandle node;
 	ros::Publisher crateEventPublisher;
 	ros::Publisher ErrorPublisher;
+	ros::ServiceServer getCrateService;
+	ros::ServiceServer getAllCratesService;
 
 	double crateMovementThresshold;
 	int numberOfStableFrames;
