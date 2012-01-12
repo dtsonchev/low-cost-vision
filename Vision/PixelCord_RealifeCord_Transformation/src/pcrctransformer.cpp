@@ -222,7 +222,7 @@ namespace pcrctransformation {
 			intersection0.y = y0+(dy/ratio);
 			intersection1.y = y0+(dy/ratio);
 
-			std::cout<< "circles do not intersect, calculating the point that has the same distance to both circles" << std::endl;
+			//std::cout<< "circles do not intersect, calculating the point that has the same distance to both circles" << std::endl;
 			return true;
 		}
 

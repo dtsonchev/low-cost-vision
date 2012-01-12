@@ -56,6 +56,9 @@ using namespace std;
 using namespace imageMetaData;
 using namespace report;
 
+//TODO RGB of HSV aangeven met de nummers 1 en 2 is niet zo'n goed idee
+//TODO als er fouten in een van de XML bestanden staat crasht t programma
+
 // Function that counts the number of pixels that are the same in two images
 int compare(Mat& img1, Mat& img2);
 

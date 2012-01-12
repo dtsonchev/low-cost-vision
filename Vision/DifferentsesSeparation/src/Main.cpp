@@ -29,6 +29,7 @@
 
 
 #include <iostream>
+#include <sstream>
 #include <cstdio>
 #include <Locator/liblocator.h>
 #include <Locator/cameraException.h>
@@ -44,7 +45,13 @@ using namespace std;
  */
 int main(int argc, char** argv){
 	try{				
-		Locator loca(0);
+		int deviceNr = 0;
+		if(argc > 1){
+			stringstream s;
+			s << argv[1];
+			s >> deviceNr;
+		}
+		Locator loca(deviceNr);
 		int key = 0;
 		cv::Mat Background;
 
@@ -56,12 +63,20 @@ int main(int argc, char** argv){
 		}
 		cv::Mat view, difference, blobs;
 
+		blobs = Background.clone();
+		difference = Background.clone();
+		cv::namedWindow("blobs");
+		cvMoveWindow("blobs", blobs.cols + 100, 200);
+		cv::namedWindow("differences");
+		cvMoveWindow("differences", 100, 200);
+
 		std::cout << "Press q to quit" << std::endl;
 		while(key != 'q'){
 			loca.WaitForStableViewAndTakeImage(view);
 			loca.showDifference(difference);
 			loca.findAndDrawBlobs(blobs );
-			imshow("blobs",blobs);	
+			imshow("blobs",blobs);								
+			imshow("differences",difference);	
 			key = cv::waitKey(100);
 		}
 	    

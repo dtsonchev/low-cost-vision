@@ -9,7 +9,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
+BUILDTYPE           := library
 
 # name of target binary or library
 TARGET              := coordinates

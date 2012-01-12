@@ -9,7 +9,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := binary
+BUILDTYPE           := library
 
 # name of target binary or library
 TARGET              := DifferensesSeperation
@@ -36,7 +36,7 @@ ARFLAGS             :=
 PKGCONF_LIBRARIES   := opencv
 
 # libraries that are linked against with '-l'
-LIBRARIES           :=
+LIBRARIES           := 
 
 # include paths that will be included using '-I'
 EXTINCLUDEPATHS     := 

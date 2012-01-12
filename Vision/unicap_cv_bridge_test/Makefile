@@ -39,7 +39,7 @@ PKGCONF_LIBRARIES   := libunicap opencv
 LIBRARIES           := boost_thread
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := /usr/include/unicap /usr/include/local/unicap
+EXTINCLUDEPATHS     := 
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 

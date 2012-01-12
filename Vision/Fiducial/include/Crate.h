@@ -40,6 +40,7 @@ private:
 	cv::RotatedRect bounds;
 	//! Fiducial points belonging to the crate
 	std::vector<cv::Point2f> points;
+	
 public:
 	//! The crate identifier
 	std::string name;
