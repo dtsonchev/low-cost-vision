@@ -79,6 +79,13 @@ public:
 	 */
 	void findAndDrawBlobs(cv::Mat &Blobs );
 
+
+	/**
+	 * @brief this function draw a rectangle on the image for every blob.
+	 * @param -
+	 */
+	inline void getObjectLocations(std::vector<cv::Rect> &objectLocations );
+
 	///@brief contours smaller as this number will be ignored
 	char minContourSize;
 	///@brief the number which describe the range for a image which is the same or not
@@ -91,7 +98,7 @@ public:
 private:
 	void setStdVars(){
 		 minContourSize = 40;
-		 normRange = 60;
+		 normRange = 30;
 		 differents = 30;
 		 filterIterations = 3;
 		 maxNorm = 0;		
@@ -106,6 +113,12 @@ private:
 	cv::Mat detectedDifference;
 	
 	int internalKey;
+
+	std::vector<cv::Rect> objectLocations;
 };
+
+void Locator::getObjectLocations(std::vector<cv::Rect> &Locations ){
+	Locations = objectLocations;
+}
 
 #endif

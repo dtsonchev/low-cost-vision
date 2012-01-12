@@ -142,9 +142,11 @@ void Locator::findAndDrawBlobs(cv::Mat &blobs ){
 		cv::minEnclosingCircle( contours_poly[i], center[i], radius[i] );
 	}
 	
+	objectLocations.clear();
 	/// Draw polygonal contour + bonding rects
 	for( uint i = 0; i< contours.size(); i++ ){
 		if(contours[i].size() > (uint)minContourSize){
+			objectLocations.push_back(boundRect[i]);
 			rectangle( blobs, boundRect[i].tl(), boundRect[i].br(), cv::Scalar(0,0,255), 2, 8, 0 );
 			rectangle( blobs, cv::Point(center[i].x - 3, center[i].y - 3), cv::Point(center[i].x + 3, center[i].y + 3), cv::Scalar(0,255,255), 2, 8, 0 );
 		}
