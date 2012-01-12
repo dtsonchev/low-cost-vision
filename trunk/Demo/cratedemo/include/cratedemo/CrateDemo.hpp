@@ -57,7 +57,7 @@ class CrateDemo
 {
 private:
 	static const float SAFE_HEIGHT = -140;
-
+	static const float TABLE_HEIGHT = -200;
 	// deltarobot services
 	ros::ServiceClient gripperClient;
 	ros::ServiceClient motionClient;
@@ -111,5 +111,8 @@ public:
 	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
 	void crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg);
 	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
+
+///////testing/////////////////////////
+void  CrateDance(Crate& crate);
 };
 }

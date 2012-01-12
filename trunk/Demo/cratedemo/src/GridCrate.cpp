@@ -34,7 +34,7 @@
 #include <datatypes/point3.hpp>
 #include <datatypes/size3.hpp>
 #include <string>
-
+#include <iostream>
 namespace cratedemo {
 
 GridCrate::GridCrate(
@@ -63,11 +63,12 @@ datatypes::point3f GridCrate::getContainerLocation(size_t index) const {
 	using namespace datatypes;
 
 	point2f location2D;
-	location2D.x = -(size.width / 2) + (index % gridWidth) * (2 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
-	location2D.y = -(size.depth / 2) + (index / gridHeight) * (2 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
+	location2D.x = -(size.width / 2.0) + (index % gridWidth) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
+	location2D.y = -(size.depth / 2.0) + (index / gridHeight) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
 	location2D.rotate(angle);
-	point3f location3D(location2D.x, location2D.y, bottomThickness);
-
+	location2D += position;
+	point3f location3D(location2D.x, location2D.y, (TABLE_HEIGHT+bottomThickness));
+	//std::cout << "getContainerLocation:\nx:\t" << location3D.x << "\ny:\t" << location3D.y << "\nz:\t" << location3D.z << std::endl;
 	return location3D;
 }
 

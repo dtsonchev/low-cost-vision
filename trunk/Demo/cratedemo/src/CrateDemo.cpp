@@ -53,15 +53,13 @@ namespace cratedemo
 
 void CrateDemo::deltaErrorCb(const deltarobotnode::error::ConstPtr& msg)
 {
-
+	ROS_ERROR("Delta robot error[%i]:\t%s",msg->errorType,msg->errorMsg.c_str());
 }
 
 CrateDemo::~CrateDemo()
 {
 }
 
-	void crateRemovedCb(const visDum::CrateMsg& msg);
-	void crateMovedCb(const visDum::CrateMsg& msg);
 
 void CrateDemo::crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg)
 {
@@ -74,9 +72,9 @@ void CrateDemo::crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg)
 
 	switch(msg->event)
 	{
-	case NEW: break;
-	case MOVE: break;
-	case REMOVE: break;
+	case NEW: newCrateCb(msg->crate); break;
+	case MOVE: crateMovedCb(msg->crate); break;
+	case REMOVE: crateRemovedCb(msg->crate); break;
 	default: break;
 	}
 }
@@ -114,51 +112,77 @@ void CrateDemo::update()
 void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo ){
 	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
 	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
-
+	const int speed = 50;
 	//move to source
 	deltarobotnode::motion move1;
 	move1.request.x.push_back(posFrom.x);
 	move1.request.y.push_back(posFrom.y);
 	move1.request.z.push_back(SAFE_HEIGHT);
+	move1.request.speed.push_back(speed);
 	//move down
 	move1.request.x.push_back(posFrom.x);
 	move1.request.y.push_back(posFrom.y);
 	move1.request.z.push_back(posFrom.z);
+	move1.request.speed.push_back(speed);
 	motionClient.call(move1);
-
+/*
 	//enable gripper
 	deltarobotnode::gripper grip;
 	grip.request.enabled = true;
 	gripperClient.call(grip);
-
+*/
 	//move up
 	deltarobotnode::motion move2;
 	move2.request.x.push_back(posFrom.x);
 	move2.request.y.push_back(posFrom.y);
 	move2.request.z.push_back(SAFE_HEIGHT);
+	move2.request.speed.push_back(speed);
 	//move dest
 	move2.request.x.push_back(posTo.x);
 	move2.request.y.push_back(posTo.y);
 	move2.request.z.push_back(SAFE_HEIGHT);
+	move2.request.speed.push_back(speed);
 	//move down
 	move2.request.x.push_back(posTo.x);
 	move2.request.y.push_back(posTo.y);
 	move2.request.z.push_back(posTo.z);
+	move2.request.speed.push_back(speed);
 	motionClient.call(move2);
-
+/*
 	//Drop object
 	grip.request.enabled = false;
 	gripperClient.call(grip);
-
+*/
 	//move up
 	deltarobotnode::motion move3;
 	move3.request.x.push_back(posTo.x);
 	move3.request.y.push_back(posTo.y);
 	move3.request.z.push_back(SAFE_HEIGHT);
+	move3.request.speed.push_back(speed);
 	motionClient.call(move3);
 
 	CrateContent* c = crateFrom.get(indexFrom);
 	crateTo.put(indexTo, c);
 	crateFrom.remove(indexFrom);
+}
+
+void CrateDemo::CrateDance(Crate& crate) {
+	datatypes::point3f posFrom = crate.getCrateContentGripLocation(0);
+	datatypes::point3f posTo = crate.getContainerLocation(1) + crate.get(0)->getGripPoint();
+	const int speed = 50;
+//move 0
+	deltarobotnode::motion move1;
+	move1.request.x.push_back(posFrom.x);
+	move1.request.y.push_back(posFrom.y);
+	move1.request.z.push_back(posFrom.z);
+	move1.request.speed.push_back(speed);
+	motionClient.call(move1);
+
+	deltarobotnode::motion move2;
+	move2.request.x.push_back(posTo.x);
+	move2.request.y.push_back(posTo.y);
+	move2.request.z.push_back(posTo.z);
+	move2.request.speed.push_back(speed);
+	motionClient.call(move2);
 }
 }
