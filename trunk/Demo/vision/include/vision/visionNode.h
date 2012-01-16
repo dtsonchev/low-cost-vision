@@ -25,6 +25,7 @@ public:
 	~visionNode();
 
 	void run();
+	void calibrate();
 	bool getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res);
 	bool getAllCrates(vision::getAllCrates::Request &req,vision::getAllCrates::Response &res);
 
@@ -35,6 +36,7 @@ private:
 	pcrctransformation::pc_rc_transformer * cordTransformer;
 	RectifyImage * rectifier;
 	CrateTracker * crateTracker;
+	pcrctransformation::point2f::point2fvector markers;
 
 	cv::Mat camFrame;
 	cv::Mat rectifiedCamFrame;
