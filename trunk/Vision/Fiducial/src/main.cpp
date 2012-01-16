@@ -113,8 +113,6 @@ void processFid(cv::Mat& image, cv::Mat& debug) {
 		ss.str("");
 		ss << "Threshold: " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
 		cv::putText(debug, ss.str(), cv::Point(20, 80), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
-		ss.str("");
-		ss << "Method: " << ((fidDetector.centerMethod==FiducialDetector::MEAN)?"Mean":(fidDetector.centerMethod==FiducialDetector::MEDOID_RHO)?"MedoidRho":"MedoidTheta");
 		cv::putText(debug, ss.str(), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 	}
 
@@ -150,7 +148,6 @@ void callback(char key, cv::Mat* image = NULL) {
 		case '/': showContours=!showContours; break;
 		case 'p': showDebug=!showDebug; break;
 		case 'y': imwrite("screenshot.png", *image); break;
-		case '\\': fidDetector.centerMethod++; fidDetector.centerMethod%=3; break;
 	}
 }
 
