@@ -40,7 +40,6 @@ visionNode::visionNode(int argc, char* argv[]){
 		fidDetector = new FiducialDetector();
 		fidDetector->minRad = 20;
 		fidDetector->maxRad = 25;
-		fidDetector->centerMethod = FiducialDetector::MEDOID_RHO;
 		fidDetector->minDist = 2.0f;
 		fidDetector->maxDist = 5.0f;
 
