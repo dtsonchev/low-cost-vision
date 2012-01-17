@@ -194,7 +194,7 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::distance(fid3, *it);
 		float meanDeviation = totalDistance / double(fid1_buffer.size()+fid2_buffer.size()+fid3_buffer.size());
 
-		ROS_INFO("Calibration markers updated. Measured: %d Failed: %d Deviation: %f", measurements, failCount, meanDeviation);
+		ROS_INFO("Calibration markers updated.\nMeasured: %d Failed: %d Mean deviation: %f", measurements, failCount, meanDeviation);
 		return true;
 	}
 	ROS_INFO("Calibration timed out, too many failed attempts. Measurements needed: %d Measured: %d", measurements, measurementCount);
