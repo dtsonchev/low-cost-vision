@@ -30,6 +30,7 @@
 #include <cratedemo/CrateDemo.hpp>
 
 #include <cassert>
+#include <iostream>
 
 #include <ros/ros.h>
 #include <deltarobotnode/gripper.h>
@@ -61,7 +62,7 @@ CrateDemo::~CrateDemo()
 }
 
 
-void CrateDemo::crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg)
+void CrateDemo::crateEventCb(const vision::CrateEventMsg::ConstPtr& msg)
 {
 	enum
 	{
@@ -82,23 +83,25 @@ void CrateDemo::crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg)
 	}
 }
 
-void CrateDemo::newCrateCb(const visDum::CrateMsg& msg)
+void CrateDemo::newCrateCb(const vision::CrateMsg& msg)
 {
 	CrateContentMap::iterator it = crateContentMap.find(msg.name);
+	assert(it != crateContentMap.end() && "crate content not found!");
 	Crate* crate = new GridCrate4x4MiniBall(msg.name, it->second,datatypes::point2f(msg.x,msg.y),msg.angle);
 	crates.insert(std::pair<std::string, Crate*>(crate->getName(), crate));
 
 	onNewCrate(*crate);
 }
 
-void CrateDemo::crateRemovedCb(const visDum::CrateMsg& msg) {
+void CrateDemo::crateRemovedCb(const vision::CrateMsg& msg) {
 	std::map<std::string, Crate*>::iterator result = crates.find(msg.name);
+	assert(result != crates.end() && "crate does not exist!");
 	onCrateRemoved(*(result->second));
 	delete result->second;
 	crates.erase(result);
 }
 
-void CrateDemo::crateMovedCb(const visDum::CrateMsg& msg)
+void CrateDemo::crateMovedCb(const vision::CrateMsg& msg)
 {
 	std::map<std::string, Crate*>::iterator result = crates.find(msg.name);
 	Crate* c= result->second;
@@ -112,57 +115,152 @@ void CrateDemo::update()
 	ros::spinOnce();
 }
 
+static void printMove(const deltarobotnode::motion& move)
+{
+	std::cout << "printMove invoked" << std::endl;
+	if(move.request.x.size() == move.request.y.size() && move.request.x.size() == move.request.z.size() && move.request.x.size() == move.request.speed.size())
+	{
+		for(size_t i = 0; i < move.request.x.size(); i++)
+		{
+			std::cout << "i=" << i << " x=" << move.request.x.at(i) << " y=" << move.request.y.at(i) << " z=" << move.request.z.at(i) << " speed=" << move.request.speed.at(i) << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "vectors not of same size!" << std::endl;
+	}
+	std::cout << "printMove returned" << std::endl;
+}
+
+struct MotionCtor
+{
+	deltarobotnode::motion motions;
+
+	void addMotion(const datatypes::point3f& p, float speed)
+	{
+		motions.request.x.push_back(p.x );
+		motions.request.y.push_back(p.y );
+		motions.request.z.push_back(p.z );
+		motions.request.speed.push_back(speed);
+	}
+
+	bool move(ros::ServiceClient& client)
+	{
+		client.call(motions);
+		return motions.response.succeeded;
+	}
+};
+void CrateDemo::drawCrateCorners(Crate& crate) {
+	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+	const int speed = 150;
+	MotionCtor ctor;
+	datatypes::point2f pointLT = datatypes::point2f(-(crate.size.width/2),-(crate.size.depth/2));
+	pointLT = pointLT.rotate(crate.angle);
+	pointLT += crate.position;
+	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
+	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,TABLE_HEIGHT + 15),speed);
+	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
+
+	datatypes::point2f pointRT = datatypes::point2f((crate.size.width/2),-(crate.size.depth/2));
+	pointRT = pointRT.rotate(crate.angle);
+	pointRT += crate.position;
+	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
+	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,TABLE_HEIGHT + 15),speed);
+	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
+
+	datatypes::point2f pointLB = datatypes::point2f(-(crate.size.width/2),(crate.size.depth/2));
+	pointLB = pointLB.rotate(crate.angle);
+	pointLB += crate.position;
+	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
+	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,TABLE_HEIGHT + 15),speed);
+	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
+
+	datatypes::point2f pointRB = datatypes::point2f((crate.size.width/2),(crate.size.depth/2));
+	pointRB = pointRB.rotate(crate.angle);
+	pointRB += crate.position;
+	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
+	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,TABLE_HEIGHT + 15),speed);
+	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
+
+	printMove(ctor.motions);
+
+	if(!ctor.move(motionClient))
+	{
+		ROS_WARN("Can't touch this!");
+	}
+
+	//motionClient.call(ctor.motions);
+
+	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
+}
 void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo ){
 	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
 	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
 	const int speed = 350;
 	//move to source
-	deltarobotnode::motion move1;
-	move1.request.x.push_back(posFrom.x);
-	move1.request.y.push_back(posFrom.y);
-	move1.request.z.push_back(SAFE_HEIGHT);
-	move1.request.speed.push_back(speed);
+//	deltarobotnode::motion move1;
+//	move1.request.x.push_back(posFrom.x);
+//	move1.request.y.push_back(posFrom.y);
+//	move1.request.z.push_back(SAFE_HEIGHT);
+//	move1.request.speed.push_back(speed);
+
+	MotionCtor ctor;
+	ctor.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	ctor.addMotion(posFrom, speed);
+
 	//move down
-	move1.request.x.push_back(posFrom.x);
-	move1.request.y.push_back(posFrom.y);
-	move1.request.z.push_back(posFrom.z);
-	move1.request.speed.push_back(speed);
-	motionClient.call(move1);
-/*
+//	move1.request.x.push_back(posFrom.x);
+//	move1.request.y.push_back(posFrom.y);
+//	move1.request.z.push_back(posFrom.z);
+//	move1.request.speed.push_back(speed);
+
+	//printMove(move1);
+
+	motionClient.call(ctor.motions);//move1);
+
 	//enable gripper
-	deltarobotnode::gripper grip;
+	/*deltarobotnode::gripper grip;
 	grip.request.enabled = true;
-	gripperClient.call(grip);
-*/
+	gripperClient.call(grip);*/
+
 	//move up
-	deltarobotnode::motion move2;
-	move2.request.x.push_back(posFrom.x);
-	move2.request.y.push_back(posFrom.y);
-	move2.request.z.push_back(SAFE_HEIGHT);
-	move2.request.speed.push_back(speed);
-	//move dest
-	move2.request.x.push_back(posTo.x);
-	move2.request.y.push_back(posTo.y);
-	move2.request.z.push_back(SAFE_HEIGHT);
-	move2.request.speed.push_back(speed);
-	//move down
-	move2.request.x.push_back(posTo.x);
-	move2.request.y.push_back(posTo.y);
-	move2.request.z.push_back(posTo.z);
-	move2.request.speed.push_back(speed);
-	motionClient.call(move2);
-/*
+//	deltarobotnode::motion move2;
+//	move2.request.x.push_back(posFrom.x);
+//	move2.request.y.push_back(posFrom.y);
+//	move2.request.z.push_back(SAFE_HEIGHT);
+//	move2.request.speed.push_back(speed);
+//	//move dest
+//	move2.request.x.push_back(posTo.x);
+//	move2.request.y.push_back(posTo.y);
+//	move2.request.z.push_back(SAFE_HEIGHT);
+//	move2.request.speed.push_back(speed);
+//	//move down
+//	move2.request.x.push_back(posTo.x);
+//	move2.request.y.push_back(posTo.y);
+//	move2.request.z.push_back(posTo.z);
+//	move2.request.speed.push_back(speed);
+
+	MotionCtor ctor1;
+	ctor1.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	ctor1.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	ctor1.addMotion(posTo, speed);
+
+	motionClient.call(ctor1.motions);//move2);
+
 	//Drop object
-	grip.request.enabled = false;
-	gripperClient.call(grip);
-*/
+	/*grip.request.enabled = false;
+	gripperClient.call(grip);*/
+
 	//move up
-	deltarobotnode::motion move3;
-	move3.request.x.push_back(posTo.x);
-	move3.request.y.push_back(posTo.y);
-	move3.request.z.push_back(SAFE_HEIGHT);
-	move3.request.speed.push_back(speed);
-	motionClient.call(move3);
+//	deltarobotnode::motion move3;
+//	move3.request.x.push_back(posTo.x);
+//	move3.request.y.push_back(posTo.y);
+//	move3.request.z.push_back(SAFE_HEIGHT);
+//	move3.request.speed.push_back(speed);
+
+	MotionCtor ctor2;
+	ctor2.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	motionClient.call(ctor2.motions);//move3);
 
 	CrateContent* c = crateFrom.get(indexFrom);
 	crateTo.put(indexTo, c);

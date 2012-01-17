@@ -39,13 +39,13 @@ namespace huniplacer
 		const double HIP 				  = 61.1;  //mm
 		const double EFFECTOR 			  = 46.19; //mm old value: 42.15
 		const double ANKLE				  = 150.8; //mm
-		const double HIP_ANKLE_ANGLE_MAX  = utils::rad(20);    //radians
+		const double HIP_ANKLE_ANGLE_MAX  = utils::rad(22);    //radians
 		const double MOTOR_ROT_MIN 	      = utils::rad(-45);   //radians
-		const double MOTOR_ROT_MAX 	      = utils::rad(75);    //radians
+		const double MOTOR_ROT_MAX 	      = utils::rad(83);    //radians
 
-		const double MOTOR1_DEVIATION	  = utils::rad(0);	   //radians
-		const double MOTOR2_DEVIATION	  = utils::rad(0);	   //radians
-		const double MOTOR3_DEVIATION	  = utils::rad(0);	   //radians
+		const double MOTOR1_DEVIATION	  = utils::rad(-45);   //radians
+		const double MOTOR2_DEVIATION	  = utils::rad(-45);   //radians
+		const double MOTOR3_DEVIATION	  = utils::rad(-45);   //radians
 
 		//make sure all the points that the effector can reach are included in the box
 		// with the following dimensions:

@@ -10,7 +10,7 @@
   <url>http://ros.org/wiki/cratedemo</url>
   <depend package="roscpp"/>
   <depend package="deltarobotnode" />
-  <depend package="visDum" />
+  <depend package="vision" />
 </package>
 
 

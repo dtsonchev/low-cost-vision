@@ -63,9 +63,9 @@ datatypes::point3f GridCrate::getContainerLocation(size_t index) const {
 	using namespace datatypes;
 
 	point2f location2D;
-	location2D.x = -(size.width / 2.0) + (index % gridWidth) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
-	location2D.y = -(size.depth / 2.0) + (index / gridHeight) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
-	location2D = location2D.rotate(angle);
+	location2D.x = (-size.width / 2.0) + (index % gridWidth) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
+	location2D.y = (-size.depth / 2.0) + (index / gridHeight) * (2.0 * radiusOfBallContainer + distanceToNext) + distanceToSide + radiusOfBallContainer;
+	location2D = location2D.rotate(-angle);
 	location2D += position;
 	std::cout << "TABLE_HEIGHT = " << TABLE_HEIGHT << " bottomThickness = " << bottomThickness << " (TABLE_HEIGHT+bottomThickness) = " << (TABLE_HEIGHT+bottomThickness) << std::endl;
 	point3f location3D(location2D.x, location2D.y, (TABLE_HEIGHT+bottomThickness));

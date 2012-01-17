@@ -66,7 +66,6 @@ CrateContent* Crate::get(size_t index) const {
 void Crate::remove(size_t index) {
 	if (data.at(index) != NULL)
 	{
-		delete data.at(index);
 		data[index] = NULL;
 	} else {
 		throw cratedemo::LocationIsEmptyException();

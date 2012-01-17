@@ -7,6 +7,7 @@
 #include "deltarobotnode/stop.h"
 #include "deltarobotnode/gripper.h"
 #include "deltarobotnode/error.h"
+#include "deltarobotnode/error.h"
 
 using namespace huniplacer;
 //using namespace deltarobot;
@@ -29,6 +30,7 @@ static void modbus_exhandler(std::runtime_error& ex)
 bool moveTo(deltarobotnode::motion::Request &req,
 		deltarobotnode::motion::Response &res)
 {
+	ROS_INFO("-- moveTo");
 	res.succeeded = true;
 	try
 	{
@@ -58,6 +60,7 @@ bool moveTo(deltarobotnode::motion::Request &req,
 		msg.errorType = 2;
 		pub->publish(msg);
 		res.succeeded = false;
+		ROS_ERROR("moveTo: %s", ss.str().c_str());
 	}
 	return true;
 }
@@ -114,8 +117,8 @@ int main(int argc, char** argv)
 		crd514_kd::rtu_config::DATA_BITS,
 		crd514_kd::rtu_config::STOP_BITS);
 
-	double deviation[3] = {0,0,0};
-	steppermotor3 motors(modbus_rtu, utils::rad(-45), utils::rad(75), modbus_exhandler, deviation);
+	double deviation[3] = {measures::MOTOR1_DEVIATION, measures::MOTOR2_DEVIATION, measures::MOTOR3_DEVIATION};
+	steppermotor3 motors(modbus_rtu, measures::MOTOR_ROT_MIN, measures::MOTOR_ROT_MAX, modbus_exhandler, deviation);
 	robot = new huniplacer::deltarobot(kinematics, motors);
 	robot->generate_boundaries(2);
 	robot->power_on();

@@ -46,7 +46,7 @@ namespace huniplacer
     deltarobot::deltarobot(inverse_kinematics_model& kinematics, imotor3& motors) :
         kinematics(kinematics),
         motors(motors),
-        effector_location(point3(0, 0, -205)),
+        effector_location(point3(0, 0, -161.9)),
         boundaries_generated(false)
     {
     }
