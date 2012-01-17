@@ -38,7 +38,7 @@ visionNode::visionNode(int argc, char* argv[]){
 		camFrame = Mat(cam->get_img_height(), cam->get_img_width(), cam->get_img_format());
 
 		fidDetector = new FiducialDetector();
-		fidDetector->minRad = 20;
+		fidDetector->minRad = 15;
 		fidDetector->maxRad = 25;
 		fidDetector->minDist = 2.0f;
 		fidDetector->maxDist = 5.0f;
