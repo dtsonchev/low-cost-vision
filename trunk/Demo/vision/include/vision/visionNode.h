@@ -25,9 +25,9 @@ public:
 	~visionNode();
 
 	void run();
-	void calibrate();
 	bool getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res);
 	bool getAllCrates(vision::getAllCrates::Request &req,vision::getAllCrates::Response &res);
+	bool recalibrate(std_srvs::Empty &req, std_srvs::Empty &res);
 
 private:
 	unicap_cv_bridge::unicap_cv_camera * cam;
@@ -49,6 +49,8 @@ private:
 
 	double crateMovementThresshold;
 	int numberOfStableFrames;
+	bool invokeCalibration;
 
+	bool calibrate(unsigned int measurements = 100, int maxErrors = 100);
 	void printUsage(char* invokeName);
 };
