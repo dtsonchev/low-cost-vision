@@ -185,9 +185,9 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 
 		// Determine mean deviation
 		double totalDistance = 0;
-		for(std::vector<cv::Point2f>::iterator it=fid1_buffer.begin(); it!=fid1_buffer.end(); ++it) totalDistance += Crate::dist(markers[0], *it);
-		for(std::vector<cv::Point2f>::iterator it=fid2_buffer.begin(); it!=fid2_buffer.end(); ++it) totalDistance += Crate::dist(markers[1], *it);
-		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::dist(markers[2], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid1_buffer.begin(); it!=fid1_buffer.end(); ++it) totalDistance += Crate::distance(markers[0], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid2_buffer.begin(); it!=fid2_buffer.end(); ++it) totalDistance += Crate::distance(markers[1], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::distance(markers[2], *it);
 		float meanDeviation = totalDistance / double(fid1_buffer.size()+fid2_buffer.size()+fid3_buffer.size());
 
 		ROS_INFO("Calibration markers updated. Measured: %d Failed: %d Deviation: %f", measurements, failCount, meanDeviation);
