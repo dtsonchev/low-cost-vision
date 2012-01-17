@@ -55,12 +55,12 @@ namespace cratedemo
 void CrateDemo::deltaErrorCb(const deltarobotnode::error::ConstPtr& msg)
 {
 	ROS_ERROR("Delta robot error[%i]:\t%s",msg->errorType,msg->errorMsg.c_str());
+	onDeltaError(msg->errorType, msg->errorMsg);
 }
 
 CrateDemo::~CrateDemo()
 {
 }
-
 
 void CrateDemo::crateEventCb(const vision::CrateEventMsg::ConstPtr& msg)
 {
@@ -74,47 +74,48 @@ void CrateDemo::crateEventCb(const vision::CrateEventMsg::ConstPtr& msg)
 
 	switch(msg->event)
 	{
-	case IN: newCrateCb(msg->crate); break;
-	case MOVED: crateMovedCb(msg->crate); break;
-	case MOVING: //TODO implements
-	break;
-	case OUT: crateRemovedCb(msg->crate); break;
-	default: break;
+	case IN: handleNewCrateCb(msg->crate); break;
+	case MOVED: handleCrateMoved(msg->crate); break;
+	case MOVING: handleCrateMoving(msg->crate); break;
+	case OUT: handleCcrateRemoved(msg->crate); break;
+	default: assert(0 && "unknown crate event"); break;
 	}
 }
 
-void CrateDemo::newCrateCb(const vision::CrateMsg& msg)
+void CrateDemo::handleNewCrate(const vision::CrateMsg& msg)
 {
 	CrateContentMap::iterator it = crateContentMap.find(msg.name);
-	assert(it != crateContentMap.end() && "crate content not found!");
+	assert(it != crateContentMap.end() && "crate content not found!"); //TODO refresh cratedb and try again
 	Crate* crate = new GridCrate4x4MiniBall(msg.name, it->second,datatypes::point2f(msg.x,msg.y),msg.angle);
 	crates.insert(std::pair<std::string, Crate*>(crate->getName(), crate));
 
 	onNewCrate(*crate);
 }
 
-void CrateDemo::crateRemovedCb(const vision::CrateMsg& msg) {
+void CrateDemo::handleCrateRemoved(const vision::CrateMsg& msg) {
 	std::map<std::string, Crate*>::iterator result = crates.find(msg.name);
-	assert(result != crates.end() && "crate does not exist!");
+	assert(result != crates.end() && "crate does not exist!"); //TODO refresh cratedb and try again
 	onCrateRemoved(*(result->second));
 	delete result->second;
 	crates.erase(result);
 }
 
-void CrateDemo::crateMovedCb(const vision::CrateMsg& msg)
+void CrateDemo::handleCrateMoved(const vision::CrateMsg& msg)
 {
-	std::map<std::string, Crate*>::iterator result = crates.find(msg.name);
-	Crate* c= result->second;
+	CrateMap::iterator res = crates.find(msg.name);
+	assert(result != crates.end() && "crate does not exist!"); //TODO refresh crate db and try again
+	Crate* c = result->second;
 	c->position = datatypes::point2f(msg.x,msg.y);
 	c->angle = msg.angle;
 	onCrateMove(*c);
 }
 
-void CrateDemo::update()
+void CrateDemo::handleCrateMoving(const vision::CrateMsg& msg)
 {
-	ros::spinOnce();
+	//TODO impl
 }
 
+//DEBUG
 static void printMove(const deltarobotnode::motion& move)
 {
 	std::cout << "printMove invoked" << std::endl;
@@ -150,6 +151,7 @@ struct MotionCtor
 		return motions.response.succeeded;
 	}
 };
+
 void CrateDemo::drawCrateCorners(Crate& crate) {
 	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	const int speed = 150;

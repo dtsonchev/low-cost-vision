@@ -54,26 +54,23 @@ Crate::~Crate() {
 void Crate::put(size_t index, CrateContent* crateContent) {
 	if (data.at(index) != NULL)
 	{
-		throw cratedemo::LocationIsFullException();
+		throw cratedemo::LocationIsEmptyException(); }
 	}
 	data.at(index) = crateContent;
 }
 
 CrateContent* Crate::get(size_t index) const {
-	return data.at(index);
+	CrateContent* content = data.at(index);
+	if(content == NULL) { throw LocationIsFullException(); }
+	return content;
 }
 
 void Crate::remove(size_t index) {
-	if (data.at(index) != NULL)
-	{
-		data[index] = NULL;
-	} else {
-		throw cratedemo::LocationIsEmptyException();
-	}
+	if(data.at(index) == NULL) { throw LocatioIsEmptyException(); }
+	data[index] = NULL;
 }
 
-const std::string& Crate::getName(void) const
-{
+const std::string& Crate::getName(void) const {
 	return name;
 }
 

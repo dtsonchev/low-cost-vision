@@ -28,9 +28,11 @@
 //******************************************************************************
 
 #pragma once
+
 #include <cratedemo/Crate.hpp>
 #include <cratedemo/Environment.hpp>
 #include <string>
+
 namespace cratedemo {
 /**
  * Symmetric crate containing balls
@@ -63,15 +65,16 @@ public:
 		double distanceToNext,
 		double radiusOfBallContainer,
 		double bottomThickness);
+
 	virtual datatypes::point3f getContainerLocation(size_t index) const;
-	virtual datatypes::point3f getCrateContentGripLocation(size_t index) const;
+	virtual datatypes::point3f getContentGripLocation(size_t index) const;
 
 private:
 	size_t gridWidth;
 	size_t gridHeight;
-	double distanceToSide;
-	double distanceToNext;
-	double bottomThickness;
-	double radiusOfBallContainer;
+	float distanceToSide;
+	float distanceToNext;
+	float bottomThickness;
+	float radiusOfBallContainer;
 };
 }

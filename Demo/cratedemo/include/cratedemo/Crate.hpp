@@ -27,7 +27,7 @@
 // along with cratedemo.  If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
 #pragma once
-#include <string.h>
+
 #include <string>
 #include <cratedemo/CrateContent.hpp>
 #include <datatypes/point2.hpp>
@@ -61,7 +61,7 @@ public:
 	 * @param index
 	 * @return the location of the object on index.
 	 */
-	virtual datatypes::point3f getCrateContentGripLocation(size_t index) const = 0;
+	virtual datatypes::point3f getContentGripLocation(size_t index) const = 0;
 	/**
 	 * Remove the content on location index.
 	 * @param index
@@ -75,13 +75,18 @@ public:
 
 	const std::string& getName(void) const;
 protected:
-	Crate(std::string name, datatypes::point2f position, float angle, datatypes::size3f size, std::vector<CrateContent*>& crateContent);
+	Crate(
+		std::string name,
+		datatypes::point2f position,
+		float angle,
+		datatypes::size3f size,
+		std::vector<CrateContent*>& crateContent);
 
 	std::string name;
 public:
 	datatypes::point2f position;
 	float angle;
-//OOpps  :O  protected:
+protected:
 	datatypes::size3f size;
 	std::vector<CrateContent*>& data;
 
