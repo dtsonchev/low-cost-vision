@@ -178,16 +178,20 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 	}
 
 	if(measurementCount == measurements) {
-		markers.push_back(point2f(medianX(fid1_buffer), medianY(fid1_buffer)));
-		markers.push_back(point2f(medianX(fid2_buffer), medianY(fid2_buffer)));
-		markers.push_back(point2f(medianX(fid3_buffer), medianY(fid3_buffer)));
+		cv::Point2f fid1(medianX(fid1_buffer), medianY(fid1_buffer));
+		cv::Point2f fid2(medianX(fid2_buffer), medianY(fid2_buffer));
+		cv::Point2f fid3(medianX(fid3_buffer), medianY(fid3_buffer));
+
+		markers.push_back(point2f(fid1.x, fid1.y));
+		markers.push_back(point2f(fid2.x, fid2.y));
+		markers.push_back(point2f(fid3.x, fid3.y));
 		cordTransformer->set_fiducials_pixel_coordinates(markers);
 
 		// Determine mean deviation
 		double totalDistance = 0;
-		for(std::vector<cv::Point2f>::iterator it=fid1_buffer.begin(); it!=fid1_buffer.end(); ++it) totalDistance += Crate::distance(markers[0], *it);
-		for(std::vector<cv::Point2f>::iterator it=fid2_buffer.begin(); it!=fid2_buffer.end(); ++it) totalDistance += Crate::distance(markers[1], *it);
-		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::distance(markers[2], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid1_buffer.begin(); it!=fid1_buffer.end(); ++it) totalDistance += Crate::distance(fid1, *it);
+		for(std::vector<cv::Point2f>::iterator it=fid2_buffer.begin(); it!=fid2_buffer.end(); ++it) totalDistance += Crate::distance(fid2, *it);
+		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::distance(fid3, *it);
 		float meanDeviation = totalDistance / double(fid1_buffer.size()+fid2_buffer.size()+fid3_buffer.size());
 
 		ROS_INFO("Calibration markers updated. Measured: %d Failed: %d Deviation: %f", measurements, failCount, meanDeviation);
