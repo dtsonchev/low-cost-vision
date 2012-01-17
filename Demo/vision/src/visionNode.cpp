@@ -59,8 +59,7 @@ visionNode::visionNode(int argc, char* argv[]){
 		crateMovementThresshold = 5;
 		crateTracker = new CrateTracker(10 , crateMovementThresshold);
 
-
-
+		invokeCalibration = false;
 
 		crateEventPublisher = node.advertise<vision::CrateEventMsg>("crateEvent", 100);
 		ErrorPublisher = node.advertise<vision::error>("visionError", 100);
@@ -68,7 +67,7 @@ visionNode::visionNode(int argc, char* argv[]){
 		getAllCratesService = node.advertiseService("getAllCrates", &visionNode::getAllCrates, this);
 }
 
-bool visionNode::getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res)
+bool visionNode::getCrate(std_msgs:: &req,vision::getCrate::Response &res)
 {
 	exCrate crate;
 	bool succeeded = crateTracker->getCrate(req.name, crate);
@@ -108,6 +107,11 @@ bool visionNode::getAllCrates(vision::getAllCrates::Request &req,vision::getAllC
 	return true;
 }
 
+bool visionNode::recalibrate(std_srvs::Empty &req, std_srvs::Empty &res){
+	invokeCalibration = true;
+	return true;
+}
+
 visionNode::~visionNode(){
 	delete cam;
 	delete fidDetector;
@@ -144,15 +148,16 @@ inline float medianY(std::vector<cv::Point2f> points){
         }
 }
 
-void visionNode::calibrate(){
+bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 	ROS_INFO("Updating calibration markers...");
 
 	std::vector<cv::Point2f> fid1_buffer;
         std::vector<cv::Point2f> fid2_buffer;
         std::vector<cv::Point2f> fid3_buffer;
 
-	unsigned int measurements = 0;
-	while(measurements<100){
+	unsigned int measurementCount = 0;
+	unsigned int failCount = 0;
+	while(measurementCount<measurements && (maxErrors<0 || failCount<maxErrors)){
 		cam->get_frame(&camFrame);
 		rectifier->rectify(camFrame, rectifiedCamFrame);
 		cv::Mat gray;
@@ -161,26 +166,38 @@ void visionNode::calibrate(){
 		std::vector<cv::Point2f> fiducialPoints;
 		fidDetector->detect(gray, fiducialPoints);
 		if(fiducialPoints.size() == 3) {
+			measurementCount++;
 			Crate::order(fiducialPoints);
 			fid1_buffer.push_back(fiducialPoints[0]);
 			fid2_buffer.push_back(fiducialPoints[1]);
 			fid3_buffer.push_back(fiducialPoints[2]);
-			measurements++;
 		} else {
-			ROS_WARN("Number of fiducials not correct needed 3 saw: %d", fiducialPoints.size());
+			failCount++;
+			ROS_WARN("Incorrect number of markers. Needed: 3 Saw: %d", fiducialPoints.size());
 		}
 	}
 
-	markers.push_back(point2f(medianX(fid1_buffer), medianY(fid1_buffer)));
-	markers.push_back(point2f(medianX(fid2_buffer), medianY(fid2_buffer)));
-	markers.push_back(point2f(medianX(fid3_buffer), medianY(fid3_buffer)));
-	cordTransformer->set_fiducials_pixel_coordinates(markers);
-	ROS_INFO("Updated calibration markers");
+	if(measurementCount == measurements) {
+		markers.push_back(point2f(medianX(fid1_buffer), medianY(fid1_buffer)));
+		markers.push_back(point2f(medianX(fid2_buffer), medianY(fid2_buffer)));
+		markers.push_back(point2f(medianX(fid3_buffer), medianY(fid3_buffer)));
+		cordTransformer->set_fiducials_pixel_coordinates(markers);
+		ROS_INFO("Updated calibration markers with %d measurements", measurements);
+		return true;
+	}
+	ROS_INFO("Calibration timed out, too many failed attempts. Measurements needed: %d Measured: %d", measurements, measurementCount);
+	return false;
 }
 
 void visionNode::run(){
-	calibrate();
+	if(!calibrate()) ros::shutdown();
+
 	while(ros::ok()){
+		if(invokeCalibration) {
+			invokeCalibration = false;
+			calibrate();
+		}
+
 		cam->get_frame(&camFrame);
 		rectifier->rectify(camFrame, rectifiedCamFrame);
 		cv::Mat gray;
