@@ -18,6 +18,7 @@
 #include <vision/error.h>
 #include <vision/getCrate.h>
 #include <vision/getAllCrates.h>
+#include <std_srvs/Empty.h>
 
 class visionNode{
 public:
