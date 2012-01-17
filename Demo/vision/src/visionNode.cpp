@@ -152,8 +152,8 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 	ROS_INFO("Updating calibration markers...");
 
 	std::vector<cv::Point2f> fid1_buffer;
-        std::vector<cv::Point2f> fid2_buffer;
-        std::vector<cv::Point2f> fid3_buffer;
+    std::vector<cv::Point2f> fid2_buffer;
+    std::vector<cv::Point2f> fid3_buffer;
 
 	unsigned int measurementCount = 0;
 	unsigned int failCount = 0;
@@ -182,7 +182,15 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 		markers.push_back(point2f(medianX(fid2_buffer), medianY(fid2_buffer)));
 		markers.push_back(point2f(medianX(fid3_buffer), medianY(fid3_buffer)));
 		cordTransformer->set_fiducials_pixel_coordinates(markers);
-		ROS_INFO("Updated calibration markers with %d measurements", measurements);
+
+		// Determine mean deviation
+		double totalDistance = 0;
+		for(std::vector<cv::Point2f>::iterator it=fid1_buffer.begin(); it!=fid1_buffer.end(); ++it) totalDistance += Crate::dist(markers[0], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid2_buffer.begin(); it!=fid2_buffer.end(); ++it) totalDistance += Crate::dist(markers[1], *it);
+		for(std::vector<cv::Point2f>::iterator it=fid3_buffer.begin(); it!=fid3_buffer.end(); ++it) totalDistance += Crate::dist(markers[2], *it);
+		float meanDeviation = totalDistance / double(fid1_buffer.size()+fid2_buffer.size()+fid3_buffer.size());
+
+		ROS_INFO("Calibration markers updated. Measured: %d Failed: %d Deviation: %f", measurements, failCount, meanDeviation);
 		return true;
 	}
 	ROS_INFO("Calibration timed out, too many failed attempts. Measurements needed: %d Measured: %d", measurements, measurementCount);
