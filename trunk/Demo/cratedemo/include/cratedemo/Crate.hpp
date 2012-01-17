@@ -81,7 +81,7 @@ protected:
 public:
 	datatypes::point2f position;
 	float angle;
-protected:
+//OOpps  :O  protected:
 	datatypes::size3f size;
 	std::vector<CrateContent*>& data;
 

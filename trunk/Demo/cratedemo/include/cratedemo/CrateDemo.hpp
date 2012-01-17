@@ -44,7 +44,7 @@
 #include <deltarobotnode/stop.h>
 
 //WOOO 133333337!!!!!!!111111 one
-#include <visDum/CrateEventMsg.h>
+#include <vision/CrateEventMsg.h>
 
 namespace cratedemo
 {
@@ -55,7 +55,8 @@ typedef std::map<std::string, Crate*> CrateMap;
  */
 class CrateDemo
 {
-private:
+//private:
+public:
 	// deltarobot services
 	ros::ServiceClient gripperClient;
 	ros::ServiceClient motionClient;
@@ -66,10 +67,10 @@ private:
 	ros::Subscriber crateEventSub;
 
 	CrateContentMap& crateContentMap;
-	void newCrateCb(const visDum::CrateMsg& msg);
-	void crateRemovedCb(const visDum::CrateMsg& msg);
-	void crateMovedCb(const visDum::CrateMsg& msg);
-
+	void newCrateCb(const vision::CrateMsg& msg);
+	void crateRemovedCb(const vision::CrateMsg& msg);
+	void crateMovedCb(const vision::CrateMsg& msg);
+	void drawCrateCorners(Crate& crate); //for debugging
 protected:
 	CrateDemo(
 		ros::NodeHandle& hNode,
@@ -107,7 +108,7 @@ public:
 	//void GeneralCb(/*message*/);
 	void update();
 	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
-	void crateEventCb(const visDum::CrateEventMsg::ConstPtr& msg);
+	void crateEventCb(const vision::CrateEventMsg::ConstPtr& msg);
 	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
 
 	

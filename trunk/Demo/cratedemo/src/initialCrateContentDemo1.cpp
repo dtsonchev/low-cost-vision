@@ -33,10 +33,13 @@ namespace cratedemo
 		if(crateContent1 == NULL)
 		{
 			crateContent1 = new CrateContentMap();
-			add("GC4x4MB_1", Color::BLUE);
+			/*add("GC4x4MB_1", Color::BLUE);
 			addEmpty("GC4x4MB_2");
 			add("GC4x4MB_3", Color::RED);
-			addEmpty("GC4x4MB_4");
+			addEmpty("GC4x4MB_4");*/
+
+			addEmpty("GC4x4MB_1");
+			(*crateContent1)["GC4x4MB_1"][0] = new MiniBall(Color::BLUE);
 		}
 
 		return *crateContent1;
