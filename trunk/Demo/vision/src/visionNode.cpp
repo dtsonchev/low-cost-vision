@@ -67,7 +67,7 @@ visionNode::visionNode(int argc, char* argv[]){
 		getAllCratesService = node.advertiseService("getAllCrates", &visionNode::getAllCrates, this);
 }
 
-bool visionNode::getCrate(std_msgs:: &req,vision::getCrate::Response &res)
+bool visionNode::getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res)
 {
 	exCrate crate;
 	bool succeeded = crateTracker->getCrate(req.name, crate);
