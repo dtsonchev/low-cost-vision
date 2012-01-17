@@ -26,10 +26,12 @@
 // You should have received a copy of the GNU General Public License
 // along with cratedemo.  If not, see <http://www.gnu.org/licenses/>.
 #pragma once
+
 #include <datatypes/point3.hpp>
 #include <datatypes/size3.hpp>
 #include <datatypes/Color.hpp>
 #include <cratedemo/CrateContent.hpp>
+
 namespace cratedemo {
 namespace Color {
 	typedef enum _Color
@@ -58,20 +60,21 @@ private:
 	static const float GRIPPOINT_Y = 0.0;
 	static const float GRIPPOINT_Z = 9.7;
 	static const double WEIGHT = 0.4;
+
 public:
 	MiniBall(Color::type color) :
-		/**
-		 * Constructor
-		 * @param color
-		 */
-		CrateContent(datatypes::point3f(GRIPPOINT_X,GRIPPOINT_Y,GRIPPOINT_Z), datatypes::size3f(SIZE_WIDTH,SIZE_DEPTH,SIZE_HEIGHT), WEIGHT){
+		CrateContent(
+			datatypes::point3f(GRIPPOINT_X,GRIPPOINT_Y,GRIPPOINT_Z),
+			datatypes::size3f(SIZE_WIDTH,SIZE_DEPTH,SIZE_HEIGHT),
+			WEIGHT) {
 		this->color = color;
 	}
+
+	~MiniBall() {}
+
 	/**
-	 *
 	 * @return color of the miniball
 	 */
 	Color::type getColor() const { return color;}
-	~MiniBall() {}
 };
 }

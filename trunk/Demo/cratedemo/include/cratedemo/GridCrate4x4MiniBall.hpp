@@ -51,20 +51,22 @@ public:
 	 * @param angle rotation in the middle of the crate
 	 */
 	GridCrate4x4MiniBall(
-			std::string name,
-			std::vector<CrateContent*>& crateContent,
-			datatypes::point2f position,
-			float angle) : 	GridCrate(	name,
-										crateContent,
-										position,
-										angle,
-										datatypes::size3f(CRATE_WIDTH,CRATE_DEPTH,CRATE_HEIGHT),
-										GRID_WIDTH,
-										GRID_HEIGHT,
-										DISTANCE_TO_SIDE,
-										DISTANCE_TO_NEXT,
-										RADIUS_OF_BALL_CONTAINER,
-										BOTTOM_THICKNESS) {}
+		std::string name,
+		std::vector<CrateContent*>& crateContent,
+		datatypes::point2f position,
+		float angle) :
+			GridCrate(
+				name,
+				crateContent,
+				position,
+				angle,
+				datatypes::size3f(CRATE_WIDTH,CRATE_DEPTH,CRATE_HEIGHT),
+				GRID_WIDTH,
+				GRID_HEIGHT,
+				DISTANCE_TO_SIDE,
+				DISTANCE_TO_NEXT,
+				RADIUS_OF_BALL_CONTAINER,
+				BOTTOM_THICKNESS) {}
 };
 
 }

@@ -36,7 +36,7 @@ namespace cratedemo {
  */
  class LocationIsEmptyException : public std::exception {
  public:
-	 LocationIsEmptyException() {}
+	 LocationIsEmptyException() throw() {}
 	 virtual ~LocationIsEmptyException() throw() {}
 	 virtual const char* what() const throw() {
 		 return "Location Is Empty";
@@ -47,7 +47,7 @@ namespace cratedemo {
   */
  class LocationIsFullException : public std::exception {
  public:
-	 LocationIsFullException() {}
+	 LocationIsFullException() throw() {}
 	 virtual ~LocationIsFullException() throw() {}
 	 virtual const char* what() const throw() {
 		 return "Location Is Full";

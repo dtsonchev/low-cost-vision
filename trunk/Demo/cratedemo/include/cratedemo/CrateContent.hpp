@@ -26,8 +26,8 @@
 // You should have received a copy of the GNU General Public License
 // along with cratedemo.  If not, see <http://www.gnu.org/licenses/>.
 //******************************************************************************
-
 #pragma once
+
 #include <datatypes/point3.hpp>
 #include <datatypes/size3.hpp>
 #include <string>
@@ -70,7 +70,7 @@ public:
 	 * Returns the size.
 	 * @return
 	 */
-	double getWeight() const {return weight; }
+	double getWeight() const { return weight; }
 
 protected:
 	/**
@@ -79,13 +79,19 @@ protected:
 	 * @param size size of the object
 	 * @param weight weight of the object
 	 */
-	CrateContent(datatypes::point3f gripPoint,datatypes::size3f size, double weight): gripPoint(gripPoint), size(size), weight(weight) {}
+	CrateContent(
+		datatypes::point3f gripPoint,
+		datatypes::size3f size,
+		double weight) :
+			gripPoint(gripPoint),
+			size(size),weight(weight) {}
 
 private:
 	datatypes::point3f gripPoint; //in mm
 	datatypes::size3f size; //in mm
-	double weight; //in gram
+	float weight; //in gram
 };
 
 typedef std::map<std::string, std::vector<CrateContent*> > CrateContentMap;
+
 }

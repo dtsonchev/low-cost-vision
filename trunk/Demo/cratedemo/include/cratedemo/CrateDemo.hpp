@@ -55,22 +55,27 @@ typedef std::map<std::string, Crate*> CrateMap;
  */
 class CrateDemo
 {
-//private:
-public:
-	// deltarobot services
+private:
+	// deltarobot services/topics
 	ros::ServiceClient gripperClient;
 	ros::ServiceClient motionClient;
 	ros::ServiceClient stopClient;
 	ros::Subscriber deltaErrorSub;
 
-	// vision services
+	// vision services/topics
 	ros::Subscriber crateEventSub;
 
 	CrateContentMap& crateContentMap;
-	void newCrateCb(const vision::CrateMsg& msg);
-	void crateRemovedCb(const vision::CrateMsg& msg);
-	void crateMovedCb(const vision::CrateMsg& msg);
+	CrateMap crates;
+
+	//crate event handling methods
+	void handleNewCrate(const vision::CrateMsg& msg);
+	void handleCrateRemoved(const vision::CrateMsg& msg);
+	void handleCrateMoved(const vision::CrateMsg& msg);
+	void handleCrateMoving(const vision::CrateMsg& msg);
+
 	void drawCrateCorners(Crate& crate); //for debugging
+
 protected:
 	CrateDemo(
 		ros::NodeHandle& hNode,
@@ -81,38 +86,27 @@ protected:
 		const std::string& visionEvents,
 		CrateContentMap& crateContentMap);
 
-	CrateMap crates;
-
-
 public:
 	/**
 	 *Deconstructor
 	 */
 	virtual ~CrateDemo();
-/**
- * Method which is called after the (vision) system detects a new crate.
- * @param crate
- */
-	virtual void onNewCrate(Crate& crate) = 0;
 
+	/**
+	 * Method which is called after the (vision) system detects a new crate.
+	 * @param crate
+	 */
+	virtual void onNewCrate(Crate& crate) = 0;
 	/**
 	 * Method which is called after the (vision) system detects that a crate is moved.
 	 * @param crate
 	 */
 	virtual void onCrateMove(Crate& crate) = 0;
-
 	virtual void onCrateRemoved(Crate& crate) = 0;
-/**
- * Updates
- */
-	//void GeneralCb(/*message*/);
-	void update();
+	virtual void onDeltaError(int errCode, const std::string& errStr) = 0;
+
 	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
 	void crateEventCb(const vision::CrateEventMsg::ConstPtr& msg);
 	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
-
-	
-///////testing/////////////////////////
-void  CrateDance(Crate& crate);
 };
 }
