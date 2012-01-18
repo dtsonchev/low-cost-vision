@@ -25,6 +25,14 @@ using namespace pcrctransformation;
 using namespace std;
 using namespace cv;
 
+void on_mouse(int event, int x, int y, int flags, void* param){
+	if(event == CV_EVENT_LBUTTONDOWN){
+		pc_rc_transformer* cordTransformer = (pc_rc_transformer*)param;
+		point2f result = cordTransformer->to_rc(point2f(x, y));
+		ROS_INFO("X: %f, Y:%f", result.x, result.y);
+	}
+}
+
 visionNode::visionNode(int argc, char* argv[]){
 		if (argc != 4){
 			printUsage(argv[0]);
@@ -46,9 +54,13 @@ visionNode::visionNode(int argc, char* argv[]){
 		qrDetector = new QRCodeDetector();
 
 		point2f::point2fvector rc;
-		rc.push_back(point2f(62, 108));
-		rc.push_back(point2f(-64, 112));
-		rc.push_back(point2f(-66, -76.5));
+//		rc.push_back(point2f(62, 108));
+//		rc.push_back(point2f(-64, 112));
+//		rc.push_back(point2f(-66, -76.5));
+		rc.push_back(point2f(61.5, 110.5));
+		rc.push_back(point2f(-62.5, 113.5));
+		rc.push_back(point2f(-65, -74));
+
 		cordTransformer= new pc_rc_transformer(rc,rc);
 
 		rectifier = new RectifyImage();
@@ -65,6 +77,9 @@ visionNode::visionNode(int argc, char* argv[]){
 		ErrorPublisher = node.advertise<vision::error>("visionError", 100);
 		getCrateService = node.advertiseService("getCrate", &visionNode::getCrate, this);
 		getAllCratesService = node.advertiseService("getAllCrates", &visionNode::getAllCrates, this);
+
+		cv::namedWindow("image", CV_WINDOW_AUTOSIZE);
+		cvSetMouseCallback("image", &on_mouse, cordTransformer);
 }
 
 bool visionNode::getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res)
