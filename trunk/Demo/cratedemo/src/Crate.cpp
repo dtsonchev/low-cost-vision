@@ -28,8 +28,8 @@
 //******************************************************************************
 
 #include <cratedemo/Crate.hpp>
+
 #include <cratedemo/CrateExceptions.hpp>
-#include <string>
 #include <datatypes/point2.hpp>
 #include <datatypes/size3.hpp>
 
