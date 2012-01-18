@@ -2,7 +2,7 @@
 # low cost vision - generic make file
 # This makefile will be included by a project specific Makefile
 # Required configuration make file version: v1.0.0
-# version: v0.5.6
+# version: v0.5.7
 #######################################################################
 
 #######################################################################
@@ -122,7 +122,7 @@ CPPFLAGS            += $(foreach INC, $(INCLUDEDIR), -I$(INC))
 LFLAGS              := $(foreach LP, $(LINKERPATHS), -L$(LP)) $(LIBFLAGS) $(LFLAGS)
 
 # files removed during clean
-CLEANFILES           = $(OBJS) $(DFILES) $(TARGET) $(BUILDDIR)/expose.sh
+CLEANFILES           = $(OBJS) $(DFILES) $(BINDIR)/$(TARGET) $(LIBDIR)/lib$(TARGET).a
 
 # directories removed during clean
 CLEANDIRS            = $(BUILDDIR) $(BINDIR) $(LIBDIR)
