@@ -33,8 +33,11 @@
 #include <iostream>
 
 #include <ros/ros.h>
+#include <vision/getAllCrates.h>
 #include <deltarobotnode/gripper.h>
 #include <cratedemo/GridCrate4x4MiniBall.hpp>
+#include <cratedemo/MotionWrapper.hpp>
+
 namespace cratedemo
 {
 	CrateDemo::CrateDemo(
@@ -43,19 +46,29 @@ namespace cratedemo
 		const std::string& deltaStop,
 		const std::string& deltaMotion,
 		const std::string& deltaError,
+		const std::string& crateRefresh,
 		const std::string& visionEvents,
+		const std::string& visionError,
 		CrateContentMap& crateContentMap) :
 			gripperClient( hNode.serviceClient<deltarobotnode::gripper>(deltaGrip) ),
 			motionClient( hNode.serviceClient<deltarobotnode::motion>(deltaMotion) ),
 			stopClient(hNode.serviceClient<deltarobotnode::stop>(deltaStop)),
+			crateRefreshClient(hNode.serviceClient<vision::getAllCrates>(crateRefresh)),
 			deltaErrorSub(hNode.subscribe(deltaError, 1000, &CrateDemo::deltaErrorCb, this)),
 			crateEventSub(hNode.subscribe(visionEvents, 1000, &CrateDemo::crateEventCb, this)),
+			visionErrorSub(hNode.subscribe(visionError, 1000, &CrateDemo::visionErrorCb, this)),
 			crateContentMap(crateContentMap) {	}
 
 void CrateDemo::deltaErrorCb(const deltarobotnode::error::ConstPtr& msg)
 {
-	ROS_ERROR("Delta robot error[%i]:\t%s",msg->errorType,msg->errorMsg.c_str());
+	ROS_ERROR("Delta node error[%i]:\t%s",msg->errorType,msg->errorMsg.c_str());
 	onDeltaError(msg->errorType, msg->errorMsg);
+}
+
+void visionErrorCb(const vision::error::ConstPtr& msg);
+{
+	ROS_ERROR("Vision node error[%i]:\t%s", msg->errorType, msg->errorMsg);
+	onVisionError(msg->errorType, msg->errorMsg);
 }
 
 CrateDemo::~CrateDemo()
@@ -133,159 +146,104 @@ static void printMove(const deltarobotnode::motion& move)
 	std::cout << "printMove returned" << std::endl;
 }
 
-struct MotionCtor
-{
-	deltarobotnode::motion motions;
-
-	void addMotion(const datatypes::point3f& p, float speed)
-	{
-		motions.request.x.push_back(p.x );
-		motions.request.y.push_back(p.y );
-		motions.request.z.push_back(p.z );
-		motions.request.speed.push_back(speed);
-	}
-
-	bool move(ros::ServiceClient& client)
-	{
-		client.call(motions);
-		return motions.response.succeeded;
-	}
-};
+//struct MotionCtor
+//{
+//	deltarobotnode::motion motions;
+//
+//	void addMotion(const datatypes::point3f& p, float speed)
+//	{
+//		motions.request.x.push_back(p.x );
+//		motions.request.y.push_back(p.y );
+//		motions.request.z.push_back(p.z );
+//		motions.request.speed.push_back(speed);
+//	}
+//
+//	bool move(ros::ServiceClient& client)
+//	{
+//		client.call(motions);
+//		return motions.response.succeeded;
+//	}
+//};
 
 void CrateDemo::drawCrateCorners(Crate& crate) {
 	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	const int speed = 150;
-	MotionCtor ctor;
+	//MotionCtor ctor;
+	MotionWrapper motionw;
+
 	datatypes::point2f pointLT = datatypes::point2f(-(crate.size.width/2),-(crate.size.depth/2));
 	pointLT = pointLT.rotate(crate.angle);
 	pointLT += crate.position;
-	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
-	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,TABLE_HEIGHT + 15),speed);
-	ctor.addMotion(datatypes::point3f(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointLT.x,pointLT.y,TABLE_HEIGHT + 15),speed);
+	motionw.addMotion(datatypes::point3lf(pointLT.x,pointLT.y,SAFE_HEIGHT),speed);
 
 	datatypes::point2f pointRT = datatypes::point2f((crate.size.width/2),-(crate.size.depth/2));
 	pointRT = pointRT.rotate(crate.angle);
 	pointRT += crate.position;
-	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
-	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,TABLE_HEIGHT + 15),speed);
-	ctor.addMotion(datatypes::point3f(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointRT.x,pointRT.y,TABLE_HEIGHT + 15),speed);
+	motionw.addMotion(datatypes::point3lf(pointRT.x,pointRT.y,SAFE_HEIGHT),speed);
 
 	datatypes::point2f pointLB = datatypes::point2f(-(crate.size.width/2),(crate.size.depth/2));
 	pointLB = pointLB.rotate(crate.angle);
 	pointLB += crate.position;
-	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
-	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,TABLE_HEIGHT + 15),speed);
-	ctor.addMotion(datatypes::point3f(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointLB.x,pointLB.y,TABLE_HEIGHT + 15),speed);
+	motionw.addMotion(datatypes::point3lf(pointLB.x,pointLB.y,SAFE_HEIGHT),speed);
 
 	datatypes::point2f pointRB = datatypes::point2f((crate.size.width/2),(crate.size.depth/2));
 	pointRB = pointRB.rotate(crate.angle);
 	pointRB += crate.position;
-	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
-	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,TABLE_HEIGHT + 15),speed);
-	ctor.addMotion(datatypes::point3f(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
+	motionw.addMotion(datatypes::point3lf(pointRB.x,pointRB.y,TABLE_HEIGHT + 15),speed);
+	motionw.addMotion(datatypes::point3lf(pointRB.x,pointRB.y,SAFE_HEIGHT),speed);
 
-	printMove(ctor.motions);
+	motionw.print();
 
-	if(!ctor.move(motionClient))
+	if(!motionw.callService(motionClient))
 	{
 		ROS_WARN("Can't touch this!");
 	}
 
-	//motionClient.call(ctor.motions);
-
 	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 }
 void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo ){
-	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
-	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
-	const int speed = 350;
-	//move to source
-//	deltarobotnode::motion move1;
-//	move1.request.x.push_back(posFrom.x);
-//	move1.request.y.push_back(posFrom.y);
-//	move1.request.z.push_back(SAFE_HEIGHT);
-//	move1.request.speed.push_back(speed);
-
-	MotionCtor ctor;
-	ctor.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
-	ctor.addMotion(posFrom, speed);
-
-	//move down
-//	move1.request.x.push_back(posFrom.x);
-//	move1.request.y.push_back(posFrom.y);
-//	move1.request.z.push_back(posFrom.z);
-//	move1.request.speed.push_back(speed);
-
-	//printMove(move1);
-
-	motionClient.call(ctor.motions);//move1);
-
-	//enable gripper
-	/*deltarobotnode::gripper grip;
-	grip.request.enabled = true;
-	gripperClient.call(grip);*/
-
-	//move up
-//	deltarobotnode::motion move2;
-//	move2.request.x.push_back(posFrom.x);
-//	move2.request.y.push_back(posFrom.y);
-//	move2.request.z.push_back(SAFE_HEIGHT);
-//	move2.request.speed.push_back(speed);
-//	//move dest
-//	move2.request.x.push_back(posTo.x);
-//	move2.request.y.push_back(posTo.y);
-//	move2.request.z.push_back(SAFE_HEIGHT);
-//	move2.request.speed.push_back(speed);
-//	//move down
-//	move2.request.x.push_back(posTo.x);
-//	move2.request.y.push_back(posTo.y);
-//	move2.request.z.push_back(posTo.z);
-//	move2.request.speed.push_back(speed);
-
-	MotionCtor ctor1;
-	ctor1.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
-	ctor1.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
-	ctor1.addMotion(posTo, speed);
-
-	motionClient.call(ctor1.motions);//move2);
-
-	//Drop object
-	/*grip.request.enabled = false;
-	gripperClient.call(grip);*/
-
-	//move up
-//	deltarobotnode::motion move3;
-//	move3.request.x.push_back(posTo.x);
-//	move3.request.y.push_back(posTo.y);
-//	move3.request.z.push_back(SAFE_HEIGHT);
-//	move3.request.speed.push_back(speed);
-
-	MotionCtor ctor2;
-	ctor2.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
-	motionClient.call(ctor2.motions);//move3);
-
+	//update crate database
 	CrateContent* c = crateFrom.get(indexFrom);
 	crateTo.put(indexTo, c);
 	crateFrom.remove(indexFrom);
-}
+	
+	//get positions
+	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
+	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
+	const double speed = 350;
+	
+	//move to source, down
+	MotionWrapper motion1;
+	motion1.addMotion(datatypes::point3lf(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	motion1.addMotion(posFrom, speed);
+	motion1.callService(motionClient);
 
-void CrateDemo::CrateDance(Crate& crate) {
-	datatypes::point3f posFrom = crate.getCrateContentGripLocation(0);
-	datatypes::point3f posTo = crate.getContainerLocation(1) + crate.get(0)->getGripPoint();
-	const int speed = 50;
-//move 0
-	deltarobotnode::motion move1;
-	move1.request.x.push_back(posFrom.x);
-	move1.request.y.push_back(posFrom.y);
-	move1.request.z.push_back(posFrom.z);
-	move1.request.speed.push_back(speed);
-	motionClient.call(move1);
+	//enable gripper
+//	deltarobotnode::gripper grip;
+//	grip.request.enabled = true;
+//	gripperClient.call(grip);
 
-	deltarobotnode::motion move2;
-	move2.request.x.push_back(posTo.x);
-	move2.request.y.push_back(posTo.y);
-	move2.request.z.push_back(posTo.z);
-	move2.request.speed.push_back(speed);
-	motionClient.call(move2);
+	//move up, dest, down
+	MotionWrapper move2;
+	move2.addMotion(datatypes::point3lf(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	move2.addMotion(datatypes::point3lf(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	move2.addMotion(posTo, speed);
+	move2.callService(motionClient);
+
+	//Drop object
+//	grip.request.enabled = false;
+//	gripperClient.call(grip);
+
+	//move up
+	MotionWrapper move3;
+	move3.addMotion(datatypes::point3lf(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	move3.callService(motionClient);
 }
 }

@@ -28,7 +28,9 @@
 //******************************************************************************
 #pragma once
 
+#include <cstdlib>
 #include <string>
+
 #include <cratedemo/CrateContent.hpp>
 #include <datatypes/point2.hpp>
 #include <datatypes/point3.hpp>

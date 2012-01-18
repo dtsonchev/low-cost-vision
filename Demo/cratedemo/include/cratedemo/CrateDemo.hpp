@@ -45,6 +45,8 @@
 
 //WOOO 133333337!!!!!!!111111 one
 #include <vision/CrateEventMsg.h>
+#include <vision/error.h>
+#include <vision/getCrate.h>
 
 namespace cratedemo
 {
@@ -63,7 +65,9 @@ private:
 	ros::Subscriber deltaErrorSub;
 
 	// vision services/topics
+	ros::ServiceClient crateRefreshClient;
 	ros::Subscriber crateEventSub;
+	ros::Subscriber visionErrorSub;
 
 	CrateContentMap& crateContentMap;
 	CrateMap crates;
@@ -83,7 +87,9 @@ protected:
 		const std::string& deltaStop,
 		const std::string& deltaMotion,
 		const std::string& deltaError,
+		const std::string& crateRefresh,
 		const std::string& visionEvents,
+		const std::string& visionError,
 		CrateContentMap& crateContentMap);
 
 public:
@@ -104,9 +110,11 @@ public:
 	virtual void onCrateMove(Crate& crate) = 0;
 	virtual void onCrateRemoved(Crate& crate) = 0;
 	virtual void onDeltaError(int errCode, const std::string& errStr) = 0;
+	virtual void onVisionError(int errCode, const std::string& errStr) = 0;
 
 	void moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo);
 	void crateEventCb(const vision::CrateEventMsg::ConstPtr& msg);
 	void deltaErrorCb(const deltarobotnode::error::ConstPtr& msg);
+	void visionErrorCb(const vision::error::ConstPtr& msg);
 };
 }
