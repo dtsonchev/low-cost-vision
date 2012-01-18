@@ -40,7 +40,7 @@ public:
 
 		if(crate.getName().compare("GC4x4MB_1") == 0)
 		{
-			drawCrateCorners(crate);
+			//drawCrateCorners(crate);
 			for(size_t i = 0; i < 4*4 - 1; i++)
 			{
 				moveObject(crate, i, crate, i+1);
