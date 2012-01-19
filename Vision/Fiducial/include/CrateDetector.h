@@ -37,6 +37,9 @@
 
 /*! \brief Segements points into crates.
  *
+ *  \deprecated Support dropped in favor of the more
+ *  robust QRCodeDetector for crate segementation.
+ *
  *  This class allows you to segement the fiducial
  *  points into instances of the Crate class.
  */
