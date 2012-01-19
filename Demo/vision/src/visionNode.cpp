@@ -1,3 +1,31 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        VisionNode
+// File:           visionNode.cpp
+// Description:    his vision RosNode detects the crates and publishes events on the crateEvent topic.
+// Author:         Kasper van Nieuwland en Zep Mouris
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of VisionNode.
+//
+// VisionNode is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VisionNode is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with VisionNode.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 #include <vision/visionNode.h>
 #include <pcrctransformation/pcrctransformer.hpp>
 #include <pcrctransformation/point2f.hpp>
@@ -25,6 +53,7 @@ using namespace pcrctransformation;
 using namespace std;
 using namespace cv;
 
+//on mouse click event, print the real life coordinate at the clicked pixel
 void on_mouse(int event, int x, int y, int flags, void* param){
 	if(event == CV_EVENT_LBUTTONDOWN){
 		pc_rc_transformer* cordTransformer = (pc_rc_transformer*)param;
@@ -38,6 +67,7 @@ visionNode::visionNode(int argc, char* argv[]){
 			printUsage(argv[0]);
 			exit(1);
 		}
+		//setup the camera
 		int device_number = atoi(argv[1]);
 		int format_number = atoi(argv[2]);
 		cam = new unicap_cv_camera(device_number,format_number);
@@ -45,39 +75,48 @@ visionNode::visionNode(int argc, char* argv[]){
 		cam->set_exposure(0.015);
 		camFrame = Mat(cam->get_img_height(), cam->get_img_width(), cam->get_img_format());
 
+		//setup the fiducial detector
 		fidDetector = new FiducialDetector();
 		fidDetector->minRad = 15;
 		fidDetector->maxRad = 25;
 		fidDetector->minDist = 2.0f;
 		fidDetector->maxDist = 5.0f;
 
+		//setup the QR detector
 		qrDetector = new QRCodeDetector();
 
+		//setup the coordinate transformation(from pixel to real life)
+		//The real-life coordinates of the fiducials in mm.
+		//0,0 is center of the delta robot
 		point2f::point2fvector rc;
-//		rc.push_back(point2f(62, 108));
-//		rc.push_back(point2f(-64, 112));
-//		rc.push_back(point2f(-66, -76.5));
 		rc.push_back(point2f(61.5, 110.5));
 		rc.push_back(point2f(-62.5, 113.5));
 		rc.push_back(point2f(-65, -74));
-
 		cordTransformer= new pc_rc_transformer(rc,rc);
 
+		//crate tracking configuration
+		//the amount of mm a point has to move before we mark it as moving.
+		crateMovementThresshold = 5;
+		//the number of frames before a change is marked definite.
+		numberOfStableFrames = 10;
+		crateTracker = new CrateTracker(numberOfStableFrames , crateMovementThresshold);
+
+		//setup the camera lens distortion corrector
 		rectifier = new RectifyImage();
 		if(!rectifier->initRectify(argv[3], cv::Size( cam->get_img_width(),cam->get_img_height()))){
 			cout << "XML not found" << endl;
 			exit(2);
 		}
-		crateMovementThresshold = 5;
-		crateTracker = new CrateTracker(10 , crateMovementThresshold);
 
 		invokeCalibration = false;
 
+		//ROS things
 		crateEventPublisher = node.advertise<vision::CrateEventMsg>("crateEvent", 100);
 		ErrorPublisher = node.advertise<vision::error>("visionError", 100);
 		getCrateService = node.advertiseService("getCrate", &visionNode::getCrate, this);
 		getAllCratesService = node.advertiseService("getAllCrates", &visionNode::getAllCrates, this);
 
+		//GUI stuff
 		cv::namedWindow("image", CV_WINDOW_AUTOSIZE);
 		cvSetMouseCallback("image", &on_mouse, cordTransformer);
 }
@@ -142,6 +181,7 @@ void visionNode::printUsage(char* invokeName){
 
 bool xComp(cv::Point2f i, cv::Point2f j) { return (i.x<j.x); }
 bool yComp(cv::Point2f i, cv::Point2f j) { return (i.y<j.y); }
+
 inline float medianX(std::vector<cv::Point2f> points){
        	std::vector<cv::Point2f>::iterator n = points.begin()+points.size()/2;
 	if(points.size()%2 == 0) {
@@ -217,42 +257,53 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 }
 
 void visionNode::run(){
+	//run initial calibration. If that fails, this node will shut down.
 	if(!calibrate()) ros::shutdown();
 
+	//main loop
 	while(ros::ok()){
+
+		//if calibration was manualy invoked by call on the service
 		if(invokeCalibration) {
 			invokeCalibration = false;
 			calibrate();
 		}
 
+		//grab frame from camera
 		cam->get_frame(&camFrame);
+
+		//correct the lens distortion
 		rectifier->rectify(camFrame, rectifiedCamFrame);
+
+		//create a duplicate grayscale frame
 		cv::Mat gray;
 		cv::cvtColor(rectifiedCamFrame, gray, CV_BGR2GRAY);
 
+		//draw the calibration points
 		for(point2f::point2fvector::iterator it=markers.begin(); it!=markers.end(); ++it)
 			cv::circle(rectifiedCamFrame, cv::Point(cv::saturate_cast<int>(it->x), cv::saturate_cast<int>(it->y)), 1, cv::Scalar(0, 0, 255), 2);
 
+		//detect crates
 		std::vector<Crate> crates;
 		qrDetector->detectCrates(gray, crates);
+
+		//transform crate coordinates
 		for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it)
 		{
 			it->draw(rectifiedCamFrame);
-
 
 			std::vector<cv::Point2f> points;
 			for(int n = 0; n <3; n++){
 				point2f result = cordTransformer->to_rc(point2f(it->getPoints()[n].x, it->getPoints()[n].y));
 				points.push_back(cv::Point2f(result.x, result.y));
 			}
-
-			//transfor coordinates
 			it->setPoints(points);
-
-			//ROS_INFO("crate pos: %f %f", it->rect().center.x, it->rect().center.y);
 		}
+
+		//inform the crate tracker about the seen crates
 		std::vector<CrateEvent> events = crateTracker->update(crates);
 
+		//publish events
 		for(std::vector<CrateEvent>::iterator it = events.begin(); it != events.end(); ++it)
 		{
 			vision::CrateEventMsg msg;
@@ -266,8 +317,11 @@ void visionNode::run(){
 			crateEventPublisher.publish(msg);
 		}
 
+		//update GUI
 		imshow("image",rectifiedCamFrame);
 		waitKey(10);
+
+		//let ROS do it's magical things
 		ros::spinOnce();
 	}
 }
