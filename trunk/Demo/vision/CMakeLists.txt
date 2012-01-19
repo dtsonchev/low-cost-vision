@@ -32,7 +32,7 @@ rosbuild_gensrv()
 
 rosbuild_add_executable(vision src/main.cpp src/visionNode.cpp src/CrateTracker.cpp)
 
-pkg_check_modules(LIBRARIES_NEEDED REQUIRED opencv zbar libunicap)
+pkg_check_modules(PKG_LIBS REQUIRED opencv zbar libunicap)
 
 include_directories(/home/lcv/low_cost_vision_svn/low-cost-vision/Vision/Fiducial/include)
 target_link_libraries(vision /home/lcv/low_cost_vision_svn/low-cost-vision/Vision/Fiducial/lib/libFiducial.a)
@@ -53,5 +53,5 @@ target_link_libraries(vision boost_thread)
 target_link_libraries(vision boost_filesystem)
 target_link_libraries(vision boost_system)
 
-include_directories(${LIBRARIES_NEEDED_INCLUDE_DIRS})
-target_link_libraries(vision ${LIBRARIES_NEEDED_LIBRARIES})
+include_directories(${PKG_LIBS_INCLUDE_DIRS})
+target_link_libraries(vision ${PKG_LIBS_LIBRARIES})

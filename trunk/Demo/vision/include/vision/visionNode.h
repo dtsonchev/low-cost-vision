@@ -1,3 +1,31 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        VisionNode
+// File:           visionNode.h
+// Description:    This vision RosNode detects the crates and publishes events on the crateEvent topic.
+// Author:         Kasper van Nieuwland en Zep Mouris
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of VisionNode.
+//
+// VisionNode is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VisionNode is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with VisionNode.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 #pragma once
 #include <pcrctransformation/pcrctransformer.hpp>
 #include <pcrctransformation/point2f.hpp>
@@ -22,12 +50,43 @@
 
 class visionNode{
 public:
+
+	/**
+	 * the constructor
+	 * @param argc use the parameters form main
+	 * @param argv use the parameters form main
+	 */
 	visionNode(int argc, char* argv[]);
+	/**
+	 * the destructor
+	 */
 	~visionNode();
 
+	/**
+	 * blocking function that contains the main loop: take frame, detect crates, send event. this function ends when ros receives a ^c
+	 */
 	void run();
+
+	/**
+	 * callback function for the getCrate services of ROS
+	 * @param req the request object
+	 * @param res the response object
+	 * @return
+	 */
 	bool getCrate(vision::getCrate::Request &req,vision::getCrate::Response &res);
+	/**
+	 * callback function for the getAllCrates services of ROS
+	 * @param req the request object
+	 * @param res the response object
+	 * @return
+	 */
 	bool getAllCrates(vision::getAllCrates::Request &req,vision::getAllCrates::Response &res);
+	/**
+	 * callback function for the recalibrate services of ROS
+	 * @param req the request object
+	 * @param res the response object
+	 * @return
+	 */
 	bool recalibrate(std_srvs::Empty &req, std_srvs::Empty &res);
 
 private:
