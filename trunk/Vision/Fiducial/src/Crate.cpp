@@ -31,7 +31,7 @@
 #include <vector>
 #include <opencv2/imgproc/imgproc.hpp>
 
-Crate::Crate() {
+Crate::Crate() : points(3) {
 }
 
 Crate::Crate(const std::vector<cv::Point2f>& points) {
@@ -81,8 +81,8 @@ void Crate::order(std::vector<cv::Point2f>& points) {
 	}
 
 	// Now the orientation of the crate can be detect and the first two points can be ordered
-	float angle = (extra.x - start.x) * (end.y - start.y) - (extra.y - start.y) * (end.x - start.x);
-	if(angle > 0) {
+	float alpha = (extra.x - start.x) * (end.y - start.y) - (extra.y - start.y) * (end.x - start.x);
+	if(alpha > 0) {
 		if(start.x > end.x) {
 			points[0] = end;
 			points[1] = extra;
