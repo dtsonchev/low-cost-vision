@@ -173,7 +173,7 @@ library project then you have to add soms lines to your CMakeLists.txt.
 
 First start building your LCV library project(s).
 
-For every LCV library project:
+For every LCV library project add the following lines:
 	- target_link_libraries(<executable name> $ENV{LCV_PROJECT_PATH}
 		/<path to .a file>)
 	- include_directories(<path to include folder(with the headers)>)
@@ -182,6 +182,13 @@ For every library that was added in the LCV makefile by the variable
 LIBRARIES add these lines to the CMakeLists.txt. Note: These lines
 must be placed after the rosbuild_add_executable line.
 	- target_link_libraries(<executable name> <library name>)
+
+if you want to add libraries through pkg-config you have to add the 
+following lines:
+ 	- include(FindPkgConfig) (at the top of your CMakeList.txt)
+	- pkg_check_modules(PKG_LIBS REQUIRED <lib_1> <lib_2> <...>)
+	- include_directories(${PKG_LIBS_INCLUDE_DIRS})
+	- target_link_libraries(<executable name> ${PKG_LIBS_LIBRARIES})
 
 ######################################################################
 VII.  Notes and pitfalls
