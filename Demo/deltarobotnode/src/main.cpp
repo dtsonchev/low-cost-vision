@@ -1,3 +1,31 @@
+//******************************************************************************
+//
+//                 Low Cost Vision
+//
+//******************************************************************************
+// Project:        DeltaRobotNode
+// File:           main.cpp
+// Description:    Contains the whole delta robot ROSnode
+// Author:         Kasper van Nieuwland en Zep Mouris
+// Notes:          ...
+//
+// License:        GNU GPL v3
+//
+// This file is part of DeltaRobotNode.
+//
+// DeltaRobotNode is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// DeltaRobotNode is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with DeltaRobotNode.  If not, see <http://www.gnu.org/licenses/>.
+//******************************************************************************
 #include <iostream>
 #include <stdexcept>
 #include <huniplacer/huniplacer.h>
@@ -10,12 +38,12 @@
 #include "deltarobotnode/error.h"
 
 using namespace huniplacer;
-//using namespace deltarobot;
 
 static huniplacer::deltarobot * robot;
 static gripper * grip;
 static ros::Publisher * pub;
 
+//callback function that gets called by the deltarobot thread when an exception occured in it
 static void modbus_exhandler(std::exception& ex)
 {
 	deltarobotnode::error msg;
