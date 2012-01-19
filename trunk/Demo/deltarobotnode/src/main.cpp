@@ -16,7 +16,7 @@ static huniplacer::deltarobot * robot;
 static gripper * grip;
 static ros::Publisher * pub;
 
-static void modbus_exhandler(std::runtime_error& ex)
+static void modbus_exhandler(std::exception& ex)
 {
 	deltarobotnode::error msg;
 	std::stringstream ss;
@@ -98,6 +98,46 @@ bool stop(deltarobotnode::stop::Request &req,
 	return true;
 }
 
+void calibrateMotor(steppermotor3& motors, int motorIndex){
+	std::cout << "Calibrating motor number " << motorIndex << std::endl;
+	std::cout << "Enter motor rotation (radians) or 0 to finish." << std::endl;
+
+	double angle = utils::rad(45);
+	double deltaAngle = 0.0;
+	do {
+		std::cout << "deltaAngle: ";
+		std::cin >> deltaAngle;
+		angle += deltaAngle;
+		if(motorIndex == 0){
+			motors.moveto(motionf(angle, -measures::MOTOR2_DEVIATION, -measures::MOTOR3_DEVIATION, 10, 10, 10, 360, 360, 360, 360, 360, 360), false);
+		} else if(motorIndex == 1){
+			motors.moveto(motionf(-measures::MOTOR1_DEVIATION,angle,-measures::MOTOR3_DEVIATION, 10, 10, 10, 360, 360, 360, 360, 360, 360), false);
+		} else {
+			motors.moveto(motionf(-measures::MOTOR1_DEVIATION, -measures::MOTOR2_DEVIATION, angle, 10, 10, 10, 360, 360, 360, 360, 360, 360), false);
+		}
+	} while(deltaAngle != 0.0);
+
+	double curAngle;
+	std::cout << "Real motor angle (degrees): ";
+	std::cin >> curAngle;
+
+	double angles[] = {-measures::MOTOR1_DEVIATION, -measures::MOTOR2_DEVIATION, -measures::MOTOR3_DEVIATION};
+	angles[motorIndex] = utils::rad(curAngle);
+	motors.override_current_angles(angles);
+
+	motors.moveto(motionf(-measures::MOTOR1_DEVIATION, -measures::MOTOR2_DEVIATION, -measures::MOTOR3_DEVIATION, 10, 10, 10, 360, 360, 360, 360, 360, 360), false);
+}
+
+void calibrateAllMotors(steppermotor3& motors){
+	motors.set_max_angle(utils::rad(120));
+
+	for(int i = 0; i < 3; i++){
+		calibrateMotor(motors, i);
+	}
+
+	motors.set_max_angle(measures::MOTOR_ROT_MAX);
+}
+
 int main(int argc, char** argv)
 {
 	grip = new gripper("192.168.0.2", 502);
@@ -119,6 +159,10 @@ int main(int argc, char** argv)
 
 	double deviation[3] = {measures::MOTOR1_DEVIATION, measures::MOTOR2_DEVIATION, measures::MOTOR3_DEVIATION};
 	steppermotor3 motors(modbus_rtu, measures::MOTOR_ROT_MIN, measures::MOTOR_ROT_MAX, modbus_exhandler, deviation);
+	motors.power_on();
+
+	calibrateAllMotors(motors);
+
 	robot = new huniplacer::deltarobot(kinematics, motors);
 	robot->generate_boundaries(2);
 	robot->power_on();
