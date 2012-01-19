@@ -65,9 +65,9 @@ void CrateDemo::deltaErrorCb(const deltarobotnode::error::ConstPtr& msg)
 	onDeltaError(msg->errorType, msg->errorMsg);
 }
 
-void visionErrorCb(const vision::error::ConstPtr& msg);
+void CrateDemo::visionErrorCb(const vision::error::ConstPtr& msg)
 {
-	ROS_ERROR("Vision node error[%i]:\t%s", msg->errorType, msg->errorMsg);
+	ROS_ERROR("Vision node error[%i]:\t%s", msg->errorType, msg->errorMsg.c_str());
 	onVisionError(msg->errorType, msg->errorMsg);
 }
 
@@ -87,19 +87,24 @@ void CrateDemo::crateEventCb(const vision::CrateEventMsg::ConstPtr& msg)
 
 	switch(msg->event)
 	{
-	case IN: handleNewCrateCb(msg->crate); break;
+	case IN: handleNewCrate(msg->crate); break;
 	case MOVED: handleCrateMoved(msg->crate); break;
 	case MOVING: handleCrateMoving(msg->crate); break;
-	case OUT: handleCcrateRemoved(msg->crate); break;
+	case OUT: handleCrateRemoved(msg->crate); break;
 	default: assert(0 && "unknown crate event"); break;
 	}
 }
 
 void CrateDemo::handleNewCrate(const vision::CrateMsg& msg)
 {
+	bool moving = false;
 	CrateContentMap::iterator it = crateContentMap.find(msg.name);
-	assert(it != crateContentMap.end() && "crate content not found!"); //TODO refresh cratedb and try again
-	Crate* crate = new GridCrate4x4MiniBall(msg.name, it->second,datatypes::point2f(msg.x,msg.y),msg.angle);
+	if(it != crateContentMap.end()){
+		ROS_ERROR("NewCrate: Crate content unknown, crate ignored: %s", msg.name.c_str());
+		return;
+	}
+
+	Crate* crate = new GridCrate4x4MiniBall(msg.name, it->second,datatypes::point2f(msg.x,msg.y),msg.angle, moving);
 	crates.insert(std::pair<std::string, Crate*>(crate->getName(), crate));
 
 	onNewCrate(*crate);
@@ -107,7 +112,12 @@ void CrateDemo::handleNewCrate(const vision::CrateMsg& msg)
 
 void CrateDemo::handleCrateRemoved(const vision::CrateMsg& msg) {
 	std::map<std::string, Crate*>::iterator result = crates.find(msg.name);
-	assert(result != crates.end() && "crate does not exist!"); //TODO refresh cratedb and try again
+
+	if(result != crates.end()){
+		ROS_WARN("CrateRemoved: Crate didn't exist, remove action ignored: %s", msg.name.c_str());
+		return;
+	}
+
 	onCrateRemoved(*(result->second));
 	delete result->second;
 	crates.erase(result);
@@ -116,15 +126,33 @@ void CrateDemo::handleCrateRemoved(const vision::CrateMsg& msg) {
 void CrateDemo::handleCrateMoved(const vision::CrateMsg& msg)
 {
 	CrateMap::iterator res = crates.find(msg.name);
-	assert(result != crates.end() && "crate does not exist!"); //TODO refresh crate db and try again
-	Crate* c = result->second;
+	if(res != crates.end()){
+		vision::getAllCrates::Response allCrates;
+		vision::getAllCrates::Request req;
+		crateRefreshClient.call(req, allCrates);
+
+		for(int i = 0; i < allCrates.crates.size(); i++){
+			if(allCrates.crates.at(i).name == msg.name){
+				handleNewCrate(allCrates.crates.at(i));
+				ROS_WARN("CrateMoved: Crate didn't exist, crate added: %s", msg.name.c_str());
+				break;
+			}
+		}
+	}
+
+	Crate* c = res->second;
 	c->position = datatypes::point2f(msg.x,msg.y);
 	c->angle = msg.angle;
+	c->moving = false;
 	onCrateMove(*c);
 }
 
 void CrateDemo::handleCrateMoving(const vision::CrateMsg& msg)
 {
+	CrateMap::iterator res = crates.find(msg.name);
+	assert(res != crates.end() && "crate does not exist!");
+	Crate* c = res->second;
+	c->moving = true;
 	//TODO impl
 }
 
@@ -165,7 +193,7 @@ static void printMove(const deltarobotnode::motion& move)
 //	}
 //};
 
-void CrateDemo::drawCrateCorners(Crate& crate) {
+/*void CrateDemo::drawCrateCorners(Crate& crate) {
 	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 	const int speed = 150;
 	//MotionCtor ctor;
@@ -207,21 +235,21 @@ void CrateDemo::drawCrateCorners(Crate& crate) {
 	}
 
 	ROS_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-drawCrateCorners-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
-}
+}*/
 void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, size_t indexTo ){
+	//get positions
+	datatypes::point3f posFrom = crateFrom.getContentGripLocation(indexFrom);
+	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
+	const double speed = 350;
+
 	//update crate database
 	CrateContent* c = crateFrom.get(indexFrom);
 	crateTo.put(indexTo, c);
 	crateFrom.remove(indexFrom);
 	
-	//get positions
-	datatypes::point3f posFrom = crateFrom.getCrateContentGripLocation(indexFrom);
-	datatypes::point3f posTo = crateTo.getContainerLocation(indexTo) + crateFrom.get(indexFrom)->getGripPoint();
-	const double speed = 350;
-	
 	//move to source, down
 	MotionWrapper motion1;
-	motion1.addMotion(datatypes::point3lf(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	motion1.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
 	motion1.addMotion(posFrom, speed);
 	motion1.callService(motionClient);
 
@@ -232,8 +260,8 @@ void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, s
 
 	//move up, dest, down
 	MotionWrapper move2;
-	move2.addMotion(datatypes::point3lf(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
-	move2.addMotion(datatypes::point3lf(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	move2.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), speed);
+	move2.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
 	move2.addMotion(posTo, speed);
 	move2.callService(motionClient);
 
@@ -241,9 +269,14 @@ void CrateDemo::moveObject(Crate& crateFrom, size_t indexFrom ,Crate& crateTo, s
 //	grip.request.enabled = false;
 //	gripperClient.call(grip);
 
+	//loose ball //TODO: this is temporary, delete it
+	MotionWrapper move4;
+	move4.addMotion(datatypes::point3f(posTo.x + 3, posTo.y + 3, posTo.z + 3), speed);
+	move4.callService(motionClient);
+
 	//move up
 	MotionWrapper move3;
-	move3.addMotion(datatypes::point3lf(posTo.x, posTo.y, SAFE_HEIGHT), speed);
+	move3.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), speed);
 	move3.callService(motionClient);
 }
 }

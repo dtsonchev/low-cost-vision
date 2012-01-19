@@ -70,7 +70,10 @@ private:
 	ros::Subscriber visionErrorSub;
 
 	CrateContentMap& crateContentMap;
+
+protected:
 	CrateMap crates;
+private:
 
 	//crate event handling methods
 	void handleNewCrate(const vision::CrateMsg& msg);
@@ -78,7 +81,7 @@ private:
 	void handleCrateMoved(const vision::CrateMsg& msg);
 	void handleCrateMoving(const vision::CrateMsg& msg);
 
-	void drawCrateCorners(Crate& crate); //for debugging
+	//void drawCrateCorners(Crate& crate); //for debugging
 
 protected:
 	CrateDemo(

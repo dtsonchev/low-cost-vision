@@ -18,34 +18,38 @@ public:
 		"stop",
 		"moveTo" ,
 		"deltaError" ,
-		"crateEvent",crateContentMap) {}
+		"getAllCrates",
+		"crateEvent",
+		"visionError",
+		crateContentMap) {
+
+	}
 
 	void onNewCrate(Crate& crate) {
 		ROS_INFO("onNewCrate called %s, on location:\tx:\t%f\ty:\t%f",crate.getName().c_str(),crate.position.x,crate.position.y);
-//		moveTo(crate);
-//		CrateMap::iterator it1 = crates.find("GC4x4MB_1");
-//		if(it1 == crates.end()) { return; }
-//
-//		CrateMap::iterator it2 = crates.find("GC4x4MB_2");
-//		if(it2 == crates.end()) { return; }
-//
-//
-//
-//		for(size_t i = 0; i < 4*4; i++)
-//		{
-//			moveObject(*(it1->second), i, *(it2->second), i);
-//		}
-//		ROS_INFO("Demo done...");
-//		//CrateDance(crate);
 
-		if(crate.getName().compare("GC4x4MB_1") == 0)
+		CrateMap::iterator it1 = crates.find("GC4x4MB_1");
+		if(it1 == crates.end()) { return; }
+
+		CrateMap::iterator it2 = crates.find("GC4x4MB_2");
+		if(it2 == crates.end()) { return; }
+
+		for(size_t i = 0; i < 4*4; i++)
 		{
-			//drawCrateCorners(crate);
-			for(size_t i = 0; i < 4*4 - 1; i++)
-			{
-				moveObject(crate, i, crate, i+1);
-			}
+			moveObject(*(it1->second), i, *(it2->second), i);
 		}
+
+		ROS_INFO("Demo done...");
+		//CrateDance(crate);
+
+//		if(crate.getName().compare("GC4x4MB_1") == 0)
+//		{
+//			//drawCrateCorners(crate);
+//			for(size_t i = 0; i < 4*4 - 1; i++)
+//			{
+//				moveObject(crate, i, crate, i+1);
+//			}
+//		}
 	}
 
 	void onCrateMove(Crate& crate)
@@ -56,6 +60,14 @@ public:
 	void onCrateRemoved(Crate& crate)
 	{
 		ROS_INFO("onCrateRemoved called %s",crate.getName().c_str());
+	}
+
+	void onDeltaError(int, const std::string&){
+		// Do nothing
+	}
+
+	void onVisionError(int, const std::string&){
+		// Do nothing
 	}
 };
 

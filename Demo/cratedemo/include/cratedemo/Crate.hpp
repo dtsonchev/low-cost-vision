@@ -81,6 +81,7 @@ protected:
 		std::string name,
 		datatypes::point2f position,
 		float angle,
+		bool moving,
 		datatypes::size3f size,
 		std::vector<CrateContent*>& crateContent);
 
@@ -88,6 +89,7 @@ protected:
 public:
 	datatypes::point2f position;
 	float angle;
+	bool moving;
 protected:
 	datatypes::size3f size;
 	std::vector<CrateContent*>& data;

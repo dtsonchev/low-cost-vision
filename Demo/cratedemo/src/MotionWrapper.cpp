@@ -4,7 +4,7 @@
 
 namespace cratedemo
 {
-	void MotionWrapper::addMotion(const datatypes::point3lf& p, double speed)
+	void MotionWrapper::addMotion(const datatypes::point3f& p, double speed)
 	{
 		motions.request.x.push_back(p.x * FACTOR_X + OFFSET_X);
 		motions.request.y.push_back(p.y * FACTOR_Y + OFFSET_Y);
@@ -12,7 +12,7 @@ namespace cratedemo
 		motions.request.speed.push_back(speed);
 	}
 
-	bool MotionWrapper::callService(ServiceClient& service)
+	bool MotionWrapper::callService(ros::ServiceClient& service)
 	{
 		service.call(motions);
 		return motions.response.succeeded;
@@ -21,7 +21,7 @@ namespace cratedemo
 	void MotionWrapper::print(std::ostream& os)
 	{
 		os << "motions:" << std::endl;
-		for(size_t i = 0; i < motions.size(); i++)
+		for(size_t i = 0; i < motions.request.x.size(); i++)
 		{
 			#define P motions.request
 			os << "  i=" << i << " pos=(" << P.x.at(i) << ',' << P.y.at(i) << ',' << P.z.at(i) << ") speed=" << P.speed.at(i) << std::endl;

@@ -54,12 +54,14 @@ public:
 		std::string name,
 		std::vector<CrateContent*>& crateContent,
 		datatypes::point2f position,
-		float angle) :
+		float angle,
+		bool moving) :
 			GridCrate(
 				name,
 				crateContent,
 				position,
 				angle,
+				moving,
 				datatypes::size3f(CRATE_WIDTH,CRATE_DEPTH,CRATE_HEIGHT),
 				GRID_WIDTH,
 				GRID_HEIGHT,

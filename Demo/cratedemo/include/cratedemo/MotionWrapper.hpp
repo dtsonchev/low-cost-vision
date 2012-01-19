@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ros.h>
+#include <ros/ros.h>
 #include <deltarobotnode/motion.h>
 #include <datatypes/point3.hpp>
 #include <iostream>
@@ -21,8 +21,8 @@ private:
 public:
 	deltarobotnode::motion motions;
 
-	void addMotion(const datatypes::point3lf& p, double speed);
-	bool callService(ServiceClient& service);
+	void addMotion(const datatypes::point3f& p, double speed);
+	bool callService(ros::ServiceClient& service);
 	void print(std::ostream& os = std::cout);
 };
 }
