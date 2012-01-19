@@ -49,37 +49,42 @@ private:
 public:
 	//! Turn on console debug messages
 	bool verbose;
+
+	//! Gaussian blur size
+	int blur;
+	//! Gaussian blur sigma
+	double sigma;
+	//! Vote threshold for circles
+	int circleVotes;
+	//! Minimum distance between circles
+	double distance;
 	//! Minimum circle radius
 	int minRad;
 	//! Maximum circle radius
 	int maxRad;
-	//! Minimum distance between circles
-	int distance;
-	//! Vote threshold for circles
-	int circleVotes;
-	//! Minimum vote threshold for lines, thinner lines get less votes.
+	//! High canny threshold for circle detection (low threshold is twice smaller)
+	double circleThreshold;
+
+	//! Starting vote threshold for lines, thinner lines get less votes.
 	int lineVotes;
-	//! Maximum amount of lines that need to be found.
+	//! Maximum amount of lines that can be found.
 	unsigned int maxLines;
 	//! Minimum distance between lines to use for the center line.
 	float minDist;
 	//! Maximum distance between lines to use for the center line.
 	float maxDist;
-	//! First canny threshold
-	int lowThreshold;
-	//! Second canny threshold
-	int highThreshold;
+	//! Low canny threshold for line detection
+	double lowThreshold;
+	//! High canny threshold for line detection
+	double highThreshold;
 
 	/*! \brief The FiducialDetector constructor
 	 *
-	 *  Constructs the fiducial detector with default thresholds.
-	 *  Supply more arguments to change the thresholds or change
-	 *  the public fields after construction.
+	 *  Constructs the fiducial detector with default properties.
+	 *  The minimum and maximum radius can be changed in the constructor,
+	 *  all other properties can be changed after construction.
 	 */
-	FiducialDetector(int minRad = 20, int maxRad = 40, int distance = 70,
-			int circleVotes = 100, float minDist = 1.5f, float maxDist = 5.0f,
-			int lineVotes = 10, unsigned int maxLines = 10, int lowThreshold = 125,
-			int highThreshold = 300);
+	FiducialDetector(int minRad = 20, int maxRad = 40);
 
 	//! The FiducialDetector deconstructor
 	virtual ~FiducialDetector();

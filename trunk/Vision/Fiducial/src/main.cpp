@@ -38,66 +38,34 @@
 #include <sstream>
 
 FiducialDetector fidDetector;
-CrateDetector crateDetector;
 QRCodeDetector qrDetector;
 
 bool showValues = true;
 bool showContours = false;
 bool showDebug = true;
 
-void processQR(cv::Mat& image, cv::Mat& debug) {
-	std::vector<Crate> crates;
-
-	qrDetector.detectCrates(image, crates);
-
-	if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
-}
-
-void processFid(cv::Mat& image, cv::Mat& debug) {
+void process(cv::Mat& image, cv::Mat& debug) {
 	std::vector<cv::Point2f> points;
-	cv::RotatedRect rect;
+
 	if(showDebug)
 		fidDetector.detect(image, points, &debug);
 	else
 		fidDetector.detect(image, points);
 
 	if(showContours) {
+		// Apply gaussian blur
+		cv::Mat blur;
+		cv::GaussianBlur(image, blur, cv::Size(fidDetector.blur,fidDetector.blur), fidDetector.sigma);
+		cv::imshow("Blur", blur);
+
 		cv::Mat canny;
-		cv::Canny(image, canny, fidDetector.lowThreshold, fidDetector.highThreshold);
+		cv::Canny(blur, canny, fidDetector.lowThreshold, fidDetector.highThreshold);
 		cv::imshow("Canny", canny);
-		cv::Canny(image, canny, crateDetector.lowThreshold, crateDetector.highThreshold);
-		std::vector<std::vector<cv::Point> > contoursCanny;
-		cv::findContours(canny, contoursCanny, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-		cv::Mat cannyContours = cv::Mat::zeros(image.rows, image.cols, CV_8UC3);
-
-		for(unsigned int i=0; i<contoursCanny.size(); i++)
-			cv::drawContours(cannyContours, contoursCanny, i, cv::Scalar(rand()%255,rand()%255,rand()%255), 2);
-
-		if(showValues) {
-			cv::rectangle(cannyContours, cv::Point(10, 5), cv::Point(210, 22), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
-			std::stringstream ss;
-			ss << "Threshold: " << crateDetector.lowThreshold << "/" << crateDetector.highThreshold;
-			cv::putText(cannyContours, ss.str(), cv::Point(20, 20), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
-		}
-
-		cv::imshow("Contours", cannyContours);
 	}
 
-	if(points.size() > 3) {
-		std::vector<Crate> crates;
-		std::vector<cv::Point2f> calibration;
-		crateDetector.detect(image, points, crates, &calibration);
-
-		if(showDebug) {
-			for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
-			for(std::vector<cv::Point2f>::iterator it=calibration.begin(); it!=calibration.end(); ++it) cv::circle(debug, *it, 4, cv::Scalar(0,0,0), -1);
-		}
-	}
-	else if(points.size() == 3) {
-		Crate::order(points);
-		Crate crate(points);
-		if(showDebug) crate.draw(debug);
-	}
+	std::vector<Crate> crates;
+	qrDetector.detectCrates(image, crates);
+	if(showDebug) for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) it->draw(debug);
 
 	if(showValues) {
 		cv::rectangle(debug, cv::Point(10, 5), cv::Point(210, 110), cv::Scalar(100, 100, 100, 50), CV_FILLED, 1, 0);
@@ -113,10 +81,10 @@ void processFid(cv::Mat& image, cv::Mat& debug) {
 		ss.str("");
 		ss << "Threshold: " << fidDetector.lowThreshold << "/" << fidDetector.highThreshold;
 		cv::putText(debug, ss.str(), cv::Point(20, 80), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
+		ss.str("");
+		ss << "Blur: " << fidDetector.blur << "/" << fidDetector.sigma;
 		cv::putText(debug, ss.str(), cv::Point(20, 100), cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(255, 255, 255, 0), 1, 1, false);
 	}
-
-	processQR(image, debug);
 }
 
 void callback(char key, cv::Mat* image = NULL) {
@@ -124,8 +92,8 @@ void callback(char key, cv::Mat* image = NULL) {
 	{
 		case 'w': fidDetector.lineVotes++; break;
 		case 's': fidDetector.lineVotes--; break;
-		case 'a': fidDetector.circleVotes--; break;
-		case 'd': fidDetector.circleVotes++; break;
+		case 'a': fidDetector.circleVotes-=10; break;
+		case 'd': fidDetector.circleVotes+=10; break;
 		case ']': fidDetector.maxLines++; break;
 		case '[': fidDetector.maxLines--; break;
 		case 'u': fidDetector.minRad++; break;
@@ -138,12 +106,12 @@ void callback(char key, cv::Mat* image = NULL) {
 		case 'g': fidDetector.maxDist-=.1; break;
 		case 'x': fidDetector.lowThreshold+=10; break;
 		case 'z': fidDetector.lowThreshold-=10; break;
-		case 'v': fidDetector.highThreshold+=10; break;
-		case 'c': fidDetector.highThreshold-=10; break;
-		case 'm': crateDetector.lowThreshold+=10; break;
-		case 'n': crateDetector.lowThreshold-=10; break;
-		case '.': crateDetector.highThreshold+=10; break;
-		case ',': crateDetector.highThreshold-=10; break;
+		case 'v': fidDetector.highThreshold+=10; fidDetector.circleThreshold+=10; break;
+		case 'c': fidDetector.highThreshold-=10; fidDetector.circleThreshold-=10; break;
+		case 'm': fidDetector.blur+=2; break;
+		case 'n': fidDetector.blur-=2; break;
+		case '.': fidDetector.sigma+=.1; break;
+		case ',': fidDetector.sigma-=.1; break;
 		case 'b': showValues=!showValues; break;
 		case '/': showContours=!showContours; break;
 		case 'p': showDebug=!showDebug; break;
@@ -184,11 +152,11 @@ int main(int argc, char* argv[]) {
 		char key = 0;
 		while (key != 'q') {
 			cv::Mat debug = image.clone();
-			processFid(gray, debug);
+			process(gray, debug);
 
 			cv::imshow("Image", debug);
 			key = cv::waitKey();
-			callback(key, &image);
+			callback(key, &debug);
 		}
 	}
 	else if(!strcmp(argv[1], "cam")) {
@@ -214,7 +182,7 @@ int main(int argc, char* argv[]) {
 			cv::Mat gray;
 			cv::cvtColor(frame, gray, CV_BGR2GRAY);
 
-			processFid(gray, frame);
+			process(gray, frame);
 
 			cv::imshow("Frame", frame);
 			key = cv::waitKey(10);

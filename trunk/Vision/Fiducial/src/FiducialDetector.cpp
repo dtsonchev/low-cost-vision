@@ -34,21 +34,22 @@
 #include <iostream>
 #include <math.h>
 
-FiducialDetector::FiducialDetector(int minRad, int maxRad, int distance,
-		int circleVotes, float minDist, float maxDist, int lineVotes,
-		unsigned int maxLines, int lowThreshold, int highThreshold) {
+FiducialDetector::FiducialDetector(int minRad, int maxRad) {
 	this->verbose = false;
 	this->minRad = minRad;
 	this->maxRad = maxRad;
-	this->distance = distance;
-	this->circleVotes = circleVotes;
-	this->minDist = minDist;
-	this->maxDist = maxDist;
-	this->lineVotes = lineVotes;
-	this->maxLines = maxLines;
-	this->lowThreshold = lowThreshold;
-	this->highThreshold = highThreshold;
-	this->lineVotes = lineVotes;
+	this->distance = 70;
+	this->circleVotes = 100;
+	this->minDist = 1.5f;
+	this->maxDist = 5.0f;
+	this->lineVotes = 10;
+	this->maxLines = 10;
+	this->lowThreshold = 125;
+	this->highThreshold = 300;
+	this->circleThreshold = 300;
+	this->lineVotes = 10;
+	this->blur = 3;
+	this->sigma = 2.0;
 }
 
 FiducialDetector::~FiducialDetector() {
@@ -77,13 +78,13 @@ void FiducialDetector::detect(cv::Mat& image, std::vector<cv::Point2f>& points,
 		cv::Mat* debugImage) {
 	// Apply gaussian blur
 	cv::Mat blur;
-	cv::GaussianBlur(image, blur, cv::Size(3,3), 2.0);
+	cv::GaussianBlur(image, blur, cv::Size(this->blur,this->blur), this->sigma);
 
 	// Detect circles
 	std::vector<cv::Vec3f> circles;
 	cv::HoughCircles(blur, circles, CV_HOUGH_GRADIENT, 2, // accumulator resolution divisor
 			distance, // minimum distance between circles
-			highThreshold, // Canny high threshold
+			circleThreshold, // Canny high threshold
 			circleVotes, // minimum number of votes
 			minRad, maxRad); // min and max radius
 
