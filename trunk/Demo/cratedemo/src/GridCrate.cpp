@@ -42,6 +42,7 @@ GridCrate::GridCrate(
 	std::vector<CrateContent*>& crateContent,
 	datatypes::point2f position,
 	float angle,
+	bool moving,
 	datatypes::size3f size,
 	size_t gridWidth,
 	size_t gridHeight,
@@ -49,7 +50,7 @@ GridCrate::GridCrate(
 	double distanceToNext,
 	double radiusOfBallContainer,
 	double bottomThickness) :
-		Crate(name, position, angle, size, crateContent) {
+		Crate(name, position, angle, moving, size, crateContent) {
 
 	this->gridWidth = gridWidth;
 	this->gridHeight = gridHeight;
@@ -73,7 +74,7 @@ datatypes::point3f GridCrate::getContainerLocation(size_t index) const {
 	return location3D;
 }
 
-datatypes::point3f GridCrate::getCrateContentGripLocation(size_t index) const {
+datatypes::point3f GridCrate::getContentGripLocation(size_t index) const {
 	if (data.at(index) == NULL) {
 		throw cratedemo::LocationIsEmptyException();
 	}

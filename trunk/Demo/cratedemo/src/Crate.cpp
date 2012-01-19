@@ -39,13 +39,15 @@ Crate::Crate(
 	std::string name,
 	datatypes::point2f position,
 	float angle,
+	bool moving,
 	datatypes::size3f size,
 	std::vector<CrateContent*>& crateContent) :
 		name(name),
 		position(position),
 		angle(angle),
 		size(size),
-		data(crateContent) {
+		data(crateContent),
+		moving(moving) {
 }
 
 Crate::~Crate() {
@@ -54,9 +56,9 @@ Crate::~Crate() {
 void Crate::put(size_t index, CrateContent* crateContent) {
 	if (data.at(index) != NULL)
 	{
-		throw cratedemo::LocationIsEmptyException(); }
+		throw cratedemo::LocationIsEmptyException();
 	}
-	data.at(index) = crateContent;
+	data[index] = crateContent;
 }
 
 CrateContent* Crate::get(size_t index) const {
@@ -66,7 +68,7 @@ CrateContent* Crate::get(size_t index) const {
 }
 
 void Crate::remove(size_t index) {
-	if(data.at(index) == NULL) { throw LocatioIsEmptyException(); }
+	if(data.at(index) == NULL) { throw LocationIsEmptyException(); }
 	data[index] = NULL;
 }
 

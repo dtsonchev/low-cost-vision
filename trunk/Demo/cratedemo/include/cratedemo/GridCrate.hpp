@@ -58,6 +58,7 @@ public:
 		std::vector<CrateContent*>& crateContent,
 		datatypes::point2f position,
 		float angle,
+		bool moving,
 		datatypes::size3f size,
 		size_t gridWidth,
 		size_t gridHeight,
