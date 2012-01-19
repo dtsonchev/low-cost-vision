@@ -89,22 +89,22 @@ int main(int argc, char** argv){
         unsigned int size = images.size();
 
         // Deviation results
-        vector<double> fidResults(size);
+        vector<double> crateResults(size);
         vector<double> qrResults(size);
         vector<double> calibResults(size);
 
         // Expected results
-        vector<int> fidCounts(size);
+        vector<int> crateCounts(size);
         vector<int> qrCounts(size);
         vector<int> calibCounts(size);
 
         // Detected results
-        vector<int> fidSizes(size);
+        vector<int> crateSizes(size);
         vector<int> qrSizes(size);
         vector<int> calibSizes(size);
 
         // Matched results
-        vector<int> fidMatches(size);
+        vector<int> crateMatches(size);
         vector<int> qrMatches(size);
         vector<int> calibMatches(size);
 
@@ -118,7 +118,7 @@ int main(int argc, char** argv){
 			bool fidSuccess = true;
 			bool qrSuccess = true;
 			bool calibSuccess = true;
-			fidCounts[i] = 0;
+			crateCounts[i] = 0;
 			qrCounts[i] = 0;
 			calibCounts[i] = 0;
 
@@ -160,7 +160,7 @@ int main(int argc, char** argv){
 				qrDetector.detectCrates(image, qrCrates);
 			}
 
-			fidSizes[i] = fidCrates.size();
+			crateSizes[i] = fidCrates.size();
 			qrSizes[i] = qrCrates.size();
 			calibSizes[i] = calib.size();
 
@@ -199,7 +199,7 @@ int main(int argc, char** argv){
 					}
 				}
 				else if(object["type"] == "Crate") {
-					fidCounts[i]++;
+					crateCounts[i]++;
 					if(!fidCrates.empty()) {
 						cv::Point2f ptTarget((double)object["x"], (double)object["y"]);
 						float lastDistance = Crate::distance(fidCrates[0].rect().center, ptTarget);
@@ -217,7 +217,7 @@ int main(int argc, char** argv){
 						}
 
 						if(found) {
-							fidMatches[i]++;
+							crateMatches[i]++;
 							std::vector<cv::Point2f> points = result.getPoints();
 							vector<cv::Point2f> targetPoints;
 							targetPoints.push_back(cv::Point2f((double)object["fid1.x"], (double)object["fid1.y"]));
@@ -260,14 +260,14 @@ int main(int argc, char** argv){
 
 			// Determine result
 			if(fidDeviation.empty()) {
-				fidResults[i] = -1.0;
+				crateResults[i] = -1.0;
 				fidSuccess = false;
 			}
 			else {
-				fidResults[i] = *(std::max_element(fidDeviation.begin(), fidDeviation.end()));
-				if (fidResults[i] > MAX_DEVIATION ||
-						fidMatches[i] != fidCounts[i]	||
-						fidSizes[i] != fidCounts[i])
+				crateResults[i] = *(std::max_element(fidDeviation.begin(), fidDeviation.end()));
+				if (crateResults[i] > MAX_DEVIATION ||
+						crateMatches[i] != crateCounts[i]	||
+						crateSizes[i] != crateCounts[i])
 				fidSuccess = false;
 			}
 
@@ -339,13 +339,13 @@ int main(int argc, char** argv){
         // Put the result of each image in a ReportList
         ReportList* fidList = new ReportList("CrateDetector results", 5, STRING, INT, INT, INT, DOUBLE);
         for(unsigned int i=0; i<images.size(); i++) {
-        	fidList->appendRow(images[i].name, fidSizes[i], fidCounts[i], fidMatches[i], fidResults[i]);
+        	fidList->appendRow(images[i].name, crateSizes[i], crateCounts[i], crateMatches[i], crateResults[i]);
         }
         fidList->setColumnNames("Image", "Detected", "Tagged", "Matched", "Max deviation");
         r.addField(fidList);
 
         // Create a histogram of the results
-        ReportHistogram* fidHis = new ReportHistogram("histogram", fidResults, MAX_RANGE*2, MAX_RANGE);
+        ReportHistogram* fidHis = new ReportHistogram("histogram", crateResults, MAX_RANGE*2, MAX_RANGE);
         fidHis->setColumnNames("Deviation range", "Images with deviation");
         r.addField(fidHis);
 
@@ -406,7 +406,6 @@ int main(int argc, char** argv){
 		ReportList* fidConf = new ReportList("FiducialDetector settings", 2, STRING, DOUBLE);
 		fidConf->setColumnNames("Setting", "Value");
 		fidConf->appendRow("Verbose", (double)(fidDetector.verbose?1:0));
-		fidConf->appendRow("Center method", (double)fidDetector.centerMethod);
 		fidConf->appendRow("Min. radius", (double)fidDetector.minRad);
 		fidConf->appendRow("Max. radius", (double)fidDetector.maxRad);
 		fidConf->appendRow("Circle votes", (double)fidDetector.circleVotes);
@@ -416,6 +415,9 @@ int main(int argc, char** argv){
 		fidConf->appendRow("Max. line distance", (double)fidDetector.maxDist);
 		fidConf->appendRow("Low threshold", (double)fidDetector.lowThreshold);
 		fidConf->appendRow("High threshold", (double)fidDetector.highThreshold);
+		fidConf->appendRow("Circle threshold", (double)fidDetector.circleThreshold);
+		fidConf->appendRow("Gaussian blur size", (double)fidDetector.blur);
+		fidConf->appendRow("Gaussian blur sigma", (double)fidDetector.sigma);
         r.addField(fidConf);
 
         // Put the result of each setting in a ReportList
