@@ -45,9 +45,9 @@ Crate::Crate(
 		name(name),
 		position(position),
 		angle(angle),
+		moving(moving),
 		size(size),
-		data(crateContent),
-		moving(moving) {
+		data(crateContent) {
 }
 
 Crate::~Crate() {
