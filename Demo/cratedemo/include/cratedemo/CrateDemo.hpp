@@ -32,10 +32,13 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <queue>
 
+#include <cratedemo/MoveAction.hpp>
 #include <cratedemo/Crate.hpp>
 #include <cratedemo/Environment.hpp>
 #include <ros/ros.h>
+#include <boost/thread.hpp>
 
 //delta node messages & services
 #include <deltarobotnode/error.h>
@@ -66,21 +69,36 @@ private:
 
 	// vision services/topics
 	ros::ServiceClient crateRefreshClient;
+	ros::ServiceClient getCrateClient;
 	ros::Subscriber crateEventSub;
 	ros::Subscriber visionErrorSub;
 
+	std::queue<MoveAction> actionQueue;
 	CrateContentMap& crateContentMap;
 
+	volatile bool threadRunning;
+	boost::mutex actionQueueMutex;
+	boost::recursive_mutex crateMapMutex;
+
+	volatile bool idle;
+	boost::mutex idleMutex;
+	boost::condition_variable idleCondition;
+
+	boost::mutex waitMutex;
+	boost::condition_variable waitCondition;
+
+	boost::thread* actionThread;
 protected:
 	CrateMap crates;
 private:
-
 	//crate event handling methods
 	void handleNewCrate(const vision::CrateMsg& msg);
 	void handleCrateRemoved(const vision::CrateMsg& msg);
 	void handleCrateMoved(const vision::CrateMsg& msg);
 	void handleCrateMoving(const vision::CrateMsg& msg);
 
+	static void staticActionThreadFunc(CrateDemo* obj);
+	void actionThreadFunc(void);
 	//void drawCrateCorners(Crate& crate); //for debugging
 
 protected:
@@ -91,11 +109,13 @@ protected:
 		const std::string& deltaMotion,
 		const std::string& deltaError,
 		const std::string& crateRefresh,
+		const std::string& getCrate,
 		const std::string& visionEvents,
 		const std::string& visionError,
 		CrateContentMap& crateContentMap);
 
 public:
+	void getAllCrates(void);
 	/**
 	 *Deconstructor
 	 */

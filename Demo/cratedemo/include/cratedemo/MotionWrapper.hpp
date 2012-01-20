@@ -24,5 +24,6 @@ public:
 	void addMotion(const datatypes::point3f& p, double speed);
 	bool callService(ros::ServiceClient& service);
 	void print(std::ostream& os = std::cout);
+	void addHack(datatypes::point3f& p);
 };
 }

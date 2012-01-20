@@ -19,6 +19,7 @@ public:
 		"moveTo" ,
 		"deltaError" ,
 		"getAllCrates",
+		"getCrate",
 		"crateEvent",
 		"visionError",
 		crateContentMap) {
@@ -77,6 +78,7 @@ int main(int argc, char** argv) {
 	ros::init(argc, argv, "demoNode");
 	ros::NodeHandle nodeHandle;
 	Demo d(nodeHandle,initializeCrateContent1());
+	d.getAllCrates();
 	ros::spin();
 	cout << "ros is not OK" << endl;
 	return 0;
