@@ -17,6 +17,7 @@ public:
 		"enableGripper" ,
 		"stop",
 		"moveTo" ,
+		"checkTo" ,
 		"deltaError" ,
 		"getAllCrates",
 		"getCrate",
@@ -79,6 +80,7 @@ int main(int argc, char** argv) {
 	ros::NodeHandle nodeHandle;
 	Demo d(nodeHandle,initializeCrateContent1());
 	d.getAllCrates();
+
 	ros::spin();
 	cout << "ros is not OK" << endl;
 	return 0;

@@ -78,8 +78,8 @@ void process(cv::Mat& image, cv::Mat& debug) {
 	}
 
 	std::vector<Crate> crates;
-	if(points.size() > 3) crateDetector.detect(image, crates, points);
-	else if(points.size() == 3) crates.push_back(Crate(points));
+	if(points.size() > 3) crateDetector.detect(image, points, crates);
+	//else if(points.size() == 3) crates.push_back(Crate(points));
 
 	if(showDebug) {
 		for(std::vector<Crate>::iterator it=crates.begin(); it!=crates.end(); ++it) {
@@ -145,7 +145,7 @@ void callback(char key, cv::Mat* image = NULL) {
 		case 'b': showValues=!showValues; break;
 		case '/': showContours=!showContours; break;
 		case 'p': showDebug=!showDebug; break;
-		case 'y': imwrite("screenshot.png", *image); break;
+		case 'y': imwrite("screenshot.png", *image); cvWaitKey(1000); break;
 	}
 }
 
@@ -162,6 +162,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	fidDetector.verbose = true;
+	fidDetector.minRad = 15;
+	fidDetector.maxRad = 25;
+	fidDetector.centerMethod = FiducialDetector::MEDOID_RHO;
+	fidDetector.highThreshold = 200;
 
 	if(!strcmp(argv[1], "image")) {
 		if(argc < 3) {
@@ -265,13 +269,14 @@ int main(int argc, char* argv[]) {
 			if(argc > 4) rectify.rectify(frame.clone(), frame);
 
 			cv::Mat gray;
+			cv::Mat image = frame.clone();
 			cv::cvtColor(frame, gray, CV_BGR2GRAY);
 
 			process(gray, frame);
 
 			imshow("Result", frame);
 			key = cv::waitKey(10);
-			callback(key, &frame);
+			callback(key, &image);
 		}
 	}
 	else {

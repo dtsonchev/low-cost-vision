@@ -41,38 +41,70 @@
 
 namespace cratedemo
 {
-	void CrateDemo::staticActionThreadFunc(CrateDemo* obj)
+
+void CrateDemo::staticActionThreadFunc(CrateDemo* obj)
+{
+	obj->actionThreadFunc();
+}
+
+CrateDemo::CrateDemo(
+	ros::NodeHandle& hNode,
+	const std::string& deltaGrip,
+	const std::string& deltaStop,
+	const std::string& deltaMotion,
+	const std::string& checkMotion,
+	const std::string& deltaError,
+	const std::string& crateRefresh,
+	const std::string& getCrate,
+	const std::string& visionEvents,
+	const std::string& visionError,
+	CrateContentMap& crateContentMap) :
+		gripperClient( hNode.serviceClient<deltarobotnode::gripper>(deltaGrip) ),
+		motionClient( hNode.serviceClient<deltarobotnode::motion>(deltaMotion) ),
+		checkClient( hNode.serviceClient<deltarobotnode::motion>(checkMotion) ),
+		stopClient(hNode.serviceClient<deltarobotnode::stop>(deltaStop)),
+		deltaErrorSub(hNode.subscribe(deltaError, 1000, &CrateDemo::deltaErrorCb, this)),
+		crateRefreshClient(hNode.serviceClient<vision::getAllCrates>(crateRefresh)),
+		getCrateClient(hNode.serviceClient<vision::getCrate>(getCrate)),
+		crateEventSub(hNode.subscribe(visionEvents, 1000, &CrateDemo::crateEventCb, this)),
+		visionErrorSub(hNode.subscribe(visionError, 1000, &CrateDemo::visionErrorCb, this)),
+		crateContentMap(crateContentMap),
+		threadRunning(true) {
+	actionThread = new boost::thread(staticActionThreadFunc, this);
+}
+
+Crate* CrateDemo::waitForCrate(const std::string& name)
+{
+	CrateMap::iterator it = crates.find(name);
+	while(it == crates.end() || it->second->moving)
 	{
-		obj->actionThreadFunc();
+		crateMapMutex.unlock();
+		boost::unique_lock<boost::mutex> lock(waitMutex);
+		waitCondition.wait(lock);
+		crateMapMutex.lock();
+		it = crates.find(name);
 	}
 
-	CrateDemo::CrateDemo(
-		ros::NodeHandle& hNode,
-		const std::string& deltaGrip,
-		const std::string& deltaStop,
-		const std::string& deltaMotion,
-		const std::string& deltaError,
-		const std::string& crateRefresh,
-		const std::string& getCrate,
-		const std::string& visionEvents,
-		const std::string& visionError,
-		CrateContentMap& crateContentMap) :
-			gripperClient( hNode.serviceClient<deltarobotnode::gripper>(deltaGrip) ),
-			motionClient( hNode.serviceClient<deltarobotnode::motion>(deltaMotion) ),
-			stopClient(hNode.serviceClient<deltarobotnode::stop>(deltaStop)),
-			deltaErrorSub(hNode.subscribe(deltaError, 1000, &CrateDemo::deltaErrorCb, this)),
-			crateRefreshClient(hNode.serviceClient<vision::getAllCrates>(crateRefresh)),
-			getCrateClient(hNode.serviceClient<vision::getCrate>(getCrate)),
-			crateEventSub(hNode.subscribe(visionEvents, 1000, &CrateDemo::crateEventCb, this)),
-			visionErrorSub(hNode.subscribe(visionError, 1000, &CrateDemo::visionErrorCb, this)),
-			crateContentMap(crateContentMap),
-			threadRunning(true) {
-		actionThread = new boost::thread(staticActionThreadFunc, this);
+	return it->second;
+}
+
+datatypes::point3f CrateDemo::getCrateContentGripLocation(const Crate& crate, size_t index)
+{
+	try
+	{
+		return crate.getContentGripLocation(index);
 	}
+	catch(LocationIsEmptyException& ex)
+	{
+		std::cerr << "index " << index << " in crate " << crate.getName() << " is empty" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+}
 
 void CrateDemo::actionThreadFunc(void)
 {
-	try{
+	try
+	{
 		while(threadRunning)
 		{
 			actionQueueMutex.lock();
@@ -83,45 +115,60 @@ void CrateDemo::actionThreadFunc(void)
 				actionQueue.pop();
 				actionQueueMutex.unlock();
 
-				crateMapMutex.lock();
-
 				//wait for source crate
-				CrateMap::iterator itFrom = crates.find(action.getStrFrom());
-				while(itFrom == crates.end() || itFrom->second->moving)
-				{
-					crateMapMutex.unlock();
-					boost::unique_lock<boost::mutex> lock(waitMutex);
-					waitCondition.wait(lock);
-					crateMapMutex.lock();
-					itFrom = crates.find(action.getStrFrom());
-				}
+//				CrateMap::iterator itFrom = crates.find(action.getStrFrom());
+//				while(itFrom == crates.end() || itFrom->second->moving)
+//				{
+//					crateMapMutex.unlock();
+//					boost::unique_lock<boost::mutex> lock(waitMutex);
+//					waitCondition.wait(lock);
+//					crateMapMutex.lock();
+//					itFrom = crates.find(action.getStrFrom());
+//				}
+//				try {
+//					posFrom = itFrom->second->getContentGripLocation(action.getIndexFrom());
+//				}
+//				catch(LocationIsEmptyException& ex) {
+//					std::cerr << "location is empty, location=" << action.getIndexFrom() << std::endl;
+//					exit(EXIT_FAILURE);
+//				}
 
-				//get source location
+				Crate* crateFrom;
 				datatypes::point3f posFrom;
-				try {
-					posFrom = itFrom->second->getContentGripLocation(action.getIndexFrom());
-				}
-				catch(LocationIsEmptyException& ex) {
-					//TODO maak het :O
-					assert(0);
-				}
-
-				//remove content from source crate
-				CrateContent* content = itFrom->second->get(action.getIndexFrom());
-				itFrom->second->remove(action.getIndexFrom());
-				crateMapMutex.unlock();
 
 				//move to source
 				MotionWrapper motionToSource;
-				motionToSource.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), 123);
+				for(;;)
+				{
+					crateMapMutex.lock();
+					//wait for source crate
+					crateFrom = waitForCrate(action.getStrFrom());
+					//get source location
+					posFrom = getCrateContentGripLocation(*crateFrom, action.getIndexFrom());
 
-				vision::getCrate sourceCrate;
-				sourceCrate.request.name = action.getStrFrom();
-				getCrateClient.call(sourceCrate);
+					motionToSource = MotionWrapper();
+					motionToSource.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), 123);
+					motionToSource.addMotion(posFrom, 123);
 
-				//motionToSource.addMotion(datatypes::point3f(sourceCrate.response.crate.x, sourceCrate.response.crate.y, posFrom.z), 123);
-				motionToSource.addMotion(posFrom, 123);
-				motionToSource.callService(motionClient);
+					//if object in crate is not reachable, then wait for movement and check again
+					if (!motionToSource.callService(motionClient))
+					{
+						crateMapMutex.unlock();
+						ROS_INFO("Cannot reach source location. Waiting till robot can reach it.");
+						boost::unique_lock<boost::mutex> lock(waitMutex);
+						waitCondition.wait(lock);
+
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				//remove content from source crate
+				CrateContent* content = crateFrom->get(action.getIndexFrom());
+				crateFrom->remove(action.getIndexFrom());
+				crateMapMutex.unlock();
 
 				//grip
 				deltarobotnode::gripper grip;
@@ -135,44 +182,85 @@ void CrateDemo::actionThreadFunc(void)
 				motionToSourceUp.addMotion(datatypes::point3f(posFrom.x, posFrom.y, SAFE_HEIGHT), 36);
 				motionToSourceUp.callService(motionClient);
 
-				crateMapMutex.lock();
+				Crate* crateTo;
+				datatypes::point3f posTo;
+
+				//move to destination
+				MotionWrapper motionToDestination;
+				for(;;)
+				{
+					crateMapMutex.lock();
+					//wait for source crate
+					crateTo = waitForCrate(action.getStrTo());
+					//get source location
+					posTo = crateTo->getContainerLocation(action.getIndexTo()) + content->getGripPoint();
+
+					motionToDestination = MotionWrapper();
+					motionToDestination.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), 123);
+					motionToDestination.addMotion(posTo, 123);
+
+					//if drop location in crate is not reachable, then wait for movement and check again
+					if (!motionToDestination.callService(motionClient))
+					{
+						crateMapMutex.unlock();
+						ROS_INFO("Cannot reach destination location. Waiting till robot can reach it.");
+						boost::unique_lock<boost::mutex> lock(waitMutex);
+						waitCondition.wait(lock);
+					}
+					else
+					{
+						break;
+					}
+				}
+
+				try
+				{
+					posTo = crateTo->getContainerLocation(action.getIndexTo()) + content->getGripPoint();
+					crateTo->put(action.getIndexTo(), content);
+					crateMapMutex.unlock();
+				}
+				catch(LocationIsFullException& ex)
+				{
+					std::cerr << "location is full, location=" << action.getIndexFrom() << std::endl;
+					exit(EXIT_FAILURE);
+				}
+
+				//crateMapMutex.unlock();
 
 				//wait for destination crate
-				CrateMap::iterator itTo = crates.find(action.getStrTo());
-				while(itTo == crates.end() || itTo->second->moving)
-				{
-					crateMapMutex.unlock();
-					boost::unique_lock<boost::mutex> lock(waitMutex);
-					waitCondition.wait(lock);
-					crateMapMutex.lock();
-					itTo = crates.find(action.getStrTo());
-				}
+//				CrateMap::iterator itTo = crates.find(action.getStrTo());
+//				while(itTo == crates.end() || itTo->second->moving)
+//				{
+//					crateMapMutex.unlock();
+//					boost::unique_lock<boost::mutex> lock(waitMutex);
+//					waitCondition.wait(lock);
+//					crateMapMutex.lock();
+//					itTo = crates.find(action.getStrTo());
+//				}
 
 				//get destination crate location
-				datatypes::point3f posTo;
-				posTo = itTo->second->getContainerLocation(action.getIndexTo()) + content->getGripPoint();
+//				datatypes::point3f posTo;
 
 				//put content in destination crate
-				try{
-					itTo->second->put(action.getIndexTo(), content);
-					crateMapMutex.unlock();
-				}
-				catch(LocationIsFullException& ex){
-					//TODO
-					assert(0);
-				}
+//				try{
+//					posTo = itTo->second->getContainerLocation(action.getIndexTo()) + content->getGripPoint();
+//					itTo->second->put(action.getIndexTo(), content);
+//					crateMapMutex.unlock();
+//				}
+//				catch(LocationIsFullException& ex){
+//					std::cerr << "location is full, location=" << action.getIndexFrom() << std::endl;
+//					exit(EXIT_FAILURE);
+//				}
 
 				//move to destination, down
-				MotionWrapper motionToDest;
-				motionToDest.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), 123);
-
-				vision::getCrate destCrate;
-				destCrate.request.name = action.getStrTo();
-				getCrateClient.call(destCrate);
-
-				//motionToDest.addMotion(datatypes::point3f(destCrate.response.crate.x, destCrate.response.crate.y, posTo.z), 123);
-				motionToDest.addMotion(datatypes::point3f(posTo.x, posTo.y, posTo.z + 3), 123); //TODO: remove +3
-				motionToDest.callService(motionClient);
+//				MotionWrapper motionToDest;
+//				motionToDest.addMotion(datatypes::point3f(posTo.x, posTo.y, SAFE_HEIGHT), 123);
+//				motionToDest.addMotion(datatypes::point3f(posTo.x, posTo.y, posTo.z + 4), 65); //TODO: remove temporary solution 'z + 4'
+//				while(!motionToDest.callService(motionClient))
+//				{
+//					boost::unique_lock<boost::mutex> lock(waitMutex);
+//					waitCondition.wait(lock);
+//				}
 
 				//drop
 				grip.request.enabled = false;
@@ -201,14 +289,13 @@ void CrateDemo::actionThreadFunc(void)
 
 				boost::unique_lock<boost::mutex> lock(idleMutex);
 				while(idle) { idleCondition.wait(lock); }
-
-
 			}
 		}
 	}
 	catch(boost::thread_interrupted& ex) {}
 	catch(std::exception& ex){
-		std::cout << "exception of type " << typeid(ex).name() << " occurred in action thread. what(): " << ex.what() << std::endl;
+		std::cerr << "exception of type " << typeid(ex).name() << " occurred in action thread. what(): " << ex.what() << std::endl;
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -374,8 +461,8 @@ void CrateDemo::getAllCrates(void){
 	vision::getAllCrates allCrates;
 	crateRefreshClient.call(allCrates);
 
-	unsigned int i = 0;
-	for(; i < allCrates.response.crates.size(); i++){
+
+	for(unsigned int i = 0; i < allCrates.response.crates.size(); i++){
 		crateMapMutex.lock();
 		CrateMap::iterator it = crates.find(allCrates.response.crates.at(i).name);
 		if(it == crates.end()){
