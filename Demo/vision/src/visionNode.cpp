@@ -89,14 +89,14 @@ visionNode::visionNode(int argc, char* argv[]){
 		//The real-life coordinates of the fiducials in mm.
 		//0,0 is center of the delta robot
 		point2f::point2fvector rc;
-		rc.push_back(point2f(61.5, 110.5));
-		rc.push_back(point2f(-62.5, 113.5));
-		rc.push_back(point2f(-65, -74));
+		rc.push_back(point2f(61.5 + 1.5, 110.5));
+		rc.push_back(point2f(-62.5 + 1.5, 113.5));
+		rc.push_back(point2f(-65 + 1.5, -74));
 		cordTransformer= new pc_rc_transformer(rc,rc);
 
 		//crate tracking configuration
 		//the amount of mm a point has to move before we mark it as moving.
-		crateMovementThresshold = 5;
+		crateMovementThresshold = 0.25;
 		//the number of frames before a change is marked definite.
 		numberOfStableFrames = 10;
 		crateTracker = new CrateTracker(numberOfStableFrames , crateMovementThresshold);

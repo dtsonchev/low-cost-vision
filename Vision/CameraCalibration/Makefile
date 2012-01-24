@@ -9,7 +9,7 @@
 #######################################################################
 
 # type of project. may be 'binary' or 'library'
-BUILDTYPE           := library
+BUILDTYPE           := binary
 
 # name of target binary or library
 TARGET              := CameraCalibration

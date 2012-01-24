@@ -64,6 +64,7 @@ private:
 	// deltarobot services/topics
 	ros::ServiceClient gripperClient;
 	ros::ServiceClient motionClient;
+	ros::ServiceClient checkClient;
 	ros::ServiceClient stopClient;
 	ros::Subscriber deltaErrorSub;
 
@@ -97,6 +98,12 @@ private:
 	void handleCrateMoved(const vision::CrateMsg& msg);
 	void handleCrateMoving(const vision::CrateMsg& msg);
 
+	/**
+	 * @note needs crateMapMutex to be locked
+	 */
+	Crate* waitForCrate(const std::string& name);
+	datatypes::point3f getCrateContentGripLocation(const Crate& crate, size_t index);
+
 	static void staticActionThreadFunc(CrateDemo* obj);
 	void actionThreadFunc(void);
 	//void drawCrateCorners(Crate& crate); //for debugging
@@ -107,6 +114,7 @@ protected:
 		const std::string& deltaGrip,
 		const std::string& deltaStop,
 		const std::string& deltaMotion,
+		const std::string& checkMotion,
 		const std::string& deltaError,
 		const std::string& crateRefresh,
 		const std::string& getCrate,
