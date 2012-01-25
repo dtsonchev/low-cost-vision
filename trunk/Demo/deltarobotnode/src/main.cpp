@@ -31,17 +31,18 @@
 #include <huniplacer/huniplacer.h>
 #include <gripper/gripper.h>
 #include "ros/ros.h"
-#include "deltarobotnode/motion.h"
+#include "deltarobotnode/motions.h"
 #include "deltarobotnode/stop.h"
 #include "deltarobotnode/gripper.h"
 #include "deltarobotnode/error.h"
-#include "deltarobotnode/error.h"
+#include "deltarobotnode/motionSrv.h"
 
 using namespace huniplacer;
 
 static huniplacer::deltarobot * robot;
 static gripper * grip;
 static ros::Publisher * pub;
+static ros::Publisher * pubDeltaPos;
 
 //callback function that gets called by the deltarobot thread when an exception occured in it
 static void modbus_exhandler(std::exception& ex)
@@ -55,27 +56,30 @@ static void modbus_exhandler(std::exception& ex)
 	pub->publish(msg);
 }
 
-bool moveTo(deltarobotnode::motion::Request &req,
-		deltarobotnode::motion::Response &res)
+bool moveTo(deltarobotnode::motionSrv::Request &req,
+		deltarobotnode::motionSrv::Response &res)
 {
 	ROS_INFO("-- moveTo");
 	res.succeeded = true;
 	try
 	{
 		unsigned int n;
-		for(n = 0; n < req.x.size() - 1; n++)
+		for(n = 0; n < req.motions.x.size() - 1; n++)
 		{
-			if(!robot->check_path(point3(req.x[n],req.y[n],req.z[n]),point3(req.x[n+1],req.y[n+1],req.z[n+1])))
+			if(!robot->check_path(point3(req.motions.x[n],req.motions.y[n],req.motions.z[n]),point3(req.motions.x[n+1],req.motions.y[n+1],req.motions.z[n+1])))
 			{
 				res.succeeded = false;
 				return true;
 			}
 		}
-		for(n = 0; n < req.x.size(); n++)
+		for(n = 0; n < req.motions.x.size(); n++)
 		{	
-			ROS_INFO("moveTo: (%f, %f, %f) speed=%f", req.x[n], req.y[n], req.z[n], req.speed[n]);
-			robot->moveto(point3(req.x[n],req.y[n],req.z[n]),req.speed[n]);
+			ROS_INFO("moveTo: (%f, %f, %f) speed=%f", req.motions.x[n], req.motions.y[n], req.motions.z[n], req.motions.speed[n]);
+			robot->moveto(point3(req.motions.x[n],req.motions.y[n],req.motions.z[n]),req.motions.speed[n]);
 		}
+		deltarobotnode::motions msg;
+		msg = req.motions; 		
+		pubDeltaPos->publish(msg);
 		robot->wait_for_idle();
 	}
 	catch(std::runtime_error& ex)
@@ -93,16 +97,16 @@ bool moveTo(deltarobotnode::motion::Request &req,
 	return true;
 }
 
-bool checkTo(deltarobotnode::motion::Request &req,
-		deltarobotnode::motion::Response &res)
+bool checkTo(deltarobotnode::motionSrv::Request &req,
+		deltarobotnode::motionSrv::Response &res)
 {
 	res.succeeded = true;
 	try
 	{
 		unsigned int n;
-		for(n = 0; n < req.x.size() - 1; n++)
+		for(n = 0; n < req.motions.x.size() - 1; n++)
 		{
-			if(!robot->check_path(point3(req.x[n],req.y[n],req.z[n]),point3(req.x[n+1],req.y[n+1],req.z[n+1])))
+			if(!robot->check_path(point3(req.motions.x[n],req.motions.y[n],req.motions.z[n]),point3(req.motions.x[n+1],req.motions.y[n+1],req.motions.z[n+1])))
 			{
 				res.succeeded = false;
 				return true;
@@ -173,13 +177,14 @@ bool stop(deltarobotnode::stop::Request &req,
 
 void calibrateMotor(steppermotor3& motors, int motorIndex){
 	std::cout << "Calibrating motor number " << motorIndex << std::endl;
-	std::cout << "Enter motor rotation (radians) or 0 to finish." << std::endl;
+	std::cout << "Enter motor rotation (degrees) or 0 to finish." << std::endl;
 
 	double angle = utils::rad(45);
 	double deltaAngle = 0.0;
 	do {
 		std::cout << "deltaAngle: ";
 		std::cin >> deltaAngle;
+		deltaAngle = utils::rad(deltaAngle);
 		angle += deltaAngle;
 		if(motorIndex == 0){
 			motors.moveto(motionf(angle, -measures::MOTOR2_DEVIATION, -measures::MOTOR3_DEVIATION, 10, 10, 10, 360, 360, 360, 360, 360, 360), false);
@@ -248,8 +253,9 @@ int main(int argc, char** argv)
 	ros::ServiceServer service4 = n.advertiseService("checkTo", checkTo);
 
 	ros::Publisher pubTemp = n.advertise<deltarobotnode::error>("deltaError", 100);
+	ros::Publisher pubDeltaPosTemp= n.advertise<deltarobotnode::motions>("pubDeltaPos", 100);
 	pub = &pubTemp;
-
+	pubDeltaPos = &pubDeltaPosTemp;
 
 	ros::Time gripper_went_on;
 	ros::Time got_overheated;
