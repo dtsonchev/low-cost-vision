@@ -115,6 +115,8 @@ namespace huniplacer
                 {
                     //get motion, convert and pop
                     motionf& mf = owner->motion_queue.front();
+                    printf("angles: %lf, %lf, %lf\n", mf.angles[0], mf.angles[1], mf.angles[2]);
+                    fflush(stdout);
                     motioni mi;
                     owner->motion_float_to_int(mi, mf);
                     /*printf("%d, %d, %d\n, %d %d, %d\n %d, %d %d\n %d, %d, %d\n",
@@ -187,9 +189,11 @@ namespace huniplacer
         catch(boost::thread_interrupted& ex)
         {
         }
-        catch(modbus_exception& ex)
+        catch(std::exception& ex)
         {
-            owner->exhandler(ex);
+            if(owner->exhandler != NULL){
+            	owner->exhandler(ex);
+            }
         }
     }
 
@@ -242,6 +246,10 @@ namespace huniplacer
         {
             wait_for_idle();
         }
+
+        current_angles[0] = mf.angles[0] + deviation[0];
+        current_angles[1] = mf.angles[1] + deviation[1];
+        current_angles[2] = mf.angles[2] + deviation[2];
     }
 
     void steppermotor3::stop(void)
@@ -344,13 +352,43 @@ namespace huniplacer
     void steppermotor3::moveto_within(const motionf & mf, double time, bool async)
     {
         motionf newmf = mf;
-        newmf.speed[0] = fabs(current_angles[0] - mf.angles[0]) / time;
-        newmf.speed[1] = fabs(current_angles[1] - mf.angles[1]) / time;
-        newmf.speed[2] = fabs(current_angles[2] - mf.angles[2]) / time;
-        current_angles[0] = mf.angles[0];
-        current_angles[1] = mf.angles[1];
-        current_angles[2] = mf.angles[2];
-        moveto(newmf, async);
+        newmf.speed[0] = fabs(current_angles[0] - deviation[0] - mf.angles[0]) / time;
+        newmf.speed[1] = fabs(current_angles[1] - deviation[1] - mf.angles[1]) / time;
+        newmf.speed[2] = fabs(current_angles[2] - deviation[2] - mf.angles[2]) / time;
+
+        //moveto(newmf, async);
+
+        if(!powered_on)
+        {
+        	throw motor3_exception("motor drivers are not powered on");
+        }
+
+        if(newmf.angles[0] <= min_angle || newmf.angles[1] <= min_angle || newmf.angles[2] <= min_angle ||
+           newmf.angles[0] >= max_angle || newmf.angles[1] >= max_angle || newmf.angles[2] >= max_angle)
+        {
+            throw std::out_of_range("one or more angles out of range");
+        }
+
+    	//push motion
+        queue_mutex.lock();
+        motion_queue.push(newmf);
+        queue_mutex.unlock();
+
+        //unset idle bool
+		idle_mutex.lock();
+		idle = false;
+		idle_mutex.unlock();
+		idle_cond.notify_all();
+
+        current_angles[0] = newmf.angles[0] + deviation[0];
+        current_angles[1] = newmf.angles[1] + deviation[1];
+        current_angles[2] = newmf.angles[2] + deviation[2];
+
+        if(!async)
+        {
+            wait_for_idle();
+        }
+
     }
 
     void steppermotor3::power_on(void)
@@ -388,9 +426,9 @@ namespace huniplacer
 
     void steppermotor3::override_current_angles(double * angles)
     {
-    	this->deviation[0] = angles[0] - current_angles[0];
-        this->deviation[1] = angles[1] - current_angles[1];
-        this->deviation[2] = angles[2] - current_angles[2];
+    	this->deviation[0] = current_angles[0] - angles[0];
+        this->deviation[1] = current_angles[1] - angles[1];
+        this->deviation[2] = current_angles[2] - angles[2];
         modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle + deviation[0]) / crd514_kd::MOTOR_STEP_ANGLE));
         modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle + deviation[0]) / crd514_kd::MOTOR_STEP_ANGLE));
         modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle + deviation[1]) / crd514_kd::MOTOR_STEP_ANGLE));
@@ -403,5 +441,21 @@ namespace huniplacer
     bool steppermotor3::is_powerd_on(void)
     {
     	return powered_on;
+    }
+
+    void steppermotor3::set_min_angle(double min_angle)
+    {
+    	this->min_angle = min_angle;
+        modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle + deviation[0]) / crd514_kd::MOTOR_STEP_ANGLE));
+        modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle + deviation[1]) / crd514_kd::MOTOR_STEP_ANGLE));
+        modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::CFG_POSLIMIT_NEGATIVE, (uint32_t)((min_angle + deviation[2]) / crd514_kd::MOTOR_STEP_ANGLE));
+    }
+
+    void steppermotor3::set_max_angle(double max_angle)
+    {
+    	this->max_angle = max_angle;
+        modbus.write_u32(crd514_kd::slaves::MOTOR_1, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle + deviation[0]) / crd514_kd::MOTOR_STEP_ANGLE));
+        modbus.write_u32(crd514_kd::slaves::MOTOR_2, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle + deviation[1]) / crd514_kd::MOTOR_STEP_ANGLE));
+        modbus.write_u32(crd514_kd::slaves::MOTOR_3, crd514_kd::registers::CFG_POSLIMIT_POSITIVE, (uint32_t)((max_angle + deviation[2]) / crd514_kd::MOTOR_STEP_ANGLE));
     }
 }

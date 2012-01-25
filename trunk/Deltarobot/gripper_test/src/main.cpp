@@ -33,12 +33,23 @@ using namespace std;
 
 int main(void)
 {
-		gripper grip("192.168.0.2", 502);
-		grip.connect();
-		grip.grab();
-		usleep(5*1000*1000);
-		grip.release();
-		grip.disconnect();
+	gripper grip("192.168.0.2", 502);
+	grip.connect();
+	int input;
+	do {
+		std::cin >> input;
+		if(input == 0)
+		{
+			grip.grab();
+		} 
+		else if(input == 1)
+		{
+			grip.release();
+		}
+
+	} while(input != 2);
+
+	grip.disconnect();
 	return 0;
 }
 
