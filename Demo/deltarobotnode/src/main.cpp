@@ -93,17 +93,62 @@ bool moveTo(deltarobotnode::motion::Request &req,
 	return true;
 }
 
+bool checkTo(deltarobotnode::motion::Request &req,
+		deltarobotnode::motion::Response &res)
+{
+	res.succeeded = true;
+	try
+	{
+		unsigned int n;
+		for(n = 0; n < req.x.size() - 1; n++)
+		{
+			if(!robot->check_path(point3(req.x[n],req.y[n],req.z[n]),point3(req.x[n+1],req.y[n+1],req.z[n+1])))
+			{
+				res.succeeded = false;
+				return true;
+			}
+		}
+	}
+	catch(std::runtime_error& ex)
+	{
+		deltarobotnode::error msg;
+		std::stringstream ss;
+		ss << "runtime error of type "<< typeid(ex).name()<<" in delta robot" << std::endl;
+		ss <<"what(): " << ex.what()<<std::endl;
+		msg.errorMsg = ss.str();
+		msg.errorType = 2;
+		pub->publish(msg);
+		res.succeeded = false;
+		ROS_ERROR("checkTo: %s", ss.str().c_str());
+	}
+	return true;
+}
+
+static bool gripper_status = false;
+static bool overheated = false;
 bool enableGripper(deltarobotnode::gripper::Request &req,
 		deltarobotnode::gripper::Response &res)
 {
 	try
 	{
-		if(req.enabled){
-			grip->grab();
-		} else {
-			grip->release();
-		}
 		res.succeeded = true;
+		if(req.enabled)
+		{
+			if(!overheated)
+			{
+				gripper_status = true;
+				//grip->grab();
+			}
+			else
+			{
+				ROS_WARN("Tried to turn on gripper, but it's valve is currently overheated. Ignoring request");
+				res.succeeded = false;
+			}
+		} else {
+			gripper_status = false;
+			//grip->release();
+		}
+		
 	}
 	catch(std::runtime_error& ex)
 	{
@@ -200,11 +245,50 @@ int main(int argc, char** argv)
 	ros::ServiceServer service1 = n.advertiseService("moveTo", moveTo);
 	ros::ServiceServer service2 = n.advertiseService("enableGripper", enableGripper);
 	ros::ServiceServer service3 = n.advertiseService("stop", stop);
+	ros::ServiceServer service4 = n.advertiseService("checkTo", checkTo);
 
 	ros::Publisher pubTemp = n.advertise<deltarobotnode::error>("deltaError", 100);
 	pub = &pubTemp;
 
-	ros::spin();
+
+	ros::Time gripper_went_on;
+	ros::Time got_overheated;
+	bool previous_gripper_status = gripper_status;
+	static const int MAX_GRIPPER_ON = 60; //sec
+	static const int COOLDOWN_DURATION = 3*60; //sec
+	
+	while(ros::ok())
+	{
+		
+		//prevent the watchdog to trigger by sending the same command again
+		if(gripper_status)
+			grip->grab();
+		else
+			grip->release();
+
+		if(!previous_gripper_status && gripper_status)
+		{
+			gripper_went_on = ros::Time::now();
+		}
+		else if(previous_gripper_status && gripper_status && (ros::Time::now() - gripper_went_on).toSec() > MAX_GRIPPER_ON)
+		{			
+			ROS_WARN("Gripper valve was turned on for longer than %d seconds. Gripper will be forced to turn off now to prevent overheating", MAX_GRIPPER_ON);
+			overheated = true;
+			got_overheated = ros::Time::now();
+			grip->release();
+			previous_gripper_status = gripper_status = false;
+		}
+		else if(overheated && (ros::Time::now() - got_overheated).toSec() > COOLDOWN_DURATION)
+		{
+			ROS_WARN("Gripper valve cooled down");
+			overheated = false;
+		}
+
+		previous_gripper_status = gripper_status;
+		ros::spinOnce();
+	}
+
+	grip->release();
 
     robot->wait_for_idle();
 	grip->disconnect();

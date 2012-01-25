@@ -41,7 +41,7 @@
 namespace huniplacer
 {
 	/// @brief exception handler to which modbus_exception's will be passed that occur in motion_thread
-    typedef void (*motion_thread_exception_handler)(std::runtime_error& ex);
+    typedef void (*motion_thread_exception_handler)(std::exception& ex);
 
     /// @brief implementation of imotor3 for steppermotors
     class steppermotor3 : public imotor3
@@ -59,8 +59,8 @@ namespace huniplacer
             boost::mutex queue_mutex;
             boost::mutex modbus_mutex;
             
-            const double min_angle;
-            const double max_angle;
+            double min_angle;
+            double max_angle;
             
             modbus_ctrl modbus;
             
@@ -125,5 +125,7 @@ namespace huniplacer
 
             inline double get_min_angle(void) const { return min_angle; }
             inline double get_max_angle(void) const { return max_angle; }
+            void set_min_angle(double min_angle);
+            void set_max_angle(double max_angle);
     };
 }
