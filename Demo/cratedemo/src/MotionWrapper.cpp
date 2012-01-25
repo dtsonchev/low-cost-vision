@@ -8,10 +8,10 @@ namespace cratedemo
 		datatypes::point3f point = p;
 		//addHack(point);
 
-		motions.request.x.push_back(point.x - 0.475);// * FACTOR_X + OFFSET_X);
-		motions.request.y.push_back(point.y - 0.911);// * FACTOR_Y + OFFSET_Y);
-		motions.request.z.push_back(point.z);// * FACTOR_Z + OFFSET_Z);
-		motions.request.speed.push_back(speed);
+		motions.request.motions.x.push_back(point.x - 0.475);// * FACTOR_X + OFFSET_X);
+		motions.request.motions.y.push_back(point.y - 0.911);// * FACTOR_Y + OFFSET_Y);
+		motions.request.motions.z.push_back(point.z);// * FACTOR_Z + OFFSET_Z);
+		motions.request.motions.speed.push_back(speed);
 	}
 
 	void MotionWrapper::addHack(datatypes::point3f& p){
@@ -42,9 +42,9 @@ namespace cratedemo
 	void MotionWrapper::print(std::ostream& os)
 	{
 		os << "motions:" << std::endl;
-		for(size_t i = 0; i < motions.request.x.size(); i++)
+		for(size_t i = 0; i < motions.request.motions.x.size(); i++)
 		{
-			#define P motions.request
+			#define P motions.request.motions
 			os << "  i=" << i << " pos=(" << P.x.at(i) << ',' << P.y.at(i) << ',' << P.z.at(i) << ") speed=" << P.speed.at(i) << std::endl;
 			#undef P
 		}
