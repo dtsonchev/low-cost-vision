@@ -60,8 +60,8 @@ CrateDemo::CrateDemo(
 	const std::string& visionError,
 	CrateContentMap& crateContentMap) :
 		gripperClient( hNode.serviceClient<deltarobotnode::gripper>(deltaGrip) ),
-		motionClient( hNode.serviceClient<deltarobotnode::motion>(deltaMotion) ),
-		checkClient( hNode.serviceClient<deltarobotnode::motion>(checkMotion) ),
+		motionClient( hNode.serviceClient<deltarobotnode::motionSrv>(deltaMotion) ),
+		checkClient( hNode.serviceClient<deltarobotnode::motionSrv>(checkMotion) ),
 		stopClient(hNode.serviceClient<deltarobotnode::stop>(deltaStop)),
 		deltaErrorSub(hNode.subscribe(deltaError, 1000, &CrateDemo::deltaErrorCb, this)),
 		crateRefreshClient(hNode.serviceClient<vision::getAllCrates>(crateRefresh)),

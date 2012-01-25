@@ -43,7 +43,7 @@
 //delta node messages & services
 #include <deltarobotnode/error.h>
 #include <deltarobotnode/gripper.h>
-#include <deltarobotnode/motion.h>
+#include <deltarobotnode/motionSrv.h>
 #include <deltarobotnode/stop.h>
 
 //WOOO 133333337!!!!!!!111111 one

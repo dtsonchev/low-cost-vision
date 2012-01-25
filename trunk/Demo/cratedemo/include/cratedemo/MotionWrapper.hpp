@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ros/ros.h>
-#include <deltarobotnode/motion.h>
+#include <deltarobotnode/motionSrv.h>
 #include <datatypes/point3.hpp>
 #include <iostream>
 
@@ -19,7 +19,7 @@ private:
 	static const float FACTOR_Z = 1;
 
 public:
-	deltarobotnode::motion motions;
+	deltarobotnode::motionSrv motions;
 
 	void addMotion(const datatypes::point3f& p, double speed);
 	bool callService(ros::ServiceClient& service);
