@@ -1,0 +1,18 @@
+<testset>
+	<image path="data/testing/Original/black-smurf.jpg">
+		<category name="NoOfSmurfs" value="One" />
+		<property name="FB" value="data/testing/FB_image/black-smurf.jpg" />
+	</image>
+	<image path="data/testing/Original/mopper_smurf.jpg">
+		<category name="NoOfSmurfs" value="One" />
+		<property name="FB" value="data/testing/FB_image/mopper_smurf.jpg" />
+	</image>
+	<image path="data/testing/Original/smurfen-salade.jpg">
+		<category name="NoOfSmurfs" value="One" />
+		<property name="FB" value="data/testing/FB_image/smurfen-salade.jpg" />
+	</image>
+	<image path="data/testing/Original/smurfin.jpg">
+		<category name="NoOfSmurfs" value="Two" />
+		<property name="FB" value="data/testing/FB_image/smurfin.jpg" />
+	</image>
+</testset>

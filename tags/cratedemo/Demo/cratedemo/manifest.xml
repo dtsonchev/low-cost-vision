@@ -1,0 +1,16 @@
+<package>
+  <description brief="cratedemo">
+
+     cratedemo
+
+  </description>
+  <author>wouter</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes="" />
+  <url>http://ros.org/wiki/cratedemo</url>
+  <depend package="roscpp"/>
+  <depend package="deltarobotnode" />
+  <depend package="vision" />
+</package>
+
+

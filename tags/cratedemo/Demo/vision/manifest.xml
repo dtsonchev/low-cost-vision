@@ -1,0 +1,19 @@
+<package>
+  <description brief="vision">
+
+     vision
+
+  </description>
+  <author>lcv</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/vision</url>
+  <depend package="std_msgs"/>
+  <depend package="std_srvs"/>
+  <depend package="roscpp"/>
+
+
+
+</package>
+
+

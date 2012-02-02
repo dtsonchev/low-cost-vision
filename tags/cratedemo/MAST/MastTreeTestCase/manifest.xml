@@ -1,0 +1,16 @@
+<package>
+  <description brief="MastTreeTestCase">
+
+     MastTreeTestCase
+
+  </description>
+  <author>wouter</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/MastTreeTestCase</url>
+  <depend package="std_msgs"/>
+  <depend package="roscpp"/>
+
+</package>
+
+
