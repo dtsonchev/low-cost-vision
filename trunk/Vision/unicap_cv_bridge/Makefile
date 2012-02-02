@@ -32,13 +32,13 @@ LFLAGS              :=
 ARFLAGS             := 
 
 # libraries that will be included by pkg-config
-PKGCONF_LIBRARIES   := libunicap
+PKGCONF_LIBRARIES   := libunicap opencv
 
 # libraries that are linked against with '-l'
 LIBRARIES           := boost_thread
 
 # include paths that will be included using '-I'
-EXTINCLUDEPATHS     := /usr/include/unicap /usr/include/local/unicap
+EXTINCLUDEPATHS     := 
 
 #linker paths that will be included using '-L'
 LINKERPATHS         := 
