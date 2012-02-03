@@ -34,17 +34,17 @@ rosbuild_add_executable(vision src/main.cpp src/visionNode.cpp src/CrateTracker.
 
 pkg_check_modules(PKG_LIBS REQUIRED opencv zbar libunicap)
 
-include_directories(/home/lcv/low_cost_vision_svn/low-cost-vision/Vision/Fiducial/include)
-target_link_libraries(vision /home/lcv/low_cost_vision_svn/low-cost-vision/Vision/Fiducial/lib/libFiducial.a)
+include_directories($ENV{LCV_PROJECT_PATH}/Vision/Fiducial/include)
+target_link_libraries(vision $ENV{LCV_PROJECT_PATH}/Vision/Fiducial/lib/libFiducial.a)
 
-include_directories(/home/lcv/low_cost_vision_svn/low-cost-vision/Vision/unicap_cv_bridge/include)
-target_link_libraries(vision /home/lcv/low_cost_vision_svn/low-cost-vision/Vision/unicap_cv_bridge/lib/libunicap_cv_bridge.a)
+include_directories($ENV{LCV_PROJECT_PATH}/Vision/unicap_cv_bridge/include)
+target_link_libraries(vision $ENV{LCV_PROJECT_PATH}/Vision/unicap_cv_bridge/lib/libunicap_cv_bridge.a)
 
-include_directories(/home/lcv/low_cost_vision_svn/low-cost-vision/Vision/PixelCord_RealifeCord_Transformation/include)
-target_link_libraries(vision /home/lcv/low_cost_vision_svn/low-cost-vision/Vision/PixelCord_RealifeCord_Transformation/lib/libcoordinates.a)
+include_directories($ENV{LCV_PROJECT_PATH}/Vision/PixelCord_RealifeCord_Transformation/include)
+target_link_libraries(vision $ENV{LCV_PROJECT_PATH}/Vision/PixelCord_RealifeCord_Transformation/lib/libcoordinates.a)
 
-include_directories(/home/lcv/low_cost_vision_svn/low-cost-vision/Vision/CreateCameraCalibratieMatrix/include)
-target_link_libraries(vision /home/lcv/low_cost_vision_svn/low-cost-vision/Vision/CreateCameraCalibratieMatrix/lib/libCreateCameraCalibratieMatrix.a)
+include_directories($ENV{LCV_PROJECT_PATH}/Vision/CameraCalibration/include)
+target_link_libraries(vision $ENV{LCV_PROJECT_PATH}/Vision/CameraCalibration/lib/libCameraCalibration.a)
 
 include_directories(/usr/include/unicap)
 include_directories(/usr/include/local/unicap)
