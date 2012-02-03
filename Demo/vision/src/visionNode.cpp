@@ -259,6 +259,10 @@ bool visionNode::calibrate(unsigned int measurements, int maxErrors){
 void visionNode::run(){
 	//run initial calibration. If that fails, this node will shut down.
 	if(!calibrate()) ros::shutdown();
+	
+	VideoWriter outputVideo;
+	Size S = cv::Size(cam->get_img_width(),cam->get_img_height());
+	outputVideo.open("/home/lcv/output.avi" , CV_FOURCC('M','P','2','V'), 30, S, true);
 
 	//main loop
 	while(ros::ok()){
@@ -318,8 +322,9 @@ void visionNode::run(){
 		}
 
 		//update GUI
+		outputVideo.write(rectifiedCamFrame);
 		imshow("image",rectifiedCamFrame);
-		waitKey(10);
+		waitKey(1000/30);
 
 		//let ROS do it's magical things
 		ros::spinOnce();
