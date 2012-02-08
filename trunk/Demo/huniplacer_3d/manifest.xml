@@ -1,0 +1,17 @@
+<package>
+  <description brief="huniplacer_3d">
+
+     huniplacer_3d
+
+  </description>
+  <author>Joris Vergeer</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/huniplacer_3d</url>
+  <depend package="roscpp"/>
+  <depend package="vision"/>
+  <depend package="deltarobotnode"/>
+
+</package>
+
+
