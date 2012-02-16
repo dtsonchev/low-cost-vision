@@ -1,6 +1,0 @@
-string imagePath
-uint32 expectedFiducialCount
-uint32 fiducialCount
-uint32 tooFewLines
-uint32 outsideROI
-float32 avgDeviation
